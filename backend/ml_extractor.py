@@ -2,7 +2,6 @@
 from urllib.parse import urlparse, urlencode
 import ipaddress
 import re
-from bs4 import BeautifulSoup  # pyre-ignore
 import whois  # pyre-ignore
 import urllib
 import urllib.request
