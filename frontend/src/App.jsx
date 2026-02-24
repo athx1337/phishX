@@ -396,7 +396,7 @@ function App() {
                     </div>
                     <div className="flex items-start gap-3">
                       <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">route_out</span>
+                        <span className="material-symbols-outlined text-[20px]">alt_route</span>
                       </div>
                       <div>
                         <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Suspicious Redirects</p>
