@@ -18,7 +18,9 @@ function App() {
     setError(null);
 
     try {
-      const response = await fetch('/api/verify', {
+      // Use environment variable for the backend API URL, fallback to localhost for local dev if undefined
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${apiUrl}/api/verify`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

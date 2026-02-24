@@ -1,8 +1,9 @@
 fastapi
 uvicorn
 xgboost
-scikit-learn
 requests
-beautifulsoup4
 python-whois
 pydantic
+gunicorn
+google-genai
+python-dotenv
