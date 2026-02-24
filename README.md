@@ -151,6 +151,5 @@ Check:
 
 ## 📜 License
 
-Choose a license (MIT is commonly used for projects like this) and add it here.
-If you want, I can merge this perfectly into your **full README** or tailor it exactly to your repo structure.
+MIT License
 ```
