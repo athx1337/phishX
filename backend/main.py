@@ -44,6 +44,11 @@ async def verify_url(request: URLRequest):
         
         is_phishing = bool(prediction == 1)
         
+        # Whitelist our own domain to prevent false positives
+        if "phish-x.vercel.app" in url.lower():
+            is_phishing = False
+            features = [0] * len(features) # Clear any false positive threat indicators
+        
         gemini_analysis = "Gemini AI analysis is unavailable. Please configure the GEMINI_API_KEY environment variable."
         rate_limit_exceeded = False # Add tracking flag
         
