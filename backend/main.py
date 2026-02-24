@@ -59,6 +59,7 @@ async def verify_url(request: URLRequest):
         rate_limit_exceeded = False # Add tracking flag
         
         cloudflare_context = ""
+        cloudflare_report = None
         cloudflare_account_id = os.environ.get("CLOUDFLARE_ACCOUNT_ID")
         cloudflare_api_token = os.environ.get("CLOUDFLARE_API_TOKEN")
 
@@ -101,6 +102,11 @@ async def verify_url(request: URLRequest):
                                     f"- Hosting ASN: {cf_asn[0].get('description') if cf_asn else 'Unknown'}\n"
                                     f"- Resolved IPs: {', '.join([ip.get('ip') for ip in cf_ips[:2]])}\n"
                                 )
+                                cloudflare_report = {
+                                    "malicious": report_data.get("malicious", False),
+                                    "asn": cf_asn[0].get('description') if cf_asn else 'Unknown',
+                                    "ip": cf_ips[0].get('ip') if cf_ips else 'Unknown'
+                                }
                                 break
             except Exception as cf_err:
                 print(f"Cloudflare API Error: {cf_err}")
@@ -146,7 +152,8 @@ async def verify_url(request: URLRequest):
             "is_phishing": is_phishing,
             "features_extracted": features,
             "gemini_analysis": gemini_analysis,
-            "rate_limit_exceeded": rate_limit_exceeded
+            "rate_limit_exceeded": rate_limit_exceeded,
+            "cloudflare_report": cloudflare_report
         }
     except Exception as e:
         import traceback

@@ -439,6 +439,12 @@ function App() {
                   <div className="text-center">
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">SAFE TO VISIT</h3>
                     <p className="text-slate-600 dark:text-[#92c9a0] mt-1">No security threats were detected on this URL.</p>
+                    {result.cloudflare_report && (
+                      <div className="mt-4 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-400 text-xs font-bold shadow-sm">
+                        <span className="material-symbols-outlined text-sm">shield</span>
+                        Cloudflare Radar Verified: Clean via {result.cloudflare_report.asn} (IP: {result.cloudflare_report.ip})
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -573,6 +579,12 @@ function App() {
                     <p className="text-slate-300 text-lg max-w-2xl">
                       The URL you scanned has been flagged as a high-risk phishing site. It attempts to impersonate a legitimate entity to steal sensitive information. <span className="text-white font-bold">Do not visit this link.</span>
                     </p>
+                    {result.cloudflare_report && (
+                      <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-white/5 border border-white/10 text-slate-300 text-xs font-bold shadow-sm">
+                        <span className="material-symbols-outlined text-sm">radar</span>
+                        Cloudflare Threat Intel: {result.cloudflare_report.malicious ? <span className="text-danger">Confirmed Malicious Server</span> : "Server Details"} | ASN: {result.cloudflare_report.asn} (IP: {result.cloudflare_report.ip})
+                      </div>
+                    )}
                     <div className="mt-4 flex flex-col gap-2 w-full">
                       <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Scanned Target</label>
                       <div className="flex items-center gap-3 p-3 rounded bg-danger-bg-dark border border-danger/20 font-mono text-sm break-all">
