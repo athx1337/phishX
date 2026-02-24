@@ -12,7 +12,11 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://phish-x.vercel.app",  # your frontend
+        "http://localhost:5173",        # local dev (Vite)
+        "http://localhost:3000",        # optional
+    ],
     allow_credentials=True,
     allow_methods=["*"],  # forcing reload for .env
     allow_headers=["*"],
