@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 function App() {
   const [url, setUrl] = useState('')
@@ -8,6 +8,42 @@ function App() {
 
   // Modal states for legal docs
   const [activeModal, setActiveModal] = useState(null)
+
+  // Loading animation states
+  const [progress, setProgress] = useState(0)
+  const [scanStep, setScanStep] = useState(0)
+
+  // Simulated scan progress effect
+
+  useEffect(() => {
+    let interval;
+    if (loading) {
+      setProgress(0);
+      setScanStep(0);
+
+      interval = setInterval(() => {
+        setProgress(prev => {
+          if (prev >= 95) return 95; // Hold at 95% until real API returns
+
+          const newProgress = prev + Math.random() * 8;
+
+          // Update visual steps based on progress
+          if (newProgress > 60) setScanStep(2);
+          else if (newProgress > 30) setScanStep(1);
+
+          return newProgress;
+        });
+      }, 400);
+    } else {
+      setProgress(100);
+      setTimeout(() => {
+        setScanStep(0);
+        setProgress(0);
+      }, 500);
+    }
+
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const checkUrl = async (e) => {
     e.preventDefault();
@@ -77,11 +113,11 @@ function App() {
         </header>
 
         {/* Main Content */}
-        <main className={`flex-1 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 ${!result ? 'justify-center' : ''}`}>
+        <main className={`flex-1 flex flex-col items-center p-6 sm:p-12 relative overflow-hidden ${(!result || loading) ? 'justify-center' : ''}`}>
 
           {/* STATE 1: INITIAL SCANNER */}
-          {!result && (
-            <div className="w-full max-w-4xl space-y-12">
+          {!result && !loading && (
+            <div className="w-full max-w-4xl space-y-12 z-10">
               <div className="text-center space-y-4 animate-in">
                 <div className="inline-flex items-center rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-medium text-primary mb-2">
                   <span className="mr-1 h-2 w-2 rounded-full bg-primary animate-pulse"></span>
@@ -171,6 +207,113 @@ function App() {
                     </div>
                   </div>
                 </form>
+              </div>
+            </div>
+          )}
+
+          {/* STATE 1.5: DYNAMIC LOADING SCREEN */}
+          {loading && (
+            <div className="w-full max-w-lg flex flex-col items-center gap-10 relative z-10 animate-in">
+              {/* Background Glow Effects specifically for loader */}
+              <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[100px] pointer-events-none"></div>
+              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-sky-600/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+              {/* Circular Progress / Animation */}
+              <div className="relative size-64 flex flex-col items-center justify-center">
+
+                {/* Outer Pulse Rings */}
+                <div className="absolute inset-0 rounded-full border border-primary/20 scale-110"></div>
+                <div className="absolute inset-0 rounded-full border border-primary/10 scale-125"></div>
+
+                {/* Rotating SVG Ring */}
+                <svg className="absolute inset-0 size-full animate-[spin_3s_linear_infinite] text-primary" viewBox="0 0 100 100">
+                  <circle className="opacity-30" cx="50" cy="50" fill="none" r="46" stroke="currentColor" strokeDasharray="10 10" strokeWidth="1"></circle>
+                  <path d="M50 4 A 46 46 0 0 1 96 50" fill="none" stroke="currentColor" strokeLinecap="round" strokeWidth="2"></path>
+                </svg>
+
+                {/* Inner Gradient Circle */}
+                <div className="size-48 rounded-full bg-background-dark/50 backdrop-blur-sm border border-slate-700/50 flex flex-col items-center justify-center shadow-[0_0_40px_-10px_rgba(19,164,236,0.3)]">
+                  <span className="material-symbols-outlined text-5xl text-primary animate-pulse mb-2">radar</span>
+                  <span className="text-4xl font-black text-white tabular-nums drop-shadow-md">{Math.floor(progress)}%</span>
+                </div>
+              </div>
+
+              {/* Status Text */}
+              <div className="flex flex-col gap-3 text-center w-full">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Analyzing URL...</h2>
+
+                <div className="flex flex-col gap-2 max-w-sm mx-auto w-full">
+                  <div className="flex justify-between text-xs font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider">
+                    <span>Scan Progress</span>
+                    <span>Scanning pattern {Math.min(12, Math.floor((progress / 100) * 12))}/12</span>
+                  </div>
+
+                  <div className="h-1.5 w-full bg-slate-200 dark:bg-white/5 rounded-full overflow-hidden">
+                    <div className="h-full bg-primary rounded-full shadow-[0_0_10px_rgba(19,164,236,0.5)] relative transition-all duration-300 ease-out" style={{ width: `${progress}%` }}>
+                      <div className="absolute inset-0 bg-white/30 w-full animate-[shimmer_2s_infinite]"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <p className="text-slate-600 dark:text-slate-400 mt-2 text-sm max-w-md mx-auto">
+                  Our AI is scanning the URL for known threats and suspicious patterns. This may take a few seconds.
+                </p>
+              </div>
+
+              {/* Scanning Details Card */}
+              <div className="w-full bg-white dark:bg-white/5 border border-border-light dark:border-white/10 rounded-xl p-5 shadow-xl mt-4 backdrop-blur-sm">
+                <div className="flex items-center gap-3 mb-4 border-b border-border-light dark:border-white/10 pb-3">
+                  <span className="material-symbols-outlined text-primary text-sm">link</span>
+                  <span className="text-sm font-mono text-text-main dark:text-slate-300 truncate max-w-[300px]">{url}</span>
+                  <span className="ml-auto flex h-2 w-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(19,164,236,0.8)]"></span>
+                </div>
+
+                <div className="space-y-4">
+
+                  {/* Step 1: DNS */}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className={`flex items-center gap-2 ${scanStep >= 1 ? 'text-text-main dark:text-white font-medium' : 'text-text-muted dark:text-slate-400 opacity-60'}`}>
+                      <span className={`material-symbols-outlined text-base ${scanStep === 0 ? 'animate-spin' : ''}`}>dns</span>
+                      <span>DNS Records</span>
+                    </div>
+                    {scanStep >= 1 ? (
+                      <span className="text-emerald-500 flex items-center gap-1 text-xs font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <span className="material-symbols-outlined text-sm">check</span> Verified
+                      </span>
+                    ) : (
+                      <span className="text-primary text-xs font-semibold animate-pulse">Running...</span>
+                    )}
+                  </div>
+
+                  {/* Step 2: SSL */}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className={`flex items-center gap-2 ${scanStep >= 2 ? 'text-text-main dark:text-white font-medium' : 'text-text-muted dark:text-slate-400 opacity-60'}`}>
+                      <span className={`material-symbols-outlined text-base ${scanStep === 1 ? 'animate-spin' : ''}`}>security</span>
+                      <span>SSL Certificate</span>
+                    </div>
+                    {scanStep >= 2 ? (
+                      <span className="text-emerald-500 flex items-center gap-1 text-xs font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                        <span className="material-symbols-outlined text-sm">check</span> Valid
+                      </span>
+                    ) : (
+                      scanStep === 1 ? <span className="text-primary text-xs font-semibold animate-pulse">Running...</span> : <span className="text-text-muted text-xs">Waiting</span>
+                    )}
+                  </div>
+
+                  {/* Step 3: Heuristics & AI */}
+                  <div className="flex items-center justify-between text-sm">
+                    <div className={`flex items-center gap-2 ${scanStep >= 2 ? 'text-text-main dark:text-white font-medium' : 'text-text-muted dark:text-slate-400 opacity-60'}`}>
+                      <span className={`material-symbols-outlined text-base ${scanStep >= 2 ? 'animate-spin' : ''}`}>sync</span>
+                      <span>Heuristic & AI Analysis</span>
+                    </div>
+                    {scanStep >= 2 ? (
+                      <span className="text-primary text-xs font-semibold animate-pulse drop-shadow-[0_0_2px_rgba(19,164,236,0.6)]">Running...</span>
+                    ) : (
+                      <span className="text-text-muted text-xs">Waiting</span>
+                    )}
+                  </div>
+
+                </div>
               </div>
             </div>
           )}
