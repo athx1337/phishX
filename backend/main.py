@@ -6,9 +6,7 @@ import numpy as np  # pyre-ignore
 from ml_extractor import featureExtraction  # pyre-ignore
 import os  # pyre-ignore
 from fastapi.middleware.cors import CORSMiddleware  # pyre-ignore
-from dotenv import load_dotenv  # pyre-ignore
 
-load_dotenv(override=True)
 
 app = FastAPI()
 
