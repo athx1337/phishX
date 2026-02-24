@@ -1,3 +1,29 @@
+# phishX  
+**Phishing URL Scanner — by athx1337**
+
+phishX is an **educational web tool** that analyzes URLs for phishing risk using a machine learning model (XGBoost) and generates **human-readable explanations** using **Gemini**.
+
+Workflow:  
+**Paste URL → Scan → Get result + reasoning**
+
+> ⚠️ This project is for educational and demonstration purposes only. Results are probabilistic and not a guarantee of safety.
+
+---
+
+## ✨ Features
+
+- 🔍 URL phishing classification using **XGBoost**
+- 🤖 **AI-generated reasoning** via **Gemini**
+- 🧠 Feature extraction based on URL structure & domain signals
+- ⚡ Fast **FastAPI** backend
+- 🖥️ Modern **React + Vite + Tailwind CSS** frontend
+- 🔄 Clean UI states: Initial / Loading / Safe / Phishing
+- 📄 Simple **Privacy Policy** and **Terms of Service** (non-corporate, honest)
+
+---
+
+## 🧱 Architecture
+
 ## 🧱 Backend (FastAPI)
 
 ### Pipeline
