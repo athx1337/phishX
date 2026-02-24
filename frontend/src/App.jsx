@@ -282,9 +282,21 @@ function App() {
                       Security Insight
                     </h3>
                     <div className="bg-safe/5 dark:bg-safe-border/20 border border-safe/20 rounded-lg p-5">
-                      <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
-                        {result.gemini_analysis || "No AI analysis available at the moment."}
-                      </p>
+                      {result.rate_limit_exceeded ? (
+                        <div className="flex flex-col gap-3">
+                          <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
+                            {result.gemini_analysis}
+                          </p>
+                          <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 px-4 py-2 mt-2 rounded bg-safe/10 text-safe font-bold text-sm border border-safe/30 hover:bg-safe hover:text-white transition-colors">
+                            <span className="material-symbols-outlined text-sm">local_cafe</span>
+                            Support Project
+                          </a>
+                        </div>
+                      ) : (
+                        <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
+                          {result.gemini_analysis || "No AI analysis available at the moment."}
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -350,9 +362,21 @@ function App() {
                   Gemini AI Threat Analysis
                 </h3>
                 <div className="bg-danger/10 border border-danger/30 rounded-lg p-5">
-                  <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
-                    {result.gemini_analysis || "No AI threat analysis available at the moment."}
-                  </p>
+                  {result.rate_limit_exceeded ? (
+                    <div className="flex flex-col gap-3">
+                      <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                        {result.gemini_analysis}
+                      </p>
+                      <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 px-4 py-2 mt-2 rounded bg-danger/20 text-danger-text-light dark:text-red-400 font-bold text-sm border border-danger/40 hover:bg-danger hover:text-white transition-colors">
+                        <span className="material-symbols-outlined text-sm">local_cafe</span>
+                        Support Project
+                      </a>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-slate-800 dark:text-slate-200 leading-relaxed font-medium">
+                      {result.gemini_analysis || "No AI threat analysis available at the moment."}
+                    </p>
+                  )}
                 </div>
               </div>
 

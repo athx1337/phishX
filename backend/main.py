@@ -45,6 +45,7 @@ async def verify_url(request: URLRequest):
         is_phishing = bool(prediction == 1)
         
         gemini_analysis = "Gemini AI analysis is unavailable. Please configure the GEMINI_API_KEY environment variable."
+        rate_limit_exceeded = False # Add tracking flag
         
         # Integrate Google GenAI
         api_key = os.environ.get("GEMINI_API_KEY")
@@ -73,14 +74,20 @@ async def verify_url(request: URLRequest):
                 if response.text:
                     gemini_analysis = response.text.strip()
             except Exception as gemini_err:
-                print(f"Gemini API Error: {gemini_err}")
-                gemini_analysis = "Gemini AI analysis failed to generate a response at this time."
+                err_str = str(gemini_err).upper()
+                print(f"Gemini API Error: {err_str}")
+                if "429" in err_str or "EXHAUSTED" in err_str or "QUOTA" in err_str:
+                    rate_limit_exceeded = True
+                    gemini_analysis = "Our daily free-tier AI analysis quotas have been reached. Please consider supporting the project to help us increase API limits."
+                else:    
+                    gemini_analysis = "Gemini AI analysis failed to generate a response at this time."
         
         return {
             "url": url,
             "is_phishing": is_phishing,
             "features_extracted": features,
-            "gemini_analysis": gemini_analysis
+            "gemini_analysis": gemini_analysis,
+            "rate_limit_exceeded": rate_limit_exceeded
         }
     except Exception as e:
         import traceback
