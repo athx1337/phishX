@@ -13,23 +13,39 @@ function App() {
   const [progress, setProgress] = useState(0)
   const [scanStep, setScanStep] = useState(0)
 
-  // Simulated scan progress effect
+  // Global effect to wake up Render backend on page load
+  useEffect(() => {
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    fetch(`${apiUrl}/api/ping`).catch(() => {
+      // Intentionally ignoring errors here, the goal is solely to hit the route to start the boot process
+    });
+  }, []);
 
+  // Simulated scan progress effect
   useEffect(() => {
     let interval;
     if (loading) {
       setProgress(0);
       setScanStep(0);
 
+      // We track time to detect if Render is doing a Cold Start (takes >15s)
+      const startTime = Date.now();
+
       interval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 95) return 95; // Hold at 95% until real API returns
 
           const newProgress = prev + Math.random() * 8;
+          const elapsedSeconds = (Date.now() - startTime) / 1000;
 
-          // Update visual steps based on progress
+          // Standard visual steps
           if (newProgress > 60) setScanStep(2);
           else if (newProgress > 30) setScanStep(1);
+
+          // If we pass 15 seconds, inject the cold start UI step
+          if (elapsedSeconds > 15) {
+            setScanStep(3);
+          }
 
           return newProgress;
         });
@@ -303,15 +319,32 @@ function App() {
                   {/* Step 3: Heuristics & AI */}
                   <div className="flex items-center justify-between text-sm">
                     <div className={`flex items-center gap-2 ${scanStep >= 2 ? 'text-text-main dark:text-white font-medium' : 'text-text-muted dark:text-slate-400 opacity-60'}`}>
-                      <span className={`material-symbols-outlined text-base ${scanStep >= 2 ? 'animate-spin' : ''}`}>sync</span>
+                      <span className={`material-symbols-outlined text-base ${(scanStep >= 2 && scanStep !== 3) ? 'animate-spin' : ''}`}>sync</span>
                       <span>Heuristic & AI Analysis</span>
                     </div>
                     {scanStep >= 2 ? (
-                      <span className="text-primary text-xs font-semibold animate-pulse drop-shadow-[0_0_2px_rgba(19,164,236,0.6)]">Running...</span>
+                      scanStep === 3 ? (
+                        <span className="text-emerald-500 flex items-center gap-1 text-xs font-semibold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                          <span className="material-symbols-outlined text-sm">check</span> Queued
+                        </span>
+                      ) : (
+                        <span className="text-primary text-xs font-semibold animate-pulse drop-shadow-[0_0_2px_rgba(19,164,236,0.6)]">Running...</span>
+                      )
                     ) : (
                       <span className="text-text-muted text-xs">Waiting</span>
                     )}
                   </div>
+
+                  {/* Step 4: Render Cold Start Mitigation */}
+                  {scanStep === 3 && (
+                    <div className="flex items-center justify-between text-sm animate-in pt-3 border-t border-border-light dark:border-white/10">
+                      <div className="flex items-center gap-2 text-primary font-medium">
+                        <span className="material-symbols-outlined text-base animate-pulse">cloud_sync</span>
+                        <span>Waking Cloud Server (Queue)</span>
+                      </div>
+                      <span className="text-primary text-xs">Almost ready...</span>
+                    </div>
+                  )}
 
                 </div>
               </div>

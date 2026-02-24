@@ -30,6 +30,10 @@ with open(model_path, 'rb') as f:
 class URLRequest(BaseModel):
     url: str
 
+@app.get("/api/ping")
+async def ping_server():
+    return {"status": "awake"}
+
 @app.post("/api/verify")
 async def verify_url(request: URLRequest):
     url = request.url
