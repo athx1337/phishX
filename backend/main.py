@@ -95,6 +95,8 @@ async def verify_url(request: URLRequest):
                                 cf_ips = report_data.get("ips", [])
                                 cf_asn = report_data.get("asn", {})
                                 cf_certs = report_data.get("certificates", [])
+                                cf_requests = report_data.get("requests", [])
+                                cf_risks = report_data.get("risks", [])
                                 
                                 cloudflare_context = (
                                     f"\n\n[CLOUDFLARE THREAT INTELLIGENCE RADAR]:\n"
@@ -105,7 +107,10 @@ async def verify_url(request: URLRequest):
                                 cloudflare_report = {
                                     "malicious": report_data.get("malicious", False),
                                     "asn": cf_asn[0].get('description') if cf_asn else 'Unknown',
-                                    "ip": cf_ips[0].get('ip') if cf_ips else 'Unknown'
+                                    "ip": cf_ips[0].get('ip') if cf_ips else 'Unknown',
+                                    "certificates": cf_certs,
+                                    "requests": cf_requests,
+                                    "risks": cf_risks
                                 }
                                 break
             except Exception as cf_err:

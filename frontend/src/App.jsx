@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import CloudflareDeepAnalysis from './CloudflareDeepAnalysis'
 
 function App() {
   const [url, setUrl] = useState('')
@@ -15,6 +16,9 @@ function App() {
 
   // System Status State ('checking', 'waking', 'awake', 'offline')
   const [serverStatus, setServerStatus] = useState('checking')
+
+  // Tab UI State
+  const [activeTab, setActiveTab] = useState('overview')
 
   // Global effect to wake up Render backend on page load
   useEffect(() => {
@@ -114,6 +118,7 @@ function App() {
     setResult(null);
     setUrl('');
     setError(null);
+    setActiveTab('overview');
   }
 
   // Force dark mode globally per user request
@@ -448,93 +453,106 @@ function App() {
                   </div>
                 </div>
 
-                <div className="p-6 md:p-8">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-6">Technical Indicators</h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8">
-                    {/* Indicators based on features */}
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">{result.url.startsWith('https') ? 'lock' : 'lock_open'}</span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Has HTTPS</p>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.url.startsWith('https') ? 'Yes' : 'No'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">dns</span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses IP Address</p>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[0] ? 'Yes' : 'No'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">{result.features_extracted[4] ? 'link' : 'link_off'}</span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses Shortener</p>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[4] ? 'Yes' : 'No'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">alt_route</span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Suspicious Redirects</p>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[2] ? 'Yes' : 'No'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">alternate_email</span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Contains @ Symbol</p>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[1] ? 'Yes' : 'No'}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="mt-0.5 text-safe">
-                        <span className="material-symbols-outlined text-[20px]">security</span>
-                      </div>
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Hidden Iframes</p>
-                        <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[7] ? 'Detected' : 'Clean'}</p>
-                      </div>
-                    </div>
-                  </div>
+                <div className="bg-slate-50 dark:bg-white/5 border-b border-border-light dark:border-white/10 flex">
+                  <button onClick={() => setActiveTab('overview')} className={`flex-1 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === 'overview' ? 'border-safe text-safe bg-safe/5' : 'border-transparent text-text-muted hover:text-text-main dark:text-slate-400 dark:hover:text-white'}`}>Overview</button>
+                  <button onClick={() => setActiveTab('deep')} className={`flex-1 py-4 text-sm font-bold border-b-2 transition-colors ${activeTab === 'deep' ? 'border-safe text-safe bg-safe/5' : 'border-transparent text-text-muted hover:text-text-main dark:text-slate-400 dark:hover:text-white'}`}>Deep Analysis</button>
                 </div>
 
-                {/* Gemini Insights Section */}
-                <div className="flex flex-col gap-6">
-                  <div className="rounded-xl border border-safe-border bg-white dark:bg-safe-surface-dark p-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
-                      <span className="material-symbols-outlined text-safe text-sm">auto_awesome</span>
-                      Security Insight
-                    </h3>
-                    <div className="bg-safe/5 dark:bg-safe-border/20 border border-safe/20 rounded-lg p-5">
-                      {result.rate_limit_exceeded ? (
-                        <div className="flex flex-col gap-3">
-                          <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
-                            {result.gemini_analysis}
-                          </p>
-                          <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 px-4 py-2 mt-2 rounded bg-safe/10 text-safe font-bold text-sm border border-safe/30 hover:bg-safe hover:text-white transition-colors">
-                            <span className="material-symbols-outlined text-sm">local_cafe</span>
-                            Support Project
-                          </a>
+                {activeTab === 'overview' ? (
+                  <>
+                    <div className="p-6 md:p-8">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-6">Technical Indicators</h4>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8">
+                        {/* Indicators based on features */}
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 text-safe">
+                            <span className="material-symbols-outlined text-[20px]">{result.url.startsWith('https') ? 'lock' : 'lock_open'}</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Has HTTPS</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.url.startsWith('https') ? 'Yes' : 'No'}</p>
+                          </div>
                         </div>
-                      ) : (
-                        <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
-                          {result.gemini_analysis || "No AI analysis available at the moment."}
-                        </p>
-                      )}
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 text-safe">
+                            <span className="material-symbols-outlined text-[20px]">dns</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses IP Address</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[0] ? 'Yes' : 'No'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 text-safe">
+                            <span className="material-symbols-outlined text-[20px]">{result.features_extracted[4] ? 'link' : 'link_off'}</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses Shortener</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[4] ? 'Yes' : 'No'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 text-safe">
+                            <span className="material-symbols-outlined text-[20px]">alt_route</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Suspicious Redirects</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[2] ? 'Yes' : 'No'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 text-safe">
+                            <span className="material-symbols-outlined text-[20px]">alternate_email</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Contains @ Symbol</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[1] ? 'Yes' : 'No'}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="mt-0.5 text-safe">
+                            <span className="material-symbols-outlined text-[20px]">security</span>
+                          </div>
+                          <div>
+                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Hidden Iframes</p>
+                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[7] ? 'Detected' : 'Clean'}</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
+
+                    {/* Gemini Insights Section */}
+                    <div className="flex flex-col gap-6">
+                      <div className="rounded-xl border border-safe-border bg-white dark:bg-safe-surface-dark p-5">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-safe text-sm">auto_awesome</span>
+                          Security Insight
+                        </h3>
+                        <div className="bg-safe/5 dark:bg-safe-border/20 border border-safe/20 rounded-lg p-5">
+                          {result.rate_limit_exceeded ? (
+                            <div className="flex flex-col gap-3">
+                              <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
+                                {result.gemini_analysis}
+                              </p>
+                              <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 px-4 py-2 mt-2 rounded bg-safe/10 text-safe font-bold text-sm border border-safe/30 hover:bg-safe hover:text-white transition-colors">
+                                <span className="material-symbols-outlined text-sm">local_cafe</span>
+                                Support Project
+                              </a>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
+                              {result.gemini_analysis || "No AI analysis available at the moment."}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="p-4 md:p-6 bg-slate-50/50 dark:bg-black/20">
+                    <CloudflareDeepAnalysis report={result.cloudflare_report} />
                   </div>
-                </div>
+                )}
 
                 <div className="px-6 py-4 bg-slate-50 dark:bg-safe-border/30 border-t border-slate-100 dark:border-safe-border flex justify-between items-center">
                   <span className="text-xs text-slate-500 dark:text-[#92c9a0]">Scan ID: #{Math.random().toString(36).substr(2, 8).toUpperCase()}</span>
@@ -621,114 +639,125 @@ function App() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div className="lg:col-span-2 flex flex-col gap-6">
-                  <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] overflow-hidden">
-                    <div className="border-b border-danger/20 bg-danger/5 px-6 py-4 flex justify-between items-center">
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                        <span className="material-symbols-outlined text-danger">flag</span>
-                        Threat Indicators Detected
-                      </h3>
-                    </div>
-                    <div className="divide-y divide-danger/10">
-                      {result.features_extracted[0] === 1 && (
-                        <div className="flex items-start gap-4 p-4">
-                          <div className="mt-1"><span className="material-symbols-outlined text-danger">dns</span></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className="font-bold text-slate-800 dark:text-slate-100">IP Address Format</h4>
-                              <span className="text-xs font-bold text-danger uppercase">High Risk</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">The URL is using an IP address instead of a domain name to conceal identity.</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {result.features_extracted[5] === 1 && (
-                        <div className="flex items-start gap-4 p-4">
-                          <div className="mt-1"><span className="material-symbols-outlined text-danger">subtitles</span></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className="font-bold text-slate-800 dark:text-slate-100">Hyphens in Domain</h4>
-                              <span className="text-xs font-bold text-danger uppercase">High Risk</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">Dash (-) symbols in the domain are often used in typosquatting attacks.</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {(!result.url.startsWith('https')) && (
-                        <div className="flex items-start gap-4 p-4">
-                          <div className="mt-1"><span className="material-symbols-outlined text-danger">lock_open</span></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className="font-bold text-slate-800 dark:text-slate-100">Missing SSL Certificate</h4>
-                              <span className="text-xs font-bold text-orange-500 uppercase">Warning</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">The connection is insecure (HTTP), leaving traffic vulnerable.</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {result.features_extracted[1] === 1 && (
-                        <div className="flex items-start gap-4 p-4">
-                          <div className="mt-1"><span className="material-symbols-outlined text-danger">alternate_email</span></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className="font-bold text-slate-800 dark:text-slate-100">Symbol Injection (@)</h4>
-                              <span className="text-xs font-bold text-danger uppercase">High Risk</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">An '@' symbol is being used in an attempt to trick the browser URL logic.</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {result.features_extracted[7] === 1 && (
-                        <div className="flex items-start gap-4 p-4">
-                          <div className="mt-1"><span className="material-symbols-outlined text-danger">border_clear</span></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className="font-bold text-slate-800 dark:text-slate-100">Hidden iFrames</h4>
-                              <span className="text-xs font-bold text-danger uppercase">Critical</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">Invisible frames are used to secretly load malicious execution code.</p>
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Fallback if no specific feature alerts triggers (XGBoost logic found abstract pattern) */}
-                      {result.features_extracted.reduce((a, b) => a + b, 0) <= 1 && (
-                        <div className="flex items-start gap-4 p-4">
-                          <div className="mt-1"><span className="material-symbols-outlined text-danger">psychology</span></div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className="font-bold text-slate-800 dark:text-slate-100">XGBoost Heuristics</h4>
-                              <span className="text-xs font-bold text-danger uppercase">High Risk</span>
-                            </div>
-                            <p className="text-sm text-slate-600 dark:text-slate-400">The AI model's decision tree flagged the combined structural layout of this URL as malicious based on known attack signatures.</p>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-6">
-                  <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
-                    <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Scan Meta data</h3>
-                    <div className="space-y-4">
-                      <div>
-                        <p className="text-xs text-slate-500 mb-1">Scan Reference</p>
-                        <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">#{Math.random().toString(36).substr(2, 8).toUpperCase()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-slate-500 mb-1">Evaluation Engine</p>
-                        <p className="text-sm font-mono text-slate-800 dark:text-slate-200">XGBoost (Classification)</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div className="flex bg-slate-50 dark:bg-white/5 border border-border-light dark:border-white/10 rounded-lg overflow-hidden shrink-0 w-full mb-2 shadow-sm">
+                <button onClick={() => setActiveTab('overview')} className={`flex-1 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'overview' ? 'border-danger text-danger bg-danger/5' : 'border-transparent text-text-muted hover:text-text-main dark:text-slate-400 dark:hover:text-white'}`}>Overview</button>
+                <button onClick={() => setActiveTab('deep')} className={`flex-1 py-3 text-sm font-bold border-b-2 transition-colors ${activeTab === 'deep' ? 'border-danger text-danger bg-danger/5' : 'border-transparent text-text-muted hover:text-text-main dark:text-slate-400 dark:hover:text-white'}`}>Deep Analysis</button>
               </div>
+
+              {activeTab === 'overview' ? (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                  <div className="lg:col-span-2 flex flex-col gap-6">
+                    <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] overflow-hidden">
+                      <div className="border-b border-danger/20 bg-danger/5 px-6 py-4 flex justify-between items-center">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                          <span className="material-symbols-outlined text-danger">flag</span>
+                          Threat Indicators Detected
+                        </h3>
+                      </div>
+                      <div className="divide-y divide-danger/10">
+                        {result.features_extracted[0] === 1 && (
+                          <div className="flex items-start gap-4 p-4">
+                            <div className="mt-1"><span className="material-symbols-outlined text-danger">dns</span></div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100">IP Address Format</h4>
+                                <span className="text-xs font-bold text-danger uppercase">High Risk</span>
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">The URL is using an IP address instead of a domain name to conceal identity.</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {result.features_extracted[5] === 1 && (
+                          <div className="flex items-start gap-4 p-4">
+                            <div className="mt-1"><span className="material-symbols-outlined text-danger">subtitles</span></div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100">Hyphens in Domain</h4>
+                                <span className="text-xs font-bold text-danger uppercase">High Risk</span>
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">Dash (-) symbols in the domain are often used in typosquatting attacks.</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {(!result.url.startsWith('https')) && (
+                          <div className="flex items-start gap-4 p-4">
+                            <div className="mt-1"><span className="material-symbols-outlined text-danger">lock_open</span></div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100">Missing SSL Certificate</h4>
+                                <span className="text-xs font-bold text-orange-500 uppercase">Warning</span>
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">The connection is insecure (HTTP), leaving traffic vulnerable.</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {result.features_extracted[1] === 1 && (
+                          <div className="flex items-start gap-4 p-4">
+                            <div className="mt-1"><span className="material-symbols-outlined text-danger">alternate_email</span></div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100">Symbol Injection (@)</h4>
+                                <span className="text-xs font-bold text-danger uppercase">High Risk</span>
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">An '@' symbol is being used in an attempt to trick the browser URL logic.</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {result.features_extracted[7] === 1 && (
+                          <div className="flex items-start gap-4 p-4">
+                            <div className="mt-1"><span className="material-symbols-outlined text-danger">border_clear</span></div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100">Hidden iFrames</h4>
+                                <span className="text-xs font-bold text-danger uppercase">Critical</span>
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">Invisible frames are used to secretly load malicious execution code.</p>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Fallback if no specific feature alerts triggers (XGBoost logic found abstract pattern) */}
+                        {result.features_extracted.reduce((a, b) => a + b, 0) <= 1 && (
+                          <div className="flex items-start gap-4 p-4">
+                            <div className="mt-1"><span className="material-symbols-outlined text-danger">psychology</span></div>
+                            <div className="flex-1">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className="font-bold text-slate-800 dark:text-slate-100">XGBoost Heuristics</h4>
+                                <span className="text-xs font-bold text-danger uppercase">High Risk</span>
+                              </div>
+                              <p className="text-sm text-slate-600 dark:text-slate-400">The AI model's decision tree flagged the combined structural layout of this URL as malicious based on known attack signatures.</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-6">
+                    <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Scan Meta data</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Scan Reference</p>
+                          <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">#{Math.random().toString(36).substr(2, 8).toUpperCase()}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Evaluation Engine</p>
+                          <p className="text-sm font-mono text-slate-800 dark:text-slate-200">XGBoost (Classification)</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="w-full">
+                  <CloudflareDeepAnalysis report={result.cloudflare_report} />
+                </div>
+              )}
             </div>
           )}
         </main>
