@@ -13,12 +13,29 @@ function App() {
   const [progress, setProgress] = useState(0)
   const [scanStep, setScanStep] = useState(0)
 
+  // System Status State ('checking', 'waking', 'awake', 'offline')
+  const [serverStatus, setServerStatus] = useState('checking')
+
   // Global effect to wake up Render backend on page load
   useEffect(() => {
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-    fetch(`${apiUrl}/api/ping`).catch(() => {
-      // Intentionally ignoring errors here, the goal is solely to hit the route to start the boot process
-    });
+
+    // If it takes longer than 2 seconds, assume it's doing a cold boot
+    const timeout = setTimeout(() => {
+      setServerStatus(prev => prev === 'checking' ? 'waking' : prev);
+    }, 2000);
+
+    fetch(`${apiUrl}/api/ping`)
+      .then(res => {
+        if (res.ok) setServerStatus('awake');
+        else setServerStatus('offline');
+      })
+      .catch(() => {
+        setServerStatus('waking'); // Usually CORS fails before boot finishes
+      })
+      .finally(() => {
+        clearTimeout(timeout);
+      });
   }, []);
 
   // Simulated scan progress effect
@@ -119,10 +136,39 @@ function App() {
               </div>
             </div>
 
-            <div className="flex items-center">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white border border-orange-500/20 transition-all shadow-sm">
+            <div className="flex items-center gap-3 md:gap-4">
+
+              {/* System Status Pill */}
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border border-border-light dark:border-white/10 bg-surface-light dark:bg-white/5 transition-colors">
+                {serverStatus === 'checking' && (
+                  <>
+                    <span className="flex h-2 w-2 rounded-full bg-slate-400 animate-pulse"></span>
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">Checking System...</span>
+                  </>
+                )}
+                {serverStatus === 'waking' && (
+                  <>
+                    <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.8)]"></span>
+                    <span className="text-xs font-medium text-orange-600 dark:text-orange-400">Waking System...</span>
+                  </>
+                )}
+                {serverStatus === 'awake' && (
+                  <>
+                    <span className="flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+                    <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">System Ready</span>
+                  </>
+                )}
+                {serverStatus === 'offline' && (
+                  <>
+                    <span className="flex h-2 w-2 rounded-full bg-red-500"></span>
+                    <span className="text-xs font-medium text-red-600 dark:text-red-400">System Offline</span>
+                  </>
+                )}
+              </div>
+
+              <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white border border-orange-500/20 transition-all shadow-sm">
                 <span className="material-symbols-outlined text-sm">local_cafe</span>
-                <span className="text-sm font-bold hidden sm:inline">Buy me a coffee</span>
+                <span className="text-sm font-bold hidden md:inline">Buy me a coffee</span>
               </a>
             </div>
           </div>
