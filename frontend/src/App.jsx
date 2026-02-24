@@ -66,6 +66,13 @@ function App() {
                 <span className={`text-[10px] font-bold tracking-widest uppercase ${result ? 'text-primary' : 'text-primary/80'}`}>by athx1337</span>
               </div>
             </div>
+
+            <div className="flex items-center">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-orange-500/10 text-orange-500 hover:bg-orange-500 hover:text-white border border-orange-500/20 transition-all shadow-sm">
+                <span className="material-symbols-outlined text-sm">local_cafe</span>
+                <span className="text-sm font-bold hidden sm:inline">Buy me a coffee</span>
+              </a>
+            </div>
           </div>
         </header>
 
