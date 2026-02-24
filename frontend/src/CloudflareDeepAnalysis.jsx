@@ -3,7 +3,19 @@ import React, { useState } from 'react';
 export default function CloudflareDeepAnalysis({ report }) {
     const [innerTab, setInnerTab] = useState('risks');
 
-    if (!report) return null;
+    if (!report || Object.keys(report).length === 0) {
+        return (
+            <div className="flex flex-col items-center justify-center p-12 text-center bg-slate-50 dark:bg-[#1a1c23] border border-border-light dark:border-white/10 rounded-xl shadow-sm animate-in fade-in duration-500">
+                <div className="flex h-16 w-16 mb-4 items-center justify-center rounded-full bg-slate-100 dark:bg-white/5 text-slate-400 dark:text-slate-500 ring-8 ring-slate-50 dark:ring-[#1a1c23]">
+                    <span className="material-symbols-outlined text-4xl">radar</span>
+                </div>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200 mb-2">Analysis Unavailable</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md leading-relaxed">
+                    Cloudflare Radar was unable to generate a deep threat intelligence report for this URL. The target server may be blocking headless analysis, or the database scan timed out.
+                </p>
+            </div>
+        );
+    }
 
     const { certificates = [], requests = [], risks = [] } = report;
 
