@@ -5,7 +5,7 @@ import pickle  # pyre-ignore
 import numpy as np  # pyre-ignore
 from ml_extractor import featureExtraction  # pyre-ignore
 import os  # pyre-ignore
-import requests
+import httpx
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware  # pyre-ignore
 
@@ -69,38 +69,39 @@ async def verify_url(request: URLRequest):
                 "Content-Type": "application/json"
             }
             try:
-                # 1. Submit Scan Request
-                submit_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan"
-                submit_res = requests.post(submit_url, headers=headers, json={"url": url}, timeout=5)
-                
-                if submit_res.status_code == 200:
-                    scan_uuid = submit_res.json()["result"]["uuid"]
+                async with httpx.AsyncClient() as client_http:
+                    # 1. Submit Scan Request
+                    submit_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan"
+                    submit_res = await client_http.post(submit_url, headers=headers, json={"url": url}, timeout=10.0)
                     
-                    # 2. Poll for Completion (Max 15 seconds to match Render queue UX)
-                    report_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan/{scan_uuid}?target=report"
-                    for _ in range(8):
-                        await asyncio.sleep(2)
-                        report_res = requests.get(report_url, headers=headers, timeout=5)
-                        if report_res.status_code == 200:
-                            report_data = report_res.json().get("result", {})
-                            
-                            # Extract verdict
-                            if report_data.get("malicious"):
-                                is_phishing = True
-                                features[0] = 1 # pyre-ignore
+                    if submit_res.status_code == 200:
+                        scan_uuid = submit_res.json()["result"]["uuid"]
+                        
+                        # 2. Poll for Completion (Max 15 seconds to match Render queue UX)
+                        report_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan/{scan_uuid}?target=report"
+                        for _ in range(8):
+                            await asyncio.sleep(2)
+                            report_res = await client_http.get(report_url, headers=headers, timeout=10.0)
+                            if report_res.status_code == 200:
+                                report_data = report_res.json().get("result", {})
                                 
-                            # Build intelligence context for Gemini
-                            cf_ips = report_data.get("ips", [])
-                            cf_asn = report_data.get("asn", {})
-                            cf_certs = report_data.get("certificates", [])
-                            
-                            cloudflare_context = (
-                                f"\n\n[CLOUDFLARE THREAT INTELLIGENCE RADAR]:\n"
-                                f"- Cloudflare Verdict: {'MALICIOUS' if report_data.get('malicious') else 'Clean'}\n"
-                                f"- Hosting ASN: {cf_asn[0].get('description') if cf_asn else 'Unknown'}\n"
-                                f"- Resolved IPs: {', '.join([ip.get('ip') for ip in cf_ips[:2]])}\n"
-                            )
-                            break
+                                # Extract verdict
+                                if report_data.get("malicious"):
+                                    is_phishing = True
+                                    features[0] = 1 # pyre-ignore
+                                    
+                                # Build intelligence context for Gemini
+                                cf_ips = report_data.get("ips", [])
+                                cf_asn = report_data.get("asn", {})
+                                cf_certs = report_data.get("certificates", [])
+                                
+                                cloudflare_context = (
+                                    f"\n\n[CLOUDFLARE THREAT INTELLIGENCE RADAR]:\n"
+                                    f"- Cloudflare Verdict: {'MALICIOUS' if report_data.get('malicious') else 'Clean'}\n"
+                                    f"- Hosting ASN: {cf_asn[0].get('description') if cf_asn else 'Unknown'}\n"
+                                    f"- Resolved IPs: {', '.join([ip.get('ip') for ip in cf_ips[:2]])}\n"
+                                )
+                                break
             except Exception as cf_err:
                 print(f"Cloudflare API Error: {cf_err}")
 

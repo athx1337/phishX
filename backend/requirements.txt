@@ -7,3 +7,4 @@ pydantic
 gunicorn
 google-genai
 python-dotenv
+httpx
