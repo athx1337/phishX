@@ -18,7 +18,6 @@ Workflow:
 - ⚡ Fast **FastAPI** backend
 - 🖥️ Modern **React + Vite + Tailwind CSS** frontend
 - 🔄 Clean UI states: Initial / Loading / Safe / Phishing
-- 📄 Simple **Privacy Policy** and **Terms of Service** (non-corporate, honest)
 
 ---
 
