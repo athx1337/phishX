@@ -152,4 +152,3 @@ Check:
 ## 📜 License
 
 MIT License
-```
