@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>URL Scanner - Phishing Result</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#ec1313",
+                        "background-light": "#f8f6f6",
+                        "background-dark": "#221010",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display min-h-screen flex flex-col overflow-x-hidden">
+<!-- Navbar -->
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-primary/20 bg-background-light dark:bg-background-dark px-10 py-4 sticky top-0 z-50">
+<div class="flex items-center gap-4 text-slate-900 dark:text-slate-100">
+<div class="size-8 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl">shield_lock</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-tight">URL Scanner</h2>
+</div>
+<div class="flex flex-1 justify-end gap-8">
+<nav class="flex items-center gap-9 hidden md:flex">
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">Scan</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">History</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">API</a>
+<a class="text-slate-600 dark:text-slate-300 hover:text-primary dark:hover:text-primary text-sm font-medium leading-normal transition-colors" href="#">About</a>
+</nav>
+<button class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-9 px-4 bg-primary text-white hover:bg-red-600 transition-colors text-sm font-bold leading-normal tracking-wide">
+<span class="truncate">Log In</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-1 flex justify-center py-8 px-4 sm:px-8">
+<div class="flex flex-col max-w-[960px] w-full gap-8">
+<!-- Header Section -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 border-b border-primary/20 pb-6">
+<div class="flex flex-col gap-2">
+<h1 class="text-slate-900 dark:text-white text-4xl font-black leading-tight tracking-tight">Scan Results</h1>
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-lg">schedule</span>
+<p class="text-sm font-medium uppercase tracking-wider">Analysis complete • 1.4s</p>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-background-light dark:bg-[#331818] border border-primary/20 hover:border-primary/50 text-slate-700 dark:text-slate-200 text-sm font-bold transition-colors">
+<span class="material-symbols-outlined text-lg">download</span>
+                        Export Report
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-white hover:bg-red-600 text-sm font-bold transition-colors shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">search</span>
+                        New Scan
+                    </button>
+</div>
+</div>
+<!-- Warning Card -->
+<div class="relative overflow-hidden rounded-xl border-2 border-primary bg-[#331818]/30 p-8 shadow-2xl shadow-primary/10">
+<!-- Abstract background pattern -->
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent opacity-50 pointer-events-none"></div>
+<div class="relative z-10 flex flex-col md:flex-row items-center md:items-start gap-6 text-center md:text-left">
+<div class="flex h-20 w-20 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary ring-4 ring-primary/10">
+<span class="material-symbols-outlined text-5xl">warning</span>
+</div>
+<div class="flex flex-col flex-1 gap-2">
+<div class="flex flex-col md:flex-row items-center md:items-baseline gap-3">
+<h2 class="text-3xl font-bold text-primary tracking-tight">PHISHING DETECTED</h2>
+<span class="rounded bg-primary px-2 py-0.5 text-xs font-bold uppercase text-white tracking-widest">Critical</span>
+</div>
+<p class="text-slate-300 text-lg max-w-2xl">
+                            The URL you scanned has been flagged as a high-risk phishing site. It attempts to impersonate a legitimate entity to steal sensitive information. <span class="text-white font-bold">Do not visit this link.</span>
+</p>
+<div class="mt-4 flex flex-col gap-2 w-full">
+<label class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Scanned Target</label>
+<div class="flex items-center gap-3 p-3 rounded bg-background-dark border border-primary/20 font-mono text-sm break-all">
+<span class="material-symbols-outlined text-primary shrink-0">link_off</span>
+<span class="text-white">http://secure-login-update-account-verify.example.com/login.php</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Detailed Analysis Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Left Column: Indicators (Main Focus) -->
+<div class="lg:col-span-2 flex flex-col gap-6">
+<div class="rounded-xl border border-primary/20 bg-background-light dark:bg-[#2a1414] overflow-hidden">
+<div class="border-b border-primary/20 bg-primary/5 px-6 py-4 flex justify-between items-center">
+<h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">flag</span>
+                                Threat Indicators
+                            </h3>
+<span class="text-xs font-bold bg-primary/20 text-primary px-2 py-1 rounded">5 DETECTED</span>
+</div>
+<div class="divide-y divide-primary/10">
+<!-- Indicator Item 1 -->
+<div class="flex items-start gap-4 p-4 hover:bg-primary/5 transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary">error</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-bold text-slate-800 dark:text-slate-100">Suspicious URL Length</h4>
+<span class="text-xs font-bold text-primary uppercase">High Risk</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">The URL length exceeds 75 characters, a common trait in obfuscated phishing links.</p>
+</div>
+</div>
+<!-- Indicator Item 2 -->
+<div class="flex items-start gap-4 p-4 hover:bg-primary/5 transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary">domain_verification</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-bold text-slate-800 dark:text-slate-100">Abnormal Domain Structure</h4>
+<span class="text-xs font-bold text-primary uppercase">High Risk</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">Multiple subdomains detected attempting to mimic a legitimate service structure.</p>
+</div>
+</div>
+<!-- Indicator Item 3 -->
+<div class="flex items-start gap-4 p-4 hover:bg-primary/5 transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary">dns</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-bold text-slate-800 dark:text-slate-100">Typosquatting Detected</h4>
+<span class="text-xs font-bold text-primary uppercase">Medium Risk</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">Domain name is visually similar to a popular banking service (Levenshtein distance: 2).</p>
+</div>
+</div>
+<!-- Indicator Item 4 -->
+<div class="flex items-start gap-4 p-4 hover:bg-primary/5 transition-colors">
+<div class="mt-1">
+<span class="material-symbols-outlined text-primary">lock_open</span>
+</div>
+<div class="flex-1">
+<div class="flex justify-between items-center mb-1">
+<h4 class="font-bold text-slate-800 dark:text-slate-100">Missing SSL Certificate</h4>
+<span class="text-xs font-bold text-orange-500 uppercase">Warning</span>
+</div>
+<p class="text-sm text-slate-600 dark:text-slate-400">The connection is not secure (HTTP), which is highly unusual for login pages.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Column: Meta Info & Actions -->
+<div class="flex flex-col gap-6">
+<!-- Domain Details -->
+<div class="rounded-xl border border-primary/20 bg-background-light dark:bg-[#2a1414] p-5">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Domain Info</h3>
+<div class="space-y-4">
+<div>
+<p class="text-xs text-slate-500 mb-1">Registrar</p>
+<p class="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">NameCheap, Inc.</p>
+</div>
+<div>
+<p class="text-xs text-slate-500 mb-1">Created Date</p>
+<p class="text-sm font-mono text-slate-800 dark:text-slate-200">2023-10-24 (2 days ago)</p>
+</div>
+<div>
+<p class="text-xs text-slate-500 mb-1">IP Address</p>
+<p class="text-sm font-mono text-slate-800 dark:text-slate-200">192.168.1.45</p>
+</div>
+<div>
+<p class="text-xs text-slate-500 mb-1">Server Location</p>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-sm text-slate-400">public</span>
+<p class="text-sm font-mono text-slate-800 dark:text-slate-200">Russia</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Engines Summary -->
+<div class="rounded-xl border border-primary/20 bg-background-light dark:bg-[#2a1414] p-5">
+<h3 class="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Engine Detection</h3>
+<div class="flex items-center justify-between mb-2">
+<span class="text-3xl font-black text-primary">12<span class="text-lg text-slate-500 font-medium">/64</span></span>
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded">Malicious</span>
+</div>
+<div class="w-full bg-slate-700 rounded-full h-2 mb-4">
+<div class="bg-primary h-2 rounded-full" style="width: 19%"></div>
+</div>
+<div class="grid grid-cols-2 gap-2 text-xs">
+<div class="flex items-center gap-1 text-slate-300">
+<span class="material-symbols-outlined text-green-500 text-sm">check_circle</span>
+                                Google Safe Browsing
+                            </div>
+<div class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-sm">cancel</span>
+                                PhishTank
+                            </div>
+<div class="flex items-center gap-1 text-primary font-bold">
+<span class="material-symbols-outlined text-sm">cancel</span>
+                                OpenPhish
+                            </div>
+<div class="flex items-center gap-1 text-slate-300">
+<span class="material-symbols-outlined text-green-500 text-sm">check_circle</span>
+                                Microsoft SmartScreen
+                            </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
