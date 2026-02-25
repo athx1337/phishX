@@ -72,22 +72,6 @@ Main dependencies:
 
 ---
 
-## 🚀 Run Locally
-
-### Backend
-
-```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate   # Windows
-# or: source venv/bin/activate  (macOS/Linux)
-
-pip install -r requirements.txt
-uvicorn main:app --reload
-```
-
----
-
 ## 🚀 Getting Started (Local)
 
 ### 1) Clone the repo
@@ -110,16 +94,29 @@ pip install -r requirements.txt
 
 ### Create a .env file (local only):
 
-```GEMINI_API_KEY=your_key_here
+```
+GEMINI_API_KEY=your_key_here
 CLOUDFLARE_API_TOKEN=your_token_here
 CLOUDFLARE_ACCOUNT_ID=your_account_id_here
 GOOGLE_SAFEBROWSING_API_KEY=your_key_here
 ```
 
 ### Frontend
-```cd frontend
+```
+cd frontend
 npm install
 npm run dev
+```
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate   # Windows
+# or: source venv/bin/activate  (macOS/Linux)
+
+pip install -r requirements.txt
+uvicorn main:app --reload
 ```
 Open the shown localhost URL in your browser.
 
