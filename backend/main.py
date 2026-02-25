@@ -125,8 +125,16 @@ async def verify_url(request: URLRequest):
                                         asn_str = cf_asn_obj[0].get('description', 'Unknown')
                                 
                                 cf_certs = lists_obj.get("certificates", [])
-                                cf_requests = scan_obj.get("requests", []) # Cloudflare tends to put requests at scan root or page
+                                
+                                # Cloudflare API natively strips HTTP transactions (HAR) for standard tokens, 
+                                # so we fallback to the raw 'urls' array.
+                                cf_requests = scan_obj.get("requests", [])
                                 if not cf_requests: cf_requests = page_obj.get("requests", [])
+                                if not cf_requests:
+                                    # Convert flat URL list to mocked req objects for frontend table
+                                    urls_list = lists_obj.get("urls", [])
+                                    cf_requests = [{"request": {"url": u, "method": "GET"}, "response": {"status": 200}} for u in urls_list]
+                                
                                 cf_risks = page_obj.get("securityViolations", []) # Risks are called securityViolations in the scanner payload
                                 
                                 cloudflare_context = (
