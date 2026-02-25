@@ -301,7 +301,7 @@ async def verify_url(request: URLRequest):
                     f"You are an expert cybersecurity URL analysis system. I am providing you with a URL: {url}\n"
                     f"My Multi-Engine Consensus Algorithm classified this URL as: {'PHISHING/MALICIOUS' if is_phishing else 'SAFE/CLEAN'}.\n"
                     f"{context_str}\n"
-                    "Analyze this URL and provide a concise, 2-3 sentence human-readable explanation of why it might be safe or dangerous based on the engine results and trace.\n"
+                    "Analyze this URL and provide a concise, 2-3 sentence human-readable explanation of why it might be safe or dangerous based on the engine results and trace. Also use your thinking/checking ability to check for any other malicious indicators.\n"
                     "Provide only the brief reasoning without any markdown or formatting."
                 )
                 
