@@ -700,7 +700,7 @@ function App() {
               <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-6 shadow-md shadow-danger/5">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined text-danger text-sm">auto_awesome</span>
-                  Gemini AI Threat Analysis
+                  Threat Analysis
                 </h3>
                 <div className="bg-danger/10 border border-danger/30 rounded-lg p-5">
                   {result.rate_limit_exceeded ? (
