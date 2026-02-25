@@ -136,6 +136,17 @@ async def verify_url(request: URLRequest):
                                     cf_requests = [{"request": {"url": u, "method": "GET"}, "response": {"status": 200}} for u in urls_list]
                                 
                                 cf_risks = page_obj.get("securityViolations", []) # Risks are called securityViolations in the scanner payload
+                                # Gather console security problems which radar considers as risks
+                                console_msgs = page_obj.get("console", [])
+                                sec_msgs = [c for c in console_msgs if c.get("category") == "security"]
+                                for sm in sec_msgs:
+                                    cf_risks.append({
+                                        "name": f"Console Security: {sm.get('subcategory', 'Error')}",
+                                        "description": sm.get("text", ""),
+                                        "url": sm.get("url", "")
+                                    })
+                                    
+                                cf_links = lists_obj.get("linkDomains", [])
                                 
                                 cloudflare_context = (
                                     f"\n\n[CLOUDFLARE THREAT INTELLIGENCE RADAR]:\n"
@@ -149,7 +160,8 @@ async def verify_url(request: URLRequest):
                                     "ip": primary_ip,
                                     "certificates": cf_certs,
                                     "requests": cf_requests,
-                                    "risks": cf_risks
+                                    "risks": cf_risks,
+                                    "links": cf_links
                                 }
                                 break
             except Exception as cf_err:

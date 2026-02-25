@@ -16,8 +16,7 @@ export default function CloudflareDeepAnalysis({ report }) {
             </div>
         );
     }
-
-    const { certificates = [], requests = [], risks = [] } = report;
+    const { certificates = [], requests = [], risks = [], links = [] } = report;
 
     return (
         <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -44,6 +43,13 @@ export default function CloudflareDeepAnalysis({ report }) {
                 >
                     <span className="material-symbols-outlined text-sm">swap_horiz</span>
                     HTTP Transactions · {requests.length}
+                </button>
+                <button
+                    onClick={() => setInnerTab('links')}
+                    className={`flex items-center gap-2 px-6 py-4 text-sm font-bold border-b-2 whitespace-nowrap transition-colors ${innerTab === 'links' ? 'border-primary text-primary' : 'border-transparent text-text-muted hover:text-text-main dark:text-slate-400 dark:hover:text-white'}`}
+                >
+                    <span className="material-symbols-outlined text-sm">link</span>
+                    External Links · {links.length}
                 </button>
             </div>
 
@@ -171,6 +177,28 @@ export default function CloudflareDeepAnalysis({ report }) {
                     </div>
                 )}
 
+                {/* LINKS TAB */}
+                {innerTab === 'links' && (
+                    <div className="divide-y divide-border-light dark:divide-white/10">
+                        {links.length === 0 ? (
+                            <div className="p-10 text-center flex flex-col items-center gap-3">
+                                <span className="material-symbols-outlined text-4xl text-emerald-500/50">verified</span>
+                                <p className="text-slate-500 dark:text-slate-400 font-medium">No external links discovered.</p>
+                            </div>
+                        ) : (
+                            <div className="p-6">
+                                <ul className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {links.map((link, idx) => (
+                                        <li key={idx} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-white/5 p-3 rounded-lg border border-border-light dark:border-white/10">
+                                            <span className="material-symbols-outlined text-slate-400">link</span>
+                                            <span className="font-mono break-all font-bold">{link}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );
