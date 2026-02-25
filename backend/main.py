@@ -5,6 +5,8 @@ import pickle  # pyre-ignore
 import numpy as np  # pyre-ignore
 from ml_extractor import featureExtraction  # pyre-ignore
 import os  # pyre-ignore
+from dotenv import load_dotenv
+load_dotenv()
 import httpx
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware  # pyre-ignore
