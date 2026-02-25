@@ -521,6 +521,38 @@ function App() {
                       </div>
                     </div>
 
+                    {/* Domain Details Card (Safe Mode) */}
+                    <div className="px-6 md:px-8 pb-6">
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Domain Info</h3>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">Registrar</p>
+                            <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate" title={result.whois?.registrar || "Unknown"}>{result.whois?.registrar || "Unknown"}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">Creation Date</p>
+                            <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">{result.whois?.creation_date || "Unknown"}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">Origin ASN</p>
+                            <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate" title={result.cloudflare_report?.asn || "Unknown"}>{result.cloudflare_report?.asn || "Unknown"}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">IP Address</p>
+                            <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">{result.cloudflare_report?.ip || "Unknown"}</p>
+                          </div>
+                          <div>
+                            <p className="text-xs text-slate-500 mb-1">Location</p>
+                            <div className="flex items-center gap-2">
+                              <span className="material-symbols-outlined text-sm text-slate-400">public</span>
+                              <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">{result.cloudflare_report?.server_location || "Unknown"}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Engines Summary Card (Safe Mode) */}
                     <div className="px-6 md:px-8 pb-6">
                       <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
