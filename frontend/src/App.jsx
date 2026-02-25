@@ -105,6 +105,11 @@ function App() {
     setResult(null);
     setError(null);
 
+    // Automatically skip to "Waking Server" step visually if we already know Render is asleep
+    if (serverStatus === 'waking' || serverStatus === 'checking') {
+      setScanStep(3);
+    }
+
     try {
       // Use environment variable for the backend API URL, fallback to localhost for local dev if undefined
       const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
