@@ -120,6 +120,15 @@ uvicorn main:app --reload
 ```
 Open the shown localhost URL in your browser.
 
+## 🙏 Credits
+
+This project is based on the work from:
+
+- **Phishing Website Detection by Machine Learning Techniques**  
+  https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques  
+
+The original repository provided the ML model and feature extraction logic, which were adapted and extended into a full-stack, multi-engine web application.
+
 ## 📄 Legal / Disclaimer
 
 * This is an **educational project**.
