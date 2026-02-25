@@ -191,7 +191,7 @@ export default function CloudflareDeepAnalysis({ report }) {
                                     {links.map((link, idx) => (
                                         <li key={idx} className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-white/5 p-3 rounded-lg border border-border-light dark:border-white/10">
                                             <span className="material-symbols-outlined text-slate-400">link</span>
-                                            <span className="font-mono break-all font-bold">{link}</span>
+                                            <a href={`https://${link}`} target="_blank" rel="noopener noreferrer" className="font-mono break-all font-bold hover:text-primary transition-colors">{link}</a>
                                         </li>
                                     ))}
                                 </ul>

@@ -77,8 +77,15 @@ async def verify_url(request: URLRequest):
                     submit_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan"
                     submit_res = await client_http.post(submit_url, headers=headers, json={"url": url}, timeout=10.0)
                     
+                    scan_uuid = None
                     if submit_res.status_code == 200:
                         scan_uuid = submit_res.json()["result"]["uuid"]
+                    elif submit_res.status_code == 409:
+                        tasks = submit_res.json().get("result", {}).get("tasks", [])
+                        if tasks:
+                            scan_uuid = tasks[0].get("uuid")
+                            
+                    if scan_uuid:
                         
                         # 2. Poll for Completion (Max 15 seconds to match Render queue UX)
                         report_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan/{scan_uuid}?target=report"
