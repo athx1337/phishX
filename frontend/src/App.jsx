@@ -521,9 +521,40 @@ function App() {
                       </div>
                     </div>
 
+                    {/* Engines Summary Card (Safe Mode) */}
+                    <div className="px-6 md:px-8 pb-6">
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Engine Detection</h3>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-3xl font-black text-safe">
+                            {result.engines ? result.engines.filter(e => e.malicious).length : 0}
+                            <span className="text-lg text-slate-500 font-medium">/ {result.engines ? result.engines.length : 1}</span>
+                          </span>
+                          <span className="text-xs font-bold text-safe bg-safe/10 px-2 py-1 rounded border border-safe/20">Clean</span>
+                        </div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-2 mb-4 overflow-hidden border border-slate-300 dark:border-slate-600">
+                          <div className="bg-safe h-2 rounded-full transition-all duration-1000" style={{ width: `${result.engines ? ((result.engines.length - result.engines.filter(e => e.malicious).length) / result.engines.length) * 100 : 100}%` }}></div>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                          {result.engines && result.engines.map((engine, idx) => (
+                            <div key={idx} className={`flex items-center gap-1.5 font-bold ${engine.error ? 'text-orange-500' : (engine.malicious ? 'text-danger' : 'text-safe')}`}>
+                              <span className="material-symbols-outlined text-base">
+                                {engine.error ? 'warning' : (engine.malicious ? 'cancel' : 'check_circle')}
+                              </span>
+                              <span className="truncate">{engine.name}</span>
+                              {engine.error && <span className="opacity-80 font-normal truncate max-w-[100px]" title={engine.error}>({engine.error})</span>}
+                            </div>
+                          ))}
+                          {!result.engines && (
+                            <div className="text-slate-500 italic">No detailed engine data available.</div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Gemini Insights Section */}
-                    <div className="flex flex-col gap-6">
-                      <div className="rounded-xl border border-safe-border bg-white dark:bg-safe-surface-dark p-5">
+                    <div className="flex flex-col gap-6 px-6 md:px-8 pb-6">
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
                           <span className="material-symbols-outlined text-safe text-sm">auto_awesome</span>
                           Security Insight
@@ -743,7 +774,15 @@ function App() {
                       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Domain Info</h3>
                       <div className="space-y-4">
                         <div>
-                          <p className="text-xs text-slate-500 mb-1">Origin ASN (Registrar)</p>
+                          <p className="text-xs text-slate-500 mb-1">Registrar</p>
+                          <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate" title={result.whois?.registrar || "Unknown"}>{result.whois?.registrar || "Unknown"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Creation Date</p>
+                          <p className="text-sm font-mono text-slate-800 dark:text-slate-200">{result.whois?.creation_date || "Unknown"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Origin ASN</p>
                           <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">{result.cloudflare_report?.asn || "Unknown"}</p>
                         </div>
                         <div>
@@ -764,29 +803,28 @@ function App() {
                     <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
                       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Engine Detection</h3>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="text-3xl font-black text-danger">3<span className="text-lg text-slate-500 font-medium">/ 4</span></span>
+                        <span className="text-3xl font-black text-danger">
+                          {result.engines ? result.engines.filter(e => e.malicious).length : 0}
+                          <span className="text-lg text-slate-500 font-medium">/ {result.engines ? result.engines.length : 1}</span>
+                        </span>
                         <span className="text-xs font-bold text-danger bg-danger/10 px-2 py-1 rounded">Malicious</span>
                       </div>
                       <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-4">
-                        <div className="bg-danger h-2 rounded-full" style={{ width: '75%' }}></div>
+                        <div className="bg-danger h-2 rounded-full transition-all duration-1000" style={{ width: `${result.engines ? (result.engines.filter(e => e.malicious).length / result.engines.length) * 100 : 0}%` }}></div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                        <div className="flex items-center gap-1 text-danger font-bold">
-                          <span className="material-symbols-outlined text-sm">cancel</span>
-                          XGBoost AI
-                        </div>
-                        <div className="flex items-center gap-1 text-danger font-bold">
-                          <span className="material-symbols-outlined text-sm">cancel</span>
-                          Heuristics
-                        </div>
-                        <div className="flex items-center gap-1 text-danger font-bold">
-                          <span className="material-symbols-outlined text-sm">cancel</span>
-                          Cloudflare
-                        </div>
-                        <div className="flex items-center gap-1 text-safe font-bold">
-                          <span className="material-symbols-outlined text-safe text-sm">check_circle</span>
-                          Google Safe Browsing
-                        </div>
+                        {result.engines && result.engines.map((engine, idx) => (
+                          <div key={idx} className={`flex items-center gap-1 font-bold ${engine.error ? 'text-orange-500' : (engine.malicious ? 'text-danger' : 'text-safe')}`}>
+                            <span className="material-symbols-outlined text-sm">
+                              {engine.error ? 'warning' : (engine.malicious ? 'cancel' : 'check_circle')}
+                            </span>
+                            {engine.name}
+                            {engine.error && <span className="opacity-80 font-normal">({engine.error})</span>}
+                          </div>
+                        ))}
+                        {!result.engines && (
+                          <div className="text-slate-500 italic">No detailed engine data available.</div>
+                        )}
                       </div>
                     </div>
 
