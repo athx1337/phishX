@@ -131,13 +131,12 @@ function App() {
         {/* Header */}
         <header className={`sticky top-0 z-50 w-full border-b ${result ? 'border-primary/20 bg-background-light dark:bg-background-dark px-10' : 'border-border-light dark:border-white/10 bg-surface-light/80 dark:bg-background-dark/90 backdrop-blur-md px-4 lg:px-8'} py-3 transition-colors duration-300`}>
           <div className={`mx-auto flex ${result ? 'w-full' : 'max-w-7xl'} items-center justify-between`}>
-            <div className="flex items-center gap-3">
-              <div className={`flex items-center justify-center rounded-lg ${result ? 'size-8 text-primary' : 'bg-primary/10 p-2 text-primary'}`}>
-                <span className={`material-symbols-outlined ${result ? 'text-3xl' : 'text-2xl'}`}>shield_lock</span>
-              </div>
-              <div className="flex flex-col">
-                <span className={`text-xl font-bold tracking-tight leading-none ${result ? 'text-slate-900 dark:text-white' : 'text-text-main dark:text-white'}`}>phishX</span>
-                <span className={`text-[10px] font-bold tracking-widest uppercase ${result ? 'text-primary' : 'text-primary/80'}`}>by athx1337</span>
+            <div className="flex items-center gap-2">
+              <img src="/phishx-logo.png" alt="phishX" className="h-10 md:h-12 w-auto object-contain" />
+              <div className="flex flex-col justify-end h-full">
+                <span className={`text-[10px] font-bold tracking-widest uppercase ${result ? 'text-primary' : 'text-primary/80'}`}>
+                  by athx1337
+                </span>
               </div>
             </div>
 
@@ -887,7 +886,11 @@ function App() {
         {/* Footer */}
         <footer className={`mt-auto border-t py-8 ${result ? (result.is_phishing ? 'border-danger/20' : 'border-safe-border') : 'border-border-light dark:border-white/10 bg-surface-light dark:bg-background-dark'}`}>
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row lg:px-8">
-            <p className={`text-sm ${result ? 'text-slate-500 dark:text-text-secondary' : 'text-text-muted dark:text-slate-400'}`}>© 2026 phishX by athx1337. All rights reserved.</p>
+            <div className={`flex items-center gap-2 text-sm ${result ? 'text-slate-500 dark:text-text-secondary' : 'text-text-muted dark:text-slate-400'}`}>
+              <span>© 2026</span>
+              <img src="/phishx-logo.png" alt="phishX" className="h-4 w-auto object-contain grayscale opacity-60 dark:opacity-80" />
+              <span>by athx1337. All rights reserved.</span>
+            </div>
             <div className="flex gap-6">
               <button onClick={() => setActiveModal('privacy')} className={`text-sm transition-colors ${result ? 'text-slate-500 hover:text-primary dark:text-text-secondary dark:hover:text-primary' : 'text-text-muted dark:text-slate-400 hover:text-text-main dark:hover:text-primary'}`}>Privacy Policy</button>
               <button onClick={() => setActiveModal('tos')} className={`text-sm transition-colors ${result ? 'text-slate-500 hover:text-primary dark:text-text-secondary dark:hover:text-primary' : 'text-text-muted dark:text-slate-400 hover:text-text-main dark:hover:text-primary'}`}>Terms of Service</button>
@@ -910,7 +913,10 @@ function App() {
               <div className="p-6 text-sm text-text-main dark:text-slate-300 space-y-4 leading-relaxed bg-background-light dark:bg-background-dark">
                 {activeModal === 'privacy' && (
                   <>
-                    <p className="font-bold text-base text-primary">phishX is an educational project by athx1337.</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <img src="/phishx-logo.png" alt="phishX" className="h-5 w-auto object-contain brightness-0 opacity-70 dark:brightness-200" />
+                      <span className="font-bold text-base text-primary">is an educational project by athx1337.</span>
+                    </div>
                     <p>This tool does not require user accounts.</p>
                     <p>URLs submitted are processed only to generate a risk analysis result.</p>
                     <p>We do not intentionally store personal data.</p>
@@ -919,7 +925,10 @@ function App() {
                 )}
                 {activeModal === 'tos' && (
                   <>
-                    <p className="font-bold text-base text-primary">phishX is an educational project by athx1337.</p>
+                    <div className="flex items-center gap-2 mb-1">
+                      <img src="/phishx-logo.png" alt="phishX" className="h-5 w-auto object-contain brightness-0 opacity-70 dark:brightness-200" />
+                      <span className="font-bold text-base text-primary">is an educational project by athx1337.</span>
+                    </div>
                     <p>The results provided by this tool are not guaranteed to be 100% accurate.</p>
                     <p>This tool should not be used as your only security decision system.</p>
                     <p>The author is not responsible for any damages or losses resulting from the use of this tool.</p>
