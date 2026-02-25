@@ -87,13 +87,17 @@ async def verify_url(request: URLRequest):
                             
                     if scan_uuid:
                         
-                        # 2. Poll for Completion (Max 15 seconds to match Render queue UX)
+                        # 2. Poll for Completion (Max 30 seconds to allow headless browser to finish)
                         report_url = f"https://api.cloudflare.com/client/v4/accounts/{cloudflare_account_id}/urlscanner/scan/{scan_uuid}?target=report"
-                        for _ in range(8):
+                        for _ in range(15):
                             await asyncio.sleep(2)
                             report_res = await client_http.get(report_url, headers=headers, timeout=10.0)
                             if report_res.status_code == 200:
                                 report_data = report_res.json().get("result", {})
+                                
+                                # If the task is still queued/scanning, keep polling
+                                if report_data.get("scan", {}).get("task", {}).get("status") != "Finished":
+                                    continue
                                 
                                 # Extract verdict
                                 if report_data.get("malicious"):
