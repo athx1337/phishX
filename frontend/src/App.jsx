@@ -155,7 +155,7 @@ function App() {
               <img src="/phishx-text.png" alt="phishX" className="h-8 md:h-10 w-auto object-contain drop-shadow-sm" />
               <div className="flex flex-col justify-end h-full">
                 <span className={`text-[10px] font-bold tracking-widest uppercase ${result ? 'text-primary' : 'text-primary/80'}`}>
-                  by athx1337
+                  by <a href="https://github.com/athx1337" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors underline decoration-transparent hover:decoration-white">athx1337</a>
                 </span>
               </div>
             </div>
@@ -700,7 +700,7 @@ function App() {
               <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-6 shadow-md shadow-danger/5">
                 <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined text-danger text-sm">auto_awesome</span>
-                  Threat Analysis
+                  AI Threat Analysis
                 </h3>
                 <div className="bg-danger/10 border border-danger/30 rounded-lg p-5">
                   {result.rate_limit_exceeded ? (
@@ -909,7 +909,7 @@ function App() {
             <div className={`flex items-center gap-2 text-sm ${result ? 'text-slate-500 dark:text-text-secondary' : 'text-text-muted dark:text-slate-400'}`}>
               <span>© 2026</span>
               <img src="/phishx-text.png" alt="phishX" className="h-4 sm:h-5 w-auto object-contain grayscale opacity-60 dark:opacity-80 mx-1" />
-              <span>by athx1337. All rights reserved.</span>
+              <span>by <a href="https://github.com/athx1337" target="_blank" rel="noopener noreferrer" className="hover:text-text-main dark:hover:text-white transition-colors hover:underline">athx1337</a>. All rights reserved.</span>
             </div>
             <div className="flex gap-6">
               <button onClick={() => setActiveModal('privacy')} className={`text-sm transition-colors ${result ? 'text-slate-500 hover:text-primary dark:text-text-secondary dark:hover:text-primary' : 'text-text-muted dark:text-slate-400 hover:text-text-main dark:hover:text-primary'}`}>Privacy Policy</button>
@@ -935,7 +935,7 @@ function App() {
                   <>
                     <div className="flex items-center gap-2 mb-1 mt-1">
                       <img src="/phishx-text.png" alt="phishX" className="h-5 md:h-6 w-auto object-contain brightness-0 opacity-70 dark:brightness-200" />
-                      <span className="font-bold text-base text-primary">is an educational project by athx1337.</span>
+                      <span className="font-bold text-base text-primary">is an educational project by <a href="https://github.com/athx1337" target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity underline">athx1337</a>.</span>
                     </div>
                     <p>This tool does not require user accounts.</p>
                     <p>URLs submitted are processed only to generate a risk analysis result.</p>
@@ -947,7 +947,7 @@ function App() {
                   <>
                     <div className="flex items-center gap-2 mb-1 mt-1">
                       <img src="/phishx-text.png" alt="phishX" className="h-5 md:h-6 w-auto object-contain brightness-0 opacity-70 dark:brightness-200" />
-                      <span className="font-bold text-base text-primary">is an educational project by athx1337.</span>
+                      <span className="font-bold text-base text-primary">is an educational project by <a href="https://github.com/athx1337" target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity underline">athx1337</a>.</span>
                     </div>
                     <p>The results provided by this tool are not guaranteed to be 100% accurate.</p>
                     <p>This tool should not be used as your only security decision system.</p>
