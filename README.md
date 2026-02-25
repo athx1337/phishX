@@ -1,5 +1,5 @@
 # phishX  
-**Multi-Engine Phishing URL Scanner — by athx1337**
+**Multi-Engine Phishing URL Scanner**
 
 phishX is an **educational web application** that analyzes URLs for phishing risk using multiple detection layers:
 - XGBoost machine learning model
