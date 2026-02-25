@@ -155,11 +155,14 @@ async def verify_url(request: URLRequest):
                                     
                                 cf_links = lists_obj.get("linkDomains", [])
                                 
+                                server_location = page_obj.get("country", "Unknown")
+                                
                                 cloudflare_context = (
                                     f"\n\n[CLOUDFLARE THREAT INTELLIGENCE RADAR]:\n"
                                     f"- Cloudflare Verdict: {'MALICIOUS' if report_data.get('malicious') else 'Clean'}\n"
                                     f"- Hosting ASN: {asn_str}\n"
                                     f"- Resolved IPs: {resolved_ips_str}\n"
+                                    f"- Server Location: {server_location}\n"
                                 )
                                 cloudflare_report = {
                                     "malicious": report_data.get("malicious", False),
@@ -168,7 +171,8 @@ async def verify_url(request: URLRequest):
                                     "certificates": cf_certs,
                                     "requests": cf_requests,
                                     "risks": cf_risks,
-                                    "links": cf_links
+                                    "links": cf_links,
+                                    "server_location": server_location
                                 }
                                 break
             except Exception as cf_err:

@@ -738,6 +738,58 @@ function App() {
                   </div>
 
                   <div className="flex flex-col gap-6">
+                    {/* Domain Details Card */}
+                    <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Domain Info</h3>
+                      <div className="space-y-4">
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Origin ASN (Registrar)</p>
+                          <p className="text-sm font-mono text-slate-800 dark:text-slate-200 truncate">{result.cloudflare_report?.asn || "Unknown"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">IP Address</p>
+                          <p className="text-sm font-mono text-slate-800 dark:text-slate-200">{result.cloudflare_report?.ip || "Unknown"}</p>
+                        </div>
+                        <div>
+                          <p className="text-xs text-slate-500 mb-1">Server Location</p>
+                          <div className="flex items-center gap-2">
+                            <span className="material-symbols-outlined text-sm text-slate-400">public</span>
+                            <p className="text-sm font-mono text-slate-800 dark:text-slate-200">{result.cloudflare_report?.server_location || "Unknown"}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Engines Summary Card */}
+                    <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
+                      <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Engine Detection</h3>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-3xl font-black text-danger">3<span className="text-lg text-slate-500 font-medium">/ 4</span></span>
+                        <span className="text-xs font-bold text-danger bg-danger/10 px-2 py-1 rounded">Malicious</span>
+                      </div>
+                      <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2 mb-4">
+                        <div className="bg-danger h-2 rounded-full" style={{ width: '75%' }}></div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                        <div className="flex items-center gap-1 text-danger font-bold">
+                          <span className="material-symbols-outlined text-sm">cancel</span>
+                          XGBoost AI
+                        </div>
+                        <div className="flex items-center gap-1 text-danger font-bold">
+                          <span className="material-symbols-outlined text-sm">cancel</span>
+                          Heuristics
+                        </div>
+                        <div className="flex items-center gap-1 text-danger font-bold">
+                          <span className="material-symbols-outlined text-sm">cancel</span>
+                          Cloudflare
+                        </div>
+                        <div className="flex items-center gap-1 text-safe font-bold">
+                          <span className="material-symbols-outlined text-safe text-sm">check_circle</span>
+                          Google Safe Browsing
+                        </div>
+                      </div>
+                    </div>
+
                     <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
                       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Scan Meta data</h3>
                       <div className="space-y-4">
