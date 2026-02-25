@@ -1,78 +1,90 @@
 # phishX  
-**Phishing URL Scanner — by athx1337**
+**Multi-Engine Phishing URL Scanner — by athx1337**
 
-phishX is an **educational web tool** that analyzes URLs for phishing risk using a machine learning model (XGBoost) and generates **human-readable explanations** using **Gemini**.
-
-Workflow:  
-**Paste URL → Scan → Get result + reasoning**
-
-> ⚠️ This project is for educational and demonstration purposes only. Results are probabilistic and not a guarantee of safety.
+phishX is an **educational web application** that analyzes URLs for phishing risk using multiple detection layers:
+- XGBoost machine learning model
+- Cloudflare URL Scanner
+- Google Safe Browsing
+- Heuristic URL analysis
+- Gemini AI for human-readable explanations
 
 ---
 
 ## ✨ Features
 
-- 🔍 URL phishing classification using **XGBoost**
-- 🤖 **AI-generated reasoning** via **Gemini**
-- 🧠 Feature extraction based on URL structure & domain signals
-- ⚡ Fast **FastAPI** backend
-- 🖥️ Modern **React + Vite + Tailwind CSS** frontend
-- 🔄 Clean UI states: Initial / Loading / Safe / Phishing
+- 🔍 XGBoost-based phishing classification
+- 🌐 Cloudflare URL Scanner integration
+- 🛡️ Google Safe Browsing reputation checks
+- 🧠 Heuristic checks (URL length, IP usage, subdomains, HTTPS, etc.)
+- 🤖 Gemini AI 2–3 sentence security explanation
+- 🧮 Multi-engine consensus verdict
+- ⚡ FastAPI backend + React (Vite + Tailwind) frontend
 
 ---
 
-## 🧱 Architecture
+## 🧠 How It Works
 
-## 🧱 Backend (FastAPI)
-
-### Pipeline
+### Scan Pipeline
 
 1. Extract features from the URL  
-2. Classify with XGBoost (safe vs phishing)  
-3. Build a structured prompt for **Gemini (gemini-3-flash-preview)** using:
-   - URL structure signals (IP usage, length, subdomains, suspicious chars, typosquatting)
-   - Domain & hosting signals (risky TLDs, free subdomains, brand mismatch)
-   - HTTPS usage
-4. Gemini returns a **2–3 sentence explanation**
-5. API returns **prediction + reasoning**
+2. Classify using XGBoost (safe vs phishing)  
+3. Run Cloudflare URL Scanner  
+4. Run Google Safe Browsing reputation check  
+5. Run heuristic checks  
+6. Apply consensus logic (malicious if ≥ 2 engines flag it)  
+7. Build a structured prompt for Gemini (gemini-3-flash-preview)  
+8. Gemini returns a 2–3 sentence explanation  
+9. API returns verdict + engine results + explanation  
 
-### Key files
+### Engines
 
-- `backend/main.py` — FastAPI app & API endpoint  
-- `backend/ml_extractor.py` — Feature extraction logic  
-- `backend/requirements.txt` — Python dependencies  
-
-### Main dependencies
-
-- fastapi  
-- uvicorn  
-- xgboost  
-- beautifulsoup4  
-- python-whois  
-- urllib3  
-- google-genai  
-- python-dotenv  
+- XGBoost (local ML)
+- Cloudflare URL Scanner (dynamic analysis)
+- Google Safe Browsing (reputation)
 
 ---
 
-## 🖥️ Frontend (React + Vite + Tailwind CSS)
+## 🧱 Project Structure
 
-- UI based on custom templates (from `@stitch`)
-- Tailwind configured with design tokens (colors, fonts, light/dark)
-- States:
-  - Initial  
-  - Loading  
-  - Safe (Clean)  
-  - Phishing (Critical)  
-- Fetches real results from `/api/verify`
-- Branded as **phishX by athx1337**
-- Includes simple **Privacy Policy** and **Terms** modals
+### Backend
 
-### Key files
+- `backend/main.py` — FastAPI app and engine orchestration
+- `backend/ml_extractor.py` — Feature extraction logic
+- `backend/requirements.txt` — Python dependencies
 
-- `frontend/src/App.jsx` — Main UI logic  
-- `frontend/tailwind.config.js` — Design system config  
-- `frontend/index.html` — Fonts and icons  
+Main dependencies:
+- fastapi
+- uvicorn
+- gunicorn
+- xgboost
+- requests
+- python-whois
+- pydantic
+- google-genai
+- python-dotenv
+
+### Frontend
+
+- `frontend/src/App.jsx` — Main UI logic
+- `frontend/src/CloudflareDeepAnalysis.jsx` — Deep analysis tab
+- `frontend/tailwind.config.js` — Design system config
+- `frontend/index.html` — Fonts and icons
+
+---
+
+## 🚀 Run Locally
+
+### Backend
+
+```bash
+cd backend
+python -m venv venv
+venv\Scripts\activate   # Windows
+# or: source venv/bin/activate  (macOS/Linux)
+
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
 
 ---
 
@@ -96,74 +108,20 @@ venv\Scripts\activate   # Windows
 pip install -r requirements.txt
 ```
 
-Create a `.env` file **locally only**:
+### Create a .env file (local only):
 
-```env
-GEMINI_API_KEY=your_api_key_here
+```GEMINI_API_KEY=your_key_here
+CLOUDFLARE_API_TOKEN=your_token_here
+CLOUDFLARE_ACCOUNT_ID=your_account_id_here
+GOOGLE_SAFEBROWSING_API_KEY=your_key_here
 ```
 
-Run the backend:
-
-```bash
-uvicorn main:app --reload
-```
-
-Backend will be available at:
-`http://127.0.0.1:8000`
-
-### 3) Frontend setup
-
-```bash
-cd frontend
+### Frontend
+```cd frontend
 npm install
 npm run dev
 ```
-
 Open the shown localhost URL in your browser.
-
----
-
-## 🌍 Deployment (Free)
-
-* **Frontend**: Vercel (free)
-* **Backend**: Render (free)
-
-### Backend on Render
-
-Start command:
-
-```bash
-uvicorn main:app --host 0.0.0.0 --port $PORT
-```
-
-Set environment variable in Render dashboard:
-
-```text
-GEMINI_API_KEY=your_api_key_here
-```
-
-> Do NOT commit `.env` files to GitHub. Use platform environment variables in production.
-
----
-
-## 🧪 Testing
-
-### Manual
-
-* Try a safe URL:
-
-  * `https://www.google.com`
-* Try a sketchy-looking URL:
-
-  * `http://192.168.1.1/login.php`
-
-Check:
-
-* UI transitions (Initial → Loading → Result)
-* Result correctness
-* Gemini reasoning text appears
-
----
 
 ## 📄 Legal / Disclaimer
 
