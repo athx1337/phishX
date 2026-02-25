@@ -131,10 +131,10 @@ function App() {
         {/* Header */}
         <header className={`sticky top-0 z-50 w-full border-b ${result ? 'border-primary/20 bg-background-light dark:bg-background-dark px-10' : 'border-border-light dark:border-white/10 bg-surface-light/80 dark:bg-background-dark/90 backdrop-blur-md px-4 lg:px-8'} py-3 transition-colors duration-300`}>
           <div className={`mx-auto flex ${result ? 'w-full' : 'max-w-7xl'} items-center justify-between`}>
-            <div className="flex items-center gap-2">
-              <img src="/phishx-logo.png" alt="phishX" className="h-10 md:h-12 w-auto object-contain" />
-              <div className="flex flex-col justify-end h-full">
-                <span className={`text-[10px] font-bold tracking-widest uppercase ${result ? 'text-primary' : 'text-primary/80'}`}>
+            <div className="flex items-center gap-2 sm:gap-1">
+              <img src="/phishx-logo.png" alt="phishX" className="h-16 md:h-20 w-auto object-contain scale-[1.15] origin-left drop-shadow-sm" />
+              <div className="flex flex-col justify-center h-full pt-1 sm:pt-2">
+                <span className={`text-[11px] font-bold tracking-[0.2em] uppercase ${result ? 'text-primary' : 'text-primary/80'}`}>
                   by athx1337
                 </span>
               </div>
@@ -888,7 +888,7 @@ function App() {
           <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row lg:px-8">
             <div className={`flex items-center gap-2 text-sm ${result ? 'text-slate-500 dark:text-text-secondary' : 'text-text-muted dark:text-slate-400'}`}>
               <span>© 2026</span>
-              <img src="/phishx-logo.png" alt="phishX" className="h-4 w-auto object-contain grayscale opacity-60 dark:opacity-80" />
+              <img src="/phishx-logo.png" alt="phishX" className="h-6 sm:h-8 w-auto object-contain scale-110 grayscale opacity-60 dark:opacity-80 mx-1" />
               <span>by athx1337. All rights reserved.</span>
             </div>
             <div className="flex gap-6">
@@ -913,9 +913,9 @@ function App() {
               <div className="p-6 text-sm text-text-main dark:text-slate-300 space-y-4 leading-relaxed bg-background-light dark:bg-background-dark">
                 {activeModal === 'privacy' && (
                   <>
-                    <div className="flex items-center gap-2 mb-1">
-                      <img src="/phishx-logo.png" alt="phishX" className="h-5 w-auto object-contain brightness-0 opacity-70 dark:brightness-200" />
-                      <span className="font-bold text-base text-primary">is an educational project by athx1337.</span>
+                    <div className="flex items-center gap-0 mb-2 mt-2">
+                      <img src="/phishx-logo.png" alt="phishX" className="h-8 md:h-10 w-auto object-contain scale-[1.25] origin-left brightness-0 opacity-70 dark:brightness-200" />
+                      <span className="font-bold text-base text-primary -ml-2">is an educational project by athx1337.</span>
                     </div>
                     <p>This tool does not require user accounts.</p>
                     <p>URLs submitted are processed only to generate a risk analysis result.</p>
@@ -925,9 +925,9 @@ function App() {
                 )}
                 {activeModal === 'tos' && (
                   <>
-                    <div className="flex items-center gap-2 mb-1">
-                      <img src="/phishx-logo.png" alt="phishX" className="h-5 w-auto object-contain brightness-0 opacity-70 dark:brightness-200" />
-                      <span className="font-bold text-base text-primary">is an educational project by athx1337.</span>
+                    <div className="flex items-center gap-0 mb-2 mt-2">
+                      <img src="/phishx-logo.png" alt="phishX" className="h-8 md:h-10 w-auto object-contain scale-[1.25] origin-left brightness-0 opacity-70 dark:brightness-200" />
+                      <span className="font-bold text-base text-primary -ml-2">is an educational project by athx1337.</span>
                     </div>
                     <p>The results provided by this tool are not guaranteed to be 100% accurate.</p>
                     <p>This tool should not be used as your only security decision system.</p>
