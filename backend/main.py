@@ -94,22 +94,51 @@ async def verify_url(request: URLRequest):
                                     features[0] = 1 # pyre-ignore
                                     
                                 # Build intelligence context for Gemini
-                                cf_ips = report_data.get("ips", [])
-                                cf_asn = report_data.get("asn", {})
-                                cf_certs = report_data.get("certificates", [])
-                                cf_requests = report_data.get("requests", [])
-                                cf_risks = report_data.get("risks", [])
+                                # Extract Data from Nested Scan Object
+                                scan_obj = report_data.get("scan", {})
+                                lists_obj = scan_obj.get("lists", {})
+                                # Build intelligence context for Gemini
+                                scan_obj = report_data.get("scan", {})
+                                lists_obj = scan_obj.get("lists", {})
+                                page_obj = scan_obj.get("page", {})
+                                
+                                cf_ips = lists_obj.get("ips", [])
+                                cf_asn_list = lists_obj.get("asns", []) # fallback to list in case it's nested differently
+                                
+                                # Process IP strings
+                                resolved_ips_str = "Unknown"
+                                primary_ip = "Unknown"
+                                if cf_ips and isinstance(cf_ips[0], str):
+                                    resolved_ips_str = ", ".join(cf_ips[:2])
+                                    primary_ip = cf_ips[0]
+                                elif cf_ips and isinstance(cf_ips[0], dict):
+                                    resolved_ips_str = ", ".join([ip.get('ip', '') for ip in cf_ips[:2]])
+                                    primary_ip = cf_ips[0].get('ip', 'Unknown')
+                                    
+                                # Process ASN strings
+                                asn_str = "Unknown"
+                                if cf_asn_list and isinstance(cf_asn_list[0], str):
+                                    asn_str = f"AS{cf_asn_list[0]}"
+                                else:
+                                    cf_asn_obj = report_data.get("asn", {})
+                                    if cf_asn_obj and len(cf_asn_obj) > 0 and isinstance(cf_asn_obj, list):
+                                        asn_str = cf_asn_obj[0].get('description', 'Unknown')
+                                
+                                cf_certs = lists_obj.get("certificates", [])
+                                cf_requests = scan_obj.get("requests", []) # Cloudflare tends to put requests at scan root or page
+                                if not cf_requests: cf_requests = page_obj.get("requests", [])
+                                cf_risks = page_obj.get("securityViolations", []) # Risks are called securityViolations in the scanner payload
                                 
                                 cloudflare_context = (
                                     f"\n\n[CLOUDFLARE THREAT INTELLIGENCE RADAR]:\n"
                                     f"- Cloudflare Verdict: {'MALICIOUS' if report_data.get('malicious') else 'Clean'}\n"
-                                    f"- Hosting ASN: {cf_asn[0].get('description') if cf_asn else 'Unknown'}\n"
-                                    f"- Resolved IPs: {', '.join([ip.get('ip') for ip in cf_ips[:2]])}\n"
+                                    f"- Hosting ASN: {asn_str}\n"
+                                    f"- Resolved IPs: {resolved_ips_str}\n"
                                 )
                                 cloudflare_report = {
                                     "malicious": report_data.get("malicious", False),
-                                    "asn": cf_asn[0].get('description') if cf_asn else 'Unknown',
-                                    "ip": cf_ips[0].get('ip') if cf_ips else 'Unknown',
+                                    "asn": asn_str,
+                                    "ip": primary_ip,
                                     "certificates": cf_certs,
                                     "requests": cf_requests,
                                     "risks": cf_risks
