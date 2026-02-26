@@ -530,73 +530,106 @@ function App() {
                 </div>
 
                 {activeTab === 'overview' ? (
-                  <>
-                    <div className="p-6 md:p-8">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-6">Technical Indicators</h4>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8">
-                        {/* Indicators based on features */}
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 text-safe">
-                            <span className="material-symbols-outlined text-[20px]">{result.url.startsWith('https') ? 'lock' : 'lock_open'}</span>
+                  <div className="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    {/* LEFT COLUMN: Technical Indicators & Gemini Insights */}
+                    <div className="lg:col-span-2 flex flex-col gap-8">
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark pb-6">
+                        <div className="border-b border-safe-border bg-safe/5 px-6 py-4 flex justify-between items-center mb-6">
+                          <h3 className="text-lg font-bold text-safe dark:text-safe flex items-center gap-2">
+                            <span className="material-symbols-outlined text-safe">verified</span>
+                            Technical Indicators Checked
+                          </h3>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-y-6 gap-x-8 px-6">
+                          {/* Indicators based on features */}
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-safe">
+                              <span className="material-symbols-outlined text-[20px]">{result.url.startsWith('https') ? 'lock' : 'lock_open'}</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Has HTTPS</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.url.startsWith('https') ? 'Yes' : 'No'}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Has HTTPS</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.url.startsWith('https') ? 'Yes' : 'No'}</p>
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-safe">
+                              <span className="material-symbols-outlined text-[20px]">dns</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses IP Address</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[0] ? 'Yes' : 'No'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-safe">
+                              <span className="material-symbols-outlined text-[20px]">{result.features_extracted[4] ? 'link' : 'link_off'}</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses Shortener</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[4] ? 'Yes' : 'No'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-safe">
+                              <span className="material-symbols-outlined text-[20px]">alt_route</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Suspicious Redirects</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[2] ? 'Yes' : 'No'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-safe">
+                              <span className="material-symbols-outlined text-[20px]">alternate_email</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Contains @ Symbol</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[1] ? 'Yes' : 'No'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-start gap-3">
+                            <div className="mt-0.5 text-safe">
+                              <span className="material-symbols-outlined text-[20px]">security</span>
+                            </div>
+                            <div>
+                              <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Hidden Iframes</p>
+                              <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[7] ? 'Detected' : 'Clean'}</p>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 text-safe">
-                            <span className="material-symbols-outlined text-[20px]">dns</span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses IP Address</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[0] ? 'Yes' : 'No'}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 text-safe">
-                            <span className="material-symbols-outlined text-[20px]">{result.features_extracted[4] ? 'link' : 'link_off'}</span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Uses Shortener</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[4] ? 'Yes' : 'No'}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 text-safe">
-                            <span className="material-symbols-outlined text-[20px]">alt_route</span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Suspicious Redirects</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[2] ? 'Yes' : 'No'}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 text-safe">
-                            <span className="material-symbols-outlined text-[20px]">alternate_email</span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Contains @ Symbol</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[1] ? 'Yes' : 'No'}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="mt-0.5 text-safe">
-                            <span className="material-symbols-outlined text-[20px]">security</span>
-                          </div>
-                          <div>
-                            <p className="text-xs font-medium text-slate-500 dark:text-[#92c9a0] mb-0.5">Hidden Iframes</p>
-                            <p className="text-sm font-semibold text-slate-900 dark:text-white">{result.features_extracted[7] ? 'Detected' : 'Clean'}</p>
-                          </div>
+                      </div>
+
+                      {/* Gemini Insights Section */}
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-6 shadow-sm">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                          <span className="material-symbols-outlined text-safe text-sm">auto_awesome</span>
+                          AI Threat Analysis
+                        </h3>
+                        <div className="bg-safe/5 dark:bg-safe-border/20 border border-safe/20 rounded-lg p-5">
+                          {result.rate_limit_exceeded ? (
+                            <div className="flex flex-col gap-3">
+                              <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
+                                {result.gemini_analysis}
+                              </p>
+                              <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 px-4 py-2 mt-2 rounded bg-safe/10 text-safe font-bold text-sm border border-safe/30 hover:bg-safe hover:text-white transition-colors">
+                                <span className="material-symbols-outlined text-sm">local_cafe</span>
+                                Support Project
+                              </a>
+                            </div>
+                          ) : (
+                            <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
+                              {result.gemini_analysis || "No AI analysis available at the moment."}
+                            </p>
+                          )}
                         </div>
                       </div>
                     </div>
 
-                    {/* Domain Details Card (Safe Mode) */}
-                    <div className="px-6 md:px-8 pb-6">
-                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
+                    {/* RIGHT COLUMN: Domain Info & Engines */}
+                    <div className="flex flex-col gap-6">
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-6">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Domain Info</h3>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                        <div className="space-y-4">
                           <div>
                             <p className="text-xs text-slate-500 mb-1">Registrar</p>
                             <p className="text-sm font-bold text-slate-800 dark:text-slate-200 truncate" title={result.whois?.registrar || "Unknown"}>{result.whois?.registrar || "Unknown"}</p>
@@ -622,11 +655,9 @@ function App() {
                           </div>
                         </div>
                       </div>
-                    </div>
 
-                    {/* Engines Summary Card (Safe Mode) */}
-                    <div className="px-6 md:px-8 pb-6">
-                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
+                      {/* Engines Summary Card (Safe Mode) */}
+                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-6">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Engine Detection</h3>
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-3xl font-black text-safe">
@@ -638,14 +669,14 @@ function App() {
                         <div className="w-full bg-slate-200 dark:bg-slate-700/50 rounded-full h-2 mb-4 overflow-hidden border border-slate-300 dark:border-slate-600">
                           <div className="bg-safe h-2 rounded-full transition-all duration-1000" style={{ width: `${result.engines ? ((result.engines.length - result.engines.filter(e => e.malicious).length) / result.engines.length) * 100 : 100}%` }}></div>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-slate-600 dark:text-slate-300">
                           {result.engines && result.engines.map((engine, idx) => (
                             <div key={idx} className={`flex items-center gap-1.5 font-bold ${engine.error ? 'text-orange-500' : (engine.malicious ? 'text-danger' : 'text-safe')}`}>
-                              <span className="material-symbols-outlined text-base">
+                              <span className="material-symbols-outlined text-[14px]">
                                 {engine.error ? 'warning' : (engine.malicious ? 'cancel' : 'check_circle')}
                               </span>
                               <span className="truncate">{engine.name}</span>
-                              {engine.error && <span className="opacity-80 font-normal truncate max-w-[100px]" title={engine.error}>({engine.error})</span>}
+                              {engine.error && <span className="opacity-80 font-normal truncate max-w-[50px] ml-1" title={engine.error}>({engine.error})</span>}
                             </div>
                           ))}
                           {!result.engines && (
@@ -653,72 +684,44 @@ function App() {
                           )}
                         </div>
                       </div>
-                    </div>
-                    {/* VirusTotal Overview Card (Safe View) */}
-                    {result.engines && result.engines.find(e => e.name === "VirusTotal")?.data && (
-                      <div className="flex flex-col gap-6 px-6 md:px-8 pb-6">
-                        <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
+
+                      {/* VirusTotal Overview Card (Safe View) */}
+                      {result.engines && result.engines.find(e => e.name === "VirusTotal")?.data && (
+                        <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-6">
                           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
                             <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/VirusTotal_Logo.svg/1024px-VirusTotal_Logo.svg.png" alt="VirusTotal" className="h-4 object-contain brightness-0 dark:brightness-200 opacity-60" />
-                            VirusTotal Breakdown
+                            VirusTotal Stats
                           </h3>
-                          <div className="flex gap-4">
+                          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                             {(() => {
                               const vtData = result.engines.find(e => e.name === "VirusTotal").data;
                               const total = vtData.malicious_count + vtData.suspicious_count + vtData.harmless_count + vtData.undetected_count;
                               return (
                                 <>
-                                  <div className="flex flex-col flex-1 gap-1">
-                                    <span className="text-xs text-slate-500">Malicious</span>
-                                    <span className={`text-lg font-black ${vtData.malicious_count > 0 ? 'text-danger' : 'text-slate-500 dark:text-safe'}`}>{vtData.malicious_count}</span>
+                                  <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase">Malicious</span>
+                                    <span className={`text-lg font-black leading-none ${vtData.malicious_count > 0 ? 'text-danger' : 'text-slate-400 dark:text-slate-500'}`}>{vtData.malicious_count}</span>
                                   </div>
-                                  <div className="flex flex-col flex-1 gap-1">
-                                    <span className="text-xs text-slate-500">Suspicious</span>
-                                    <span className={`text-lg font-black ${vtData.suspicious_count > 0 ? 'text-orange-500' : 'text-slate-500 dark:text-safe'}`}>{vtData.suspicious_count}</span>
+                                  <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase">Suspicious</span>
+                                    <span className={`text-lg font-black leading-none ${vtData.suspicious_count > 0 ? 'text-orange-500' : 'text-slate-400 dark:text-slate-500'}`}>{vtData.suspicious_count}</span>
                                   </div>
-                                  <div className="flex flex-col flex-1 gap-1">
-                                    <span className="text-xs text-slate-500">Harmless</span>
-                                    <span className="text-lg font-black text-slate-600 dark:text-slate-300">{vtData.harmless_count}</span>
+                                  <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase">Harmless</span>
+                                    <span className="text-lg font-black leading-none text-safe">{vtData.harmless_count}</span>
                                   </div>
-                                  <div className="flex flex-col flex-1 gap-1">
-                                    <span className="text-xs text-slate-500">Total Scans</span>
-                                    <span className="text-lg font-black text-slate-600 dark:text-slate-300">{total}</span>
+                                  <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                    <span className="text-[10px] text-slate-500 font-bold uppercase">Total</span>
+                                    <span className="text-lg font-black leading-none text-slate-400">{total}</span>
                                   </div>
                                 </>
                               )
                             })()}
                           </div>
                         </div>
-                      </div>
-                    )}
-
-                    {/* Gemini Insights Section */}
-                    <div className="flex flex-col gap-6 px-6 md:px-8 pb-6">
-                      <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
-                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
-                          <span className="material-symbols-outlined text-safe text-sm">auto_awesome</span>
-                          Security Insight
-                        </h3>
-                        <div className="bg-safe/5 dark:bg-safe-border/20 border border-safe/20 rounded-lg p-5">
-                          {result.rate_limit_exceeded ? (
-                            <div className="flex flex-col gap-3">
-                              <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
-                                {result.gemini_analysis}
-                              </p>
-                              <a href="#" target="_blank" rel="noopener noreferrer" className="inline-flex w-fit items-center gap-2 px-4 py-2 mt-2 rounded bg-safe/10 text-safe font-bold text-sm border border-safe/30 hover:bg-safe hover:text-white transition-colors">
-                                <span className="material-symbols-outlined text-sm">local_cafe</span>
-                                Support Project
-                              </a>
-                            </div>
-                          ) : (
-                            <p className="text-sm text-slate-700 dark:text-[#92c9a0] leading-relaxed">
-                              {result.gemini_analysis || "No AI analysis available at the moment."}
-                            </p>
-                          )}
-                        </div>
-                      </div>
+                      )}
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <div className="p-4 md:p-6 bg-slate-50/50 dark:bg-black/20">
                     <CloudflareDeepAnalysis report={result.cloudflare_report} />
@@ -968,32 +971,32 @@ function App() {
                       </div>
                     </div>                    {/* VirusTotal Overview Card (Phishing View) */}
                     {result.engines && result.engines.find(e => e.name === "VirusTotal")?.data && (
-                      <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
+                      <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-6 shadow-sm">
                         <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
                           <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/VirusTotal_Logo.svg/1024px-VirusTotal_Logo.svg.png" alt="VirusTotal" className="h-4 object-contain brightness-0 dark:brightness-200 opacity-60" />
-                          VirusTotal Breakdown
+                          VirusTotal Stats
                         </h3>
-                        <div className="flex gap-4">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                           {(() => {
                             const vtData = result.engines.find(e => e.name === "VirusTotal").data;
                             const total = vtData.malicious_count + vtData.suspicious_count + vtData.harmless_count + vtData.undetected_count;
                             return (
                               <>
-                                <div className="flex flex-col flex-1 gap-1">
-                                  <span className="text-xs text-slate-500">Malicious</span>
-                                  <span className={`text-lg font-black ${vtData.malicious_count > 0 ? 'text-danger' : 'text-slate-500'}`}>{vtData.malicious_count}</span>
+                                <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                  <span className="text-[10px] text-slate-500 font-bold uppercase">Malicious</span>
+                                  <span className={`text-lg font-black leading-none ${vtData.malicious_count > 0 ? 'text-danger' : 'text-slate-400 dark:text-slate-500'}`}>{vtData.malicious_count}</span>
                                 </div>
-                                <div className="flex flex-col flex-1 gap-1">
-                                  <span className="text-xs text-slate-500">Suspicious</span>
-                                  <span className={`text-lg font-black ${vtData.suspicious_count > 0 ? 'text-orange-500' : 'text-slate-500'}`}>{vtData.suspicious_count}</span>
+                                <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                  <span className="text-[10px] text-slate-500 font-bold uppercase">Suspicious</span>
+                                  <span className={`text-lg font-black leading-none ${vtData.suspicious_count > 0 ? 'text-orange-500' : 'text-slate-400 dark:text-slate-500'}`}>{vtData.suspicious_count}</span>
                                 </div>
-                                <div className="flex flex-col flex-1 gap-1">
-                                  <span className="text-xs text-slate-500">Harmless</span>
-                                  <span className="text-lg font-black text-slate-600 dark:text-slate-300">{vtData.harmless_count}</span>
+                                <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                  <span className="text-[10px] text-slate-500 font-bold uppercase">Harmless</span>
+                                  <span className="text-lg font-black leading-none text-safe">{vtData.harmless_count}</span>
                                 </div>
-                                <div className="flex flex-col flex-1 gap-1">
-                                  <span className="text-xs text-slate-500">Total</span>
-                                  <span className="text-lg font-black text-slate-600 dark:text-slate-300">{total}</span>
+                                <div className="flex flex-col gap-1 text-center bg-slate-100 dark:bg-white/5 py-2 rounded-lg items-center">
+                                  <span className="text-[10px] text-slate-500 font-bold uppercase">Total</span>
+                                  <span className="text-lg font-black leading-none text-slate-400">{total}</span>
                                 </div>
                               </>
                             )
