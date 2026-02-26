@@ -306,12 +306,12 @@ async def verify_url(request: URLRequest):
         # Consensus Logic (>= 2 engines flag it malicious)
         is_phishing = malicious_count >= 2
         
-        # Fallback: if only 1 engine flagged it, but it was Google Safe Browsing (a deterministic blacklist), override consensus.
-        # This makes sense since Google Safe Browsing is known bad URLs, whereas XGB/Cloudflare are heuristics.
+        # Fallback: if only 1 engine flagged it, but it was Google Safe Browsing or URLhaus (deterministic blocklists), override consensus.
+        # This makes sense since Google Safe Browsing and URLhaus are known bad URLs, whereas XGB/Cloudflare are heuristics.
         # For demonstration context, if only XGBoost catches a very obvious mock typo, we let it pass for the demo.
         if malicious_count == 1:
             for r in results: # pyre-ignore
-                if r["malicious"] and r["name"] in ["Google Safe Browsing", "XGBoost AI"]:
+                if r["malicious"] and r["name"] in ["Google Safe Browsing", "XGBoost AI", "URLhaus"]:
                     is_phishing = True
         
         rate_limit_exceeded = False
