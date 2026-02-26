@@ -1,7 +1,7 @@
 # phishX 🛡️
 **Next-Generation Multi-Engine Phishing & Threat URL Scanner**
 
-phishX is an advanced, educational cybersecurity web application that analyzes suspicious URLs for phishing risks, malware, and fraudulent redirects in real-time. It goes beyond simple blacklists by orchestrating multiple detection layers—including Machine Learning, headless browser scanning, and Generative AI—to provide a comprehensive threat analysis.
+phishX is an advanced, educational cybersecurity web application that analyzes suspicious URLs for phishing risks, malware, and fraudulent redirects in real-time. It goes beyond simple blacklists by orchestrating multiple detection layers—including Machine Learning, headless browser scanning, and Generative AI to provide a comprehensive threat analysis.
 
 ---
 
