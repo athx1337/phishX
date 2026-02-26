@@ -190,7 +190,46 @@ async def engine_google_safe_browsing(url: str):
                 return {"name": "Google Safe Browsing", "malicious": False, "error": f"HTTP {res.status_code}: {err_text}"}
     except Exception as e:
         print(f"Google Safe Browsing Error: {e}")
-        return {"name": "Google Safe Browsing", "malicious": False, "error": str(e)}
+async def engine_urlhaus(url: str):
+    """URLhaus API Engine (Abuse.ch)"""
+    urlhaus_key = os.environ.get("URLHAUS_API_KEY") 
+    if not urlhaus_key:
+        return {"name": "URLhaus", "malicious": False, "data": None, "error": "API key missing"}
+        
+    endpoint = "https://urlhaus-api.abuse.ch/v1/url/"
+    data = {"url": url}
+    headers = {
+        "Auth-Key": urlhaus_key
+    }
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            # URLhaus requires URL Encoded form data, httpx uses `data=` natively for this
+            res = await client.post(endpoint, data=data, headers=headers, timeout=8.0)
+            if res.status_code == 200:
+                payload = res.json()
+                status = payload.get("query_status", "no_results")
+                
+                # 'ok' means the API successfully found a match for active malware distribution
+                if status == "ok":
+                    return {
+                        "name": "URLhaus", 
+                        "malicious": True, 
+                        "data": {
+                            "threat": payload.get("threat", "Malware payload"),
+                            "status": payload.get("url_status", "Unknown")
+                        },
+                        "error": None
+                    }
+                elif status == "no_results":
+                    return {"name": "URLhaus", "malicious": False, "data": None, "error": None}
+                else:
+                    return {"name": "URLhaus", "malicious": False, "data": None, "error": f"Status: {status}"}
+            else:
+                return {"name": "URLhaus", "malicious": False, "data": None, "error": f"HTTP {res.status_code}"}
+    except Exception as e:
+        print(f"URLhaus Engine Error: {e}")
+        return {"name": "URLhaus", "malicious": False, "data": None, "error": str(e)}
 
 async def fetch_whois(url: str):
     """Fetch WHOIS data for the domain"""
@@ -234,7 +273,8 @@ async def verify_url(request: URLRequest):
         engine_tasks = [
             engine_xgboost(url),
             engine_cloudflare(url),
-            engine_google_safe_browsing(url)
+            engine_google_safe_browsing(url),
+            engine_urlhaus(url)
         ]
         results, whois_data = await asyncio.gather(
             asyncio.gather(*engine_tasks), # pyre-ignore

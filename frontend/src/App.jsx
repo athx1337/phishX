@@ -16,6 +16,7 @@ function App() {
 
   // System Status State ('checking', 'waking', 'awake', 'offline')
   const [serverStatus, setServerStatus] = useState('checking')
+  const [isWaitingForWake, setIsWaitingForWake] = useState(false)
 
   // Tab UI State
   const [activeTab, setActiveTab] = useState('overview')
@@ -97,18 +98,46 @@ function App() {
     return () => clearInterval(interval);
   }, [loading]);
 
+  // Rapid polling effect when waiting for wake
+  useEffect(() => {
+    let pollInterval;
+    if (isWaitingForWake) {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+
+      const poll = () => {
+        fetch(`${apiUrl}/api/ping`)
+          .then(res => {
+            if (res.ok) {
+              setServerStatus('awake');
+            }
+          })
+          .catch(() => {
+            setServerStatus('waking');
+          });
+      };
+
+      pollInterval = setInterval(poll, 3000);
+      poll(); // Ping immediately on queue enter
+    }
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+    };
+  }, [isWaitingForWake]);
+
   const checkUrl = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!url) return;
+
+    // Prevent scan execution if server is asleep, enter the pre-queue instead
+    if (serverStatus !== 'awake') {
+      setIsWaitingForWake(true);
+      return;
+    }
 
     setLoading(true);
     setResult(null);
     setError(null);
-
-    // Automatically skip to "Waking Server" step visually if we already know Render is asleep
-    if (serverStatus === 'waking' || serverStatus === 'checking') {
-      setScanStep(3);
-    }
+    setIsWaitingForWake(false);
 
     try {
       // Use environment variable for the backend API URL, fallback to localhost for local dev if undefined
@@ -133,6 +162,14 @@ function App() {
       setLoading(false);
     }
   }
+
+  // Effect to auto-start the scan once the server announces it is awake
+  useEffect(() => {
+    if (isWaitingForWake && serverStatus === 'awake' && url) {
+      setIsWaitingForWake(false);
+      checkUrl();
+    }
+  }, [serverStatus, isWaitingForWake]); // intentionally omit checkUrl to prevent stale closure loop
 
   const resetScan = () => {
     setResult(null);
@@ -239,10 +276,10 @@ function App() {
                       <div className="absolute inset-y-2 right-2 flex">
                         <button
                           type="submit"
-                          disabled={loading}
+                          disabled={loading || isWaitingForWake}
                           className="flex h-full items-center justify-center rounded-lg bg-primary px-6 text-sm font-bold text-white shadow-sm hover:bg-primary-dark transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-70 disabled:cursor-wait"
                         >
-                          {loading ? (
+                          {(loading || isWaitingForWake) ? (
                             <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -251,6 +288,21 @@ function App() {
                         </button>
                       </div>
                     </div>
+
+                    {/* Pre-Queue Wake Warning */}
+                    {isWaitingForWake && (
+                      <div className="mt-2 p-4 rounded-xl border border-primary/20 bg-primary/5 flex items-start gap-3 animate-in fade-in slide-in-from-top-2">
+                        <span className="material-symbols-outlined text-primary animate-pulse mt-0.5">cloud_sync</span>
+                        <div className="flex flex-col gap-1">
+                          <p className="text-sm font-bold text-primary">Waking up cloud server...</p>
+                          <p className="text-xs text-text-main dark:text-slate-300 leading-relaxed">
+                            The system is waking up on the free tier. Please wait 1-2 minutes while I set things up for you.<br />
+                            <span className="opacity-70 font-medium text-primary">Your scan will start automatically once ready.</span>
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
                     {error && (
                       <p className="text-sm text-danger mt-2 flex items-center gap-1 animate-in">
                         <span className="material-symbols-outlined text-[16px]">error</span>
