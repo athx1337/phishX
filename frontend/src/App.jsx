@@ -654,6 +654,43 @@ function App() {
                         </div>
                       </div>
                     </div>
+                    {/* VirusTotal Overview Card (Safe View) */}
+                    {result.engines && result.engines.find(e => e.name === "VirusTotal")?.data && (
+                      <div className="flex flex-col gap-6 px-6 md:px-8 pb-6">
+                        <div className="rounded-xl border border-safe-border bg-slate-50/50 dark:bg-safe-surface-dark p-5">
+                          <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/VirusTotal_Logo.svg/1024px-VirusTotal_Logo.svg.png" alt="VirusTotal" className="h-4 object-contain brightness-0 dark:brightness-200 opacity-60" />
+                            VirusTotal Breakdown
+                          </h3>
+                          <div className="flex gap-4">
+                            {(() => {
+                              const vtData = result.engines.find(e => e.name === "VirusTotal").data;
+                              const total = vtData.malicious_count + vtData.suspicious_count + vtData.harmless_count + vtData.undetected_count;
+                              return (
+                                <>
+                                  <div className="flex flex-col flex-1 gap-1">
+                                    <span className="text-xs text-slate-500">Malicious</span>
+                                    <span className={`text-lg font-black ${vtData.malicious_count > 0 ? 'text-danger' : 'text-slate-500 dark:text-safe'}`}>{vtData.malicious_count}</span>
+                                  </div>
+                                  <div className="flex flex-col flex-1 gap-1">
+                                    <span className="text-xs text-slate-500">Suspicious</span>
+                                    <span className={`text-lg font-black ${vtData.suspicious_count > 0 ? 'text-orange-500' : 'text-slate-500 dark:text-safe'}`}>{vtData.suspicious_count}</span>
+                                  </div>
+                                  <div className="flex flex-col flex-1 gap-1">
+                                    <span className="text-xs text-slate-500">Harmless</span>
+                                    <span className="text-lg font-black text-slate-600 dark:text-slate-300">{vtData.harmless_count}</span>
+                                  </div>
+                                  <div className="flex flex-col flex-1 gap-1">
+                                    <span className="text-xs text-slate-500">Total Scans</span>
+                                    <span className="text-lg font-black text-slate-600 dark:text-slate-300">{total}</span>
+                                  </div>
+                                </>
+                              )
+                            })()}
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Gemini Insights Section */}
                     <div className="flex flex-col gap-6 px-6 md:px-8 pb-6">
@@ -929,7 +966,41 @@ function App() {
                           <div className="text-slate-500 italic">No detailed engine data available.</div>
                         )}
                       </div>
-                    </div>
+                    </div>                    {/* VirusTotal Overview Card (Phishing View) */}
+                    {result.engines && result.engines.find(e => e.name === "VirusTotal")?.data && (
+                      <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
+                        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-2">
+                          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/VirusTotal_Logo.svg/1024px-VirusTotal_Logo.svg.png" alt="VirusTotal" className="h-4 object-contain brightness-0 dark:brightness-200 opacity-60" />
+                          VirusTotal Breakdown
+                        </h3>
+                        <div className="flex gap-4">
+                          {(() => {
+                            const vtData = result.engines.find(e => e.name === "VirusTotal").data;
+                            const total = vtData.malicious_count + vtData.suspicious_count + vtData.harmless_count + vtData.undetected_count;
+                            return (
+                              <>
+                                <div className="flex flex-col flex-1 gap-1">
+                                  <span className="text-xs text-slate-500">Malicious</span>
+                                  <span className={`text-lg font-black ${vtData.malicious_count > 0 ? 'text-danger' : 'text-slate-500'}`}>{vtData.malicious_count}</span>
+                                </div>
+                                <div className="flex flex-col flex-1 gap-1">
+                                  <span className="text-xs text-slate-500">Suspicious</span>
+                                  <span className={`text-lg font-black ${vtData.suspicious_count > 0 ? 'text-orange-500' : 'text-slate-500'}`}>{vtData.suspicious_count}</span>
+                                </div>
+                                <div className="flex flex-col flex-1 gap-1">
+                                  <span className="text-xs text-slate-500">Harmless</span>
+                                  <span className="text-lg font-black text-slate-600 dark:text-slate-300">{vtData.harmless_count}</span>
+                                </div>
+                                <div className="flex flex-col flex-1 gap-1">
+                                  <span className="text-xs text-slate-500">Total</span>
+                                  <span className="text-lg font-black text-slate-600 dark:text-slate-300">{total}</span>
+                                </div>
+                              </>
+                            )
+                          })()}
+                        </div>
+                      </div>
+                    )}
 
                     <div className="rounded-xl border border-danger/20 bg-background-light dark:bg-[#2a1414] p-5">
                       <h3 className="text-sm font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-4">Scan Meta data</h3>

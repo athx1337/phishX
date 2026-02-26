@@ -12,6 +12,7 @@ import asyncio
 from fastapi.middleware.cors import CORSMiddleware  # pyre-ignore
 import whois  # pyre-ignore
 import tldextract  # pyre-ignore
+import base64
 
 
 app = FastAPI()
@@ -231,6 +232,51 @@ async def engine_urlhaus(url: str):
         print(f"URLhaus Engine Error: {e}")
         return {"name": "URLhaus", "malicious": False, "data": None, "error": str(e)}
 
+async def engine_virustotal(url: str):
+    """VirusTotal API Engine v3"""
+    vt_key = os.environ.get("VIRUSTOTAL_API_KEY")
+    if not vt_key:
+        return {"name": "VirusTotal", "malicious": False, "data": None, "error": "API key missing"}
+        
+    try:
+        url_id = base64.urlsafe_b64encode(url.encode()).decode().strip("=")
+        endpoint = f"https://www.virustotal.com/api/v3/urls/{url_id}"
+        headers = {
+            "x-apikey": vt_key
+        }
+        async with httpx.AsyncClient() as client:
+            res = await client.get(endpoint, headers=headers, timeout=8.0)
+            if res.status_code == 200:
+                payload = res.json()
+                stats = payload.get("data", {}).get("attributes", {}).get("last_analysis_stats", {})
+                
+                malicious = stats.get("malicious", 0)
+                suspicious = stats.get("suspicious", 0)
+                harmless = stats.get("harmless", 0)
+                undetected = stats.get("undetected", 0)
+                
+                is_malicious = malicious >= 1 or suspicious >= 2
+                
+                return {
+                    "name": "VirusTotal",
+                    "malicious": is_malicious,
+                    "data": {
+                        "malicious_count": malicious,
+                        "suspicious_count": suspicious,
+                        "harmless_count": harmless,
+                        "undetected_count": undetected
+                    },
+                    "error": None
+                }
+            elif res.status_code == 404:
+                # 404 means the URL hasn't been scanned by VT yet or isn't in their database.
+                return {"name": "VirusTotal", "malicious": False, "data": None, "error": "URL not found in DB"}
+            else:
+                return {"name": "VirusTotal", "malicious": False, "data": None, "error": f"HTTP {res.status_code}"}
+    except Exception as e:
+        print(f"VirusTotal Engine Error: {e}")
+        return {"name": "VirusTotal", "malicious": False, "data": None, "error": str(e)}
+
 async def fetch_whois(url: str):
     """Fetch WHOIS data for the domain"""
     try:
@@ -274,7 +320,8 @@ async def verify_url(request: URLRequest):
             engine_xgboost(url),
             engine_cloudflare(url),
             engine_google_safe_browsing(url),
-            engine_urlhaus(url)
+            engine_urlhaus(url),
+            engine_virustotal(url)
         ]
         results, whois_data = await asyncio.gather(
             asyncio.gather(*engine_tasks), # pyre-ignore
@@ -293,7 +340,8 @@ async def verify_url(request: URLRequest):
             engine_outputs.append({
                 "name": r["name"],
                 "malicious": r["malicious"],
-                "error": r.get("error")
+                "error": r.get("error"),
+                "data": r.get("data")
             })
             if r["malicious"]:
                 malicious_count += 1  # pyre-ignore
@@ -311,7 +359,7 @@ async def verify_url(request: URLRequest):
         # For demonstration context, if only XGBoost catches a very obvious mock typo, we let it pass for the demo.
         if malicious_count == 1:
             for r in results: # pyre-ignore
-                if r["malicious"] and r["name"] in ["Google Safe Browsing", "XGBoost AI", "URLhaus"]:
+                if r["malicious"] and r["name"] in ["Google Safe Browsing", "XGBoost AI", "URLhaus", "VirusTotal"]:
                     is_phishing = True
         
         rate_limit_exceeded = False
