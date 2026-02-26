@@ -147,7 +147,7 @@ async def engine_cloudflare(url: str):
                             "certificates": cf_certs,
                             "requests": cf_requests,
                             "risks": cf_risks,
-                            "links": lists_obj.get("linkDomains", [])
+                            "links": lists_obj.get("urls", [])
                         }
                     }
             return {"name": "Cloudflare Radar", "malicious": False, "data": None, "error": "Timeout polling scan"}
