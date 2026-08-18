@@ -13,44 +13,44 @@
 
 ---
 
-**phishX** is a serverless, educational cybersecurity engine designed to analyze suspicious URLs for phishing risks, malware, and malicious redirects in real-time. It operates as an orchestrator across multiple scanning models and intelligence databases, combining deterministic blocklists, reputation feeds, heuristic scoring, and generative AI to deliver a unified consensus verdict.
+**phishX** is a serverless web app that scans suspicious URLs for phishing and malware in real-time. By checking multiple security databases, using AI, and analyzing the URL's structure, it gives you a clear verdict on whether a site is safe to visit.
 
 ---
 
-## 🧠 Core Architecture & Engine Orchestration
+## 🧠 How It Works (The Multi-Engine Scanner)
 
-When a target URL is submitted, the backend worker parallelizes queries across **five threat intelligence layers** to form a consensus determination:
+When you submit a link, the backend runs it through **five security checks** at the same time:
 
-| Detection Engine | Verification Mechanism |
+| Detection Engine | What it checks |
 | :--- | :--- |
-| **🔍 XGBoost AI (Heuristic Simulation)** | Performs a real-time structural parsing of the address bar. It inspects parameters such as IP hostname usage, `@` symbol inclusions, redirection indicators (`//`), presence of `https` strings within subdomains, URL shortening flags, and netloc prefix/suffix hyphens. |
-| **🛡️ Google Safe Browsing API** | Queries Google's threat registry for known malware, social engineering campaigns (phishing), and unwanted or harmful software. |
-| **🦠 URLhaus (Abuse.ch)** | Cross-references active database feeds tracking malicious distribution endpoints to intercept zero-day downloads and remote payloads. |
-| **🌐 VirusTotal v3 API** | Queries VirusTotal database records to aggregate vendor scan flags and retrieve registrars, WHOIS data, and registration timelines. |
-| **📡 Cloudflare Radar Scanner** | Dispatches the URL to Cloudflare's URL scanner API, running a headless browser to extract live network requests, active security violations, certificate chains, and server physical location details. |
+| **🔍 Heuristic Analyzer (XGBoost Rules)** | Analyzes the URL's structure for red flags (suspicious characters like `@`, excessive redirects, netloc hyphens, and link shortening). |
+| **🛡️ Google Safe Browsing** | Checks Google's database of known unsafe websites (phishing, malware, etc.). |
+| **🦠 URLhaus** | Checks the Abuse.ch database for domains hosting active malware or downloads. |
+| **🌐 VirusTotal** | Combines checks from dozens of security vendors and gathers domain information (like domain age and registrar). |
+| **📡 Cloudflare Radar Scanner** | Simulates visiting the page to extract active security issues, TLS certificates, and hosting information. |
 
-### ⚖️ The Consensus Algorithm
+### ⚖️ The Verdict Decision
 
-The final verdict is derived through a hybrid voting system:
-1. **Deterministic Overrides**: If high-confidence blocklists (**Google Safe Browsing** or **URLhaus**) confirm a positive threat signature, the URL is immediately flagged as **Malicious**.
-2. **Consensus Voting**: If blocklists are clean, the URL is flagged as **Malicious** if **two or more** of the individual engines flag it. Otherwise, it is marked **Safe**.
+The final result is decided using a simple voting system:
+1. **Immediate Block**: If Google Safe Browsing or URLhaus flags the link as malicious, it is immediately marked as **unsafe**.
+2. **Engine Vote**: If the databases are clean, the URL is flagged as **unsafe** if at least **two** other engines agree it is suspicious. Otherwise, it is marked **safe**.
 
-### 🤖 Generative AI Synthesis
+### 🤖 AI Assessment
 
-Once the engines finish scanning, the system compiles the structured threat data (ASN origin, registrar records, IP address, engine results) and dispatches it to **Google Gemini 2.5 Flash**. The AI generates a concise, 2-3 sentence technical assessment explaining the risk factors or verifying the domain safety.
+After scanning, **Google Gemini 2.5 Flash** reviews the gathered data (such as hosting info and engine flags) and explains *why* the URL is safe or unsafe in a few easy-to-read sentences.
 
 ---
 
 ## 🛠️ Stack & Technologies
 
-* **Backend**: Serverless architecture running on [Cloudflare Workers](https://workers.cloudflare.com/) via the [Hono](https://hono.dev/) framework.
+* **Backend**: Serverless API running on [Cloudflare Workers](https://workers.cloudflare.com/) built with the [Hono](https://hono.dev/) framework.
 * **Frontend**: Single Page Application built on [React](https://react.dev/) + [Vite](https://vite.dev/) and styled with [Tailwind CSS](https://tailwindcss.com/).
 
 ---
 
 ## 🚀 Local Development Setup
 
-Follow these steps to run both services locally.
+Follow these steps to run the project locally.
 
 ### 1. Clone the Repository
 ```bash
@@ -58,8 +58,8 @@ git clone https://github.com/athx1337/phishX.git
 cd phishX
 ```
 
-### 2. Configure the Backend Worker (`backend-worker`)
-Cloudflare Workers use `.dev.vars` to store secret environment variables locally. Create a file named `.dev.vars` inside the `backend-worker/` directory:
+### 2. Set Up the Backend (`backend-worker`)
+Cloudflare Workers use `.dev.vars` to store secret API keys locally. Create a file named `.dev.vars` inside the `backend-worker/` directory:
 
 ```env
 GEMINI_API_KEY=your_gemini_api_key
@@ -70,21 +70,21 @@ CLOUDFLARE_ACCOUNT_ID=your_cloudflare_account_id
 CLOUDFLARE_API_TOKEN=your_cloudflare_api_token
 ```
 
-Install dependencies and boot the local worker server (runs on `http://localhost:8787` by default):
+Install dependencies and start the local development worker (runs on `http://localhost:8787`):
 ```bash
 cd backend-worker
 npm install
 npm run dev
 ```
 
-### 3. Configure the Frontend (`frontend`)
-Create a `.env` file in the `frontend/` directory to bind it to the local worker API:
+### 3. Set Up the Frontend (`frontend`)
+Create a `.env` file in the `frontend/` directory to point to the local worker API:
 
 ```env
 VITE_API_URL=http://localhost:8787
 ```
 
-Install dependencies and start the React development server:
+Install dependencies and start the React dev server:
 ```bash
 cd ../frontend
 npm install
@@ -94,16 +94,16 @@ Open `http://localhost:5173` in your browser.
 
 ---
 
-## 🌐 Production Deployment
+## 🌐 Deploying to Production
 
-### Backend Worker
-Deploy the backend Hono worker to your Cloudflare account using Wrangler:
+### Deploying the Backend
+Deploy the worker backend to your Cloudflare account:
 ```bash
 cd backend-worker
 npx wrangler deploy
 ```
 
-Securely upload your API keys to the production environment:
+Add your production API keys securely using wrangler secrets:
 ```bash
 npx wrangler secret put GEMINI_API_KEY
 npx wrangler secret put GOOGLE_SAFE_BROWSING_API_KEY
@@ -113,13 +113,13 @@ npx wrangler secret put CLOUDFLARE_ACCOUNT_ID
 npx wrangler secret put CLOUDFLARE_API_TOKEN
 ```
 
-### Frontend
-Build and export the React app static files to deploy to hosts like Vercel or Netlify:
+### Deploying the Frontend
+Build and export the React app static files to deploy to Vercel, Netlify, or similar hosts:
 ```bash
 cd frontend
 npm run build
 ```
-Make sure to configure your production backend URL via the `VITE_API_URL` environment variable in your frontend hosting dashboard.
+Make sure to set the `VITE_API_URL` environment variable in your frontend hosting dashboard to point to your live Cloudflare Worker URL.
 
 ---
 
@@ -129,13 +129,11 @@ The foundational Machine Learning model structure and heuristic feature extracti
 * **Phishing Website Detection by Machine Learning Techniques**  
   [github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques](https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques)
 
-This research was extended to create the multi-engine, serverless full-stack scanner present in this repository.
-
 ---
 
 ## ⚖️ Legal & Disclaimer
 
 * **Educational Sandbox Only**: This project is built strictly for demonstration and research purposes.
 * **No Warranty**: Predictive models and threat feeds are subject to false positives and false negatives. 
-* **Zero Liability**: Do not rely on this tool as your sole security decision system. The authors are not responsible for any damages or network exploits.
-* **Data Processing**: Submitted URLs are processed transiently to generate real-time metrics. No user data is stored or logged.
+* **Zero Liability**: Do not rely on this tool as your sole security firewall. The authors are not responsible for any damages.
+* **Data Processing**: Submitted URLs are processed transiently. No user data is stored or logged.
