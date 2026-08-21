@@ -171,28 +171,35 @@ async function engine_cloudflare(urls: string[], cfAccountId: string, cfApiToken
 	if (!cfAccountId || !cfApiToken) {
 		return { name: "Cloudflare Radar", malicious: false, data: null, error: "API keys missing" };
 	}
-	const url = urls[0]; // Scan the primary (HTTPS default) URL
 	const headers = {
 		"Authorization": `Bearer ${cfApiToken}`,
 		"Content-Type": "application/json"
 	};
 	try {
 		const submitUrl = `https://api.cloudflare.com/client/v4/accounts/${cfAccountId}/urlscanner/scan`;
-		const submitRes = await fetch(submitUrl, {
-			method: "POST",
-			headers,
-			body: JSON.stringify({ url })
-		});
-		
 		let scanUuid = null;
-		if (submitRes.status === 200) {
-			const payload: any = await submitRes.json();
-			scanUuid = payload.result?.uuid;
-		} else if (submitRes.status === 409) {
-			const payload: any = await submitRes.json();
-			const tasks = payload.result?.tasks || [];
-			if (tasks.length > 0) {
-				scanUuid = tasks[0].uuid;
+		
+		for (const target of urls) {
+			try {
+				const submitRes = await fetch(submitUrl, {
+					method: "POST",
+					headers,
+					body: JSON.stringify({ url: target })
+				});
+				if (submitRes.status === 200) {
+					const payload: any = await submitRes.json();
+					scanUuid = payload.result?.uuid;
+					if (scanUuid) break;
+				} else if (submitRes.status === 409) {
+					const payload: any = await submitRes.json();
+					const tasks = payload.result?.tasks || [];
+					if (tasks.length > 0) {
+						scanUuid = tasks[0].uuid;
+						break;
+					}
+				}
+			} catch (e) {
+				// try next url in fallback list
 			}
 		}
 		
