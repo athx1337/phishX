@@ -281,12 +281,20 @@ function App() {
                           : 'No security threats were identified by our analytics engines.'}
                       </p>
                       
-                      {result.cloudflare_report && (
-                        <div className="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded bg-white/[0.02] border border-white/5 text-[#8a8a92] font-mono text-[9px] tracking-wider uppercase">
-                          <span className="material-symbols-outlined text-[10px] text-[#8b5cf6]">shield</span>
-                          <span>Verified via {result.cloudflare_report.asn}</span>
-                        </div>
-                      )}
+                      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                        {result.dual_protocol && (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 text-[#c084fc] font-mono text-[9px] tracking-wider uppercase font-bold">
+                            <span className="material-symbols-outlined text-[10px] text-[#8b5cf6]">sync_alt</span>
+                            <span>HTTP & HTTPS TESTED</span>
+                          </div>
+                        )}
+                        {result.cloudflare_report && (
+                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white/[0.02] border border-white/5 text-[#8a8a92] font-mono text-[9px] tracking-wider uppercase">
+                            <span className="material-symbols-outlined text-[10px] text-[#8b5cf6]">shield</span>
+                            <span>Verified via {result.cloudflare_report.asn}</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
 

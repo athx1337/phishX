@@ -29,13 +29,13 @@ export default function URLScanner({
               </div>
               <input
                 id="url-input"
-                type="url"
+                type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
                 required
                 disabled={loading || isWaitingForWake}
-                className="block w-full rounded border border-white/10 bg-black/40 py-4 pl-12 pr-4 text-sm text-white placeholder:text-[#8a8a92]/40 focus:border-[#8b5cf6]/40 focus:ring-1 focus:ring-[#8b5cf6]/20 transition-all outline-none"
-                placeholder="https://example.com/suspicious-link"
+                className="block w-full rounded border border-white/10 bg-black/40 py-4 pl-12 pr-4 text-sm text-white placeholder:text-[#8a8a92]/40 focus:border-[#8b5cf6]/40 focus:ring-1 focus:ring-[#8b5cf6]/20 transition-all outline-none font-mono text-xs sm:text-sm"
+                placeholder="example.com or https://example.com/..."
                 autoComplete="off"
                 spellCheck="false"
               />

@@ -24,7 +24,7 @@ app.use('*', cors({
 }));
 
 // 1. Google Safe Browsing API integration
-async function engine_google_safe_browsing(url: string, apiKey: string) {
+async function engine_google_safe_browsing(urls: string[], apiKey: string) {
 	if (!apiKey) return { name: "Google Safe Browsing", malicious: false, data: null, error: "API key missing" };
 	const endpoint = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${apiKey}`;
 	const body = {
@@ -33,7 +33,7 @@ async function engine_google_safe_browsing(url: string, apiKey: string) {
 			threatTypes: ["MALWARE", "SOCIAL_ENGINEERING", "UNWANTED_SOFTWARE", "POTENTIALLY_HARMFUL_APPLICATION"],
 			platformTypes: ["ANY_PLATFORM"],
 			threatEntryTypes: ["URL"],
-			threatEntries: [{ url }]
+			threatEntries: urls.map(u => ({ url: u }))
 		}
 	};
 	try {
@@ -45,7 +45,7 @@ async function engine_google_safe_browsing(url: string, apiKey: string) {
 		if (res.ok) {
 			const payload: any = await res.json();
 			const matches = payload.matches || [];
-			return { name: "Google Safe Browsing", malicious: matches.length > 0, data: null, error: null };
+			return { name: "Google Safe Browsing", malicious: matches.length > 0, data: { matches }, error: null };
 		} else {
 			const text = await res.text();
 			return { name: "Google Safe Browsing", malicious: false, data: null, error: `HTTP ${res.status}: ${text.substring(0, 100)}` };
@@ -56,98 +56,122 @@ async function engine_google_safe_browsing(url: string, apiKey: string) {
 }
 
 // 2. URLhaus API integration
-async function engine_urlhaus(url: string, apiKey: string) {
+async function engine_urlhaus(urls: string[], apiKey: string) {
 	if (!apiKey) return { name: "URLhaus", malicious: false, data: null, error: "API key missing" };
-	const endpoint = "https://urlhaus-api.abuse.ch/v1/url/";
-	const body = new URLSearchParams();
-	body.append("url", url);
-	try {
-		const res = await fetch(endpoint, {
-			method: "POST",
-			headers: {
-				"Auth-Key": apiKey,
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: body.toString()
-		});
-		if (res.ok) {
-			const payload: any = await res.json();
-			const status = payload.query_status || "no_results";
-			if (status === "ok") {
-				return {
-					name: "URLhaus",
-					malicious: true,
-					data: {
-						threat: payload.threat || "Malware payload",
-						status: payload.url_status || "Unknown"
-					},
-					error: null
-				};
-			} else if (status === "no_results") {
-				return { name: "URLhaus", malicious: false, data: null, error: null };
+	
+	const checkSingle = async (url: string) => {
+		const endpoint = "https://urlhaus-api.abuse.ch/v1/url/";
+		const body = new URLSearchParams();
+		body.append("url", url);
+		try {
+			const res = await fetch(endpoint, {
+				method: "POST",
+				headers: {
+					"Auth-Key": apiKey,
+					"Content-Type": "application/x-www-form-urlencoded"
+				},
+				body: body.toString()
+			});
+			if (res.ok) {
+				const payload: any = await res.json();
+				const status = payload.query_status || "no_results";
+				if (status === "ok") {
+					return {
+						malicious: true,
+						data: {
+							threat: payload.threat || "Malware payload",
+							status: payload.url_status || "Unknown",
+							url
+						},
+						error: null
+					};
+				} else if (status === "no_results") {
+					return { malicious: false, data: null, error: null };
+				} else {
+					return { malicious: false, data: null, error: `Status: ${status}` };
+				}
 			} else {
-				return { name: "URLhaus", malicious: false, data: null, error: `Status: ${status}` };
+				return { malicious: false, data: null, error: `HTTP ${res.status}` };
 			}
-		} else {
-			return { name: "URLhaus", malicious: false, data: null, error: `HTTP ${res.status}` };
+		} catch (e: any) {
+			return { malicious: false, data: null, error: e.message };
 		}
-	} catch (e: any) {
-		return { name: "URLhaus", malicious: false, data: null, error: e.message };
+	};
+
+	const results = await Promise.all(urls.map(u => checkSingle(u)));
+	const maliciousMatch = results.find(r => r.malicious);
+	if (maliciousMatch) {
+		return { name: "URLhaus", malicious: true, data: maliciousMatch.data, error: null };
 	}
+	const firstError = results.find(r => r.error)?.error || null;
+	return { name: "URLhaus", malicious: false, data: null, error: firstError };
 }
 
 // 3. VirusTotal API integration (v3 URLs endpoint)
-async function engine_virustotal(url: string, apiKey: string) {
+async function engine_virustotal(urls: string[], apiKey: string) {
 	if (!apiKey) return { name: "VirusTotal", malicious: false, data: null, error: "API key missing" };
-	try {
-		// base64url encoding without trailing padding '=' character
-		const urlId = btoa(url)
-			.replace(/\+/g, '-')
-			.replace(/\//g, '_')
-			.replace(/=+$/, '');
-		
-		const endpoint = `https://www.virustotal.com/api/v3/urls/${urlId}`;
-		const res = await fetch(endpoint, {
-			method: "GET",
-			headers: { "x-apikey": apiKey }
-		});
-		if (res.status === 200) {
-			const payload: any = await res.json();
-			const stats = payload.data?.attributes?.last_analysis_stats || {};
-			const rawWhois = payload.data?.attributes?.whois || "";
-			const malicious = stats.malicious || 0;
-			const suspicious = stats.suspicious || 0;
-			const harmless = stats.harmless || 0;
-			const undetected = stats.undetected || 0;
+
+	const checkSingle = async (url: string) => {
+		try {
+			// base64url encoding without trailing padding '=' character
+			const urlId = btoa(url)
+				.replace(/\+/g, '-')
+				.replace(/\//g, '_')
+				.replace(/=+$/, '');
 			
-			const isMalicious = malicious >= 1 || suspicious >= 2;
-			return {
-				name: "VirusTotal",
-				malicious: isMalicious,
-				data: {
-					malicious_count: malicious,
-					suspicious_count: suspicious,
-					harmless_count: harmless,
-					undetected_count: undetected,
-					whois_raw: rawWhois
-				},
-				error: null
-			};
-		} else if (res.status === 404) {
-			return { name: "VirusTotal", malicious: false, data: null, error: "URL not found in DB" };
-		} else {
-			return { name: "VirusTotal", malicious: false, data: null, error: `HTTP ${res.status}` };
+			const endpoint = `https://www.virustotal.com/api/v3/urls/${urlId}`;
+			const res = await fetch(endpoint, {
+				method: "GET",
+				headers: { "x-apikey": apiKey }
+			});
+			if (res.status === 200) {
+				const payload: any = await res.json();
+				const stats = payload.data?.attributes?.last_analysis_stats || {};
+				const rawWhois = payload.data?.attributes?.whois || "";
+				const malicious = stats.malicious || 0;
+				const suspicious = stats.suspicious || 0;
+				const harmless = stats.harmless || 0;
+				const undetected = stats.undetected || 0;
+				
+				const isMalicious = malicious >= 1 || suspicious >= 2;
+				return {
+					malicious: isMalicious,
+					data: {
+						malicious_count: malicious,
+						suspicious_count: suspicious,
+						harmless_count: harmless,
+						undetected_count: undetected,
+						whois_raw: rawWhois,
+						url
+					},
+					error: null
+				};
+			} else if (res.status === 404) {
+				return { malicious: false, data: null, error: "URL not found in DB" };
+			} else {
+				return { malicious: false, data: null, error: `HTTP ${res.status}` };
+			}
+		} catch (e: any) {
+			return { malicious: false, data: null, error: e.message };
 		}
-	} catch (e: any) {
-		return { name: "VirusTotal", malicious: false, data: null, error: e.message };
+	};
+
+	const results = await Promise.all(urls.map(u => checkSingle(u)));
+	const maliciousMatch = results.find(r => r.malicious);
+	if (maliciousMatch) {
+		return { name: "VirusTotal", malicious: true, data: maliciousMatch.data, error: null };
 	}
+	const validData = results.find(r => r.data)?.data || null;
+	const firstError = results.find(r => r.error)?.error || null;
+	return { name: "VirusTotal", malicious: false, data: validData, error: validData ? null : firstError };
 }
 
 // 4. Cloudflare Headless URL Scanner API integration
-async function engine_cloudflare(url: string, cfAccountId: string, cfApiToken: string) {
+async function engine_cloudflare(urls: string[], cfAccountId: string, cfApiToken: string) {
 	if (!cfAccountId || !cfApiToken) {
 		return { name: "Cloudflare Radar", malicious: false, data: null, error: "API keys missing" };
 	}
+	const url = urls[0]; // Scan the primary (HTTPS default) URL
 	const headers = {
 		"Authorization": `Bearer ${cfApiToken}`,
 		"Content-Type": "application/json"
@@ -240,7 +264,7 @@ async function engine_cloudflare(url: string, cfAccountId: string, cfApiToken: s
 // 5. Local XGBoost Heuristics extraction simulator
 function extractFeatures(url: string): number[] {
 	const features = [];
-	const hostname = url.split('/')[2] || '';
+	const hostname = url.replace(/^https?:\/\//i, '').split('/')[0] || '';
 	
 	// 1. Have_IP
 	const hasIp = /^[0-9.]+$|^\[[a-fA-F0-9:]+\]$/.test(hostname) ? 1 : 0;
@@ -272,15 +296,26 @@ function extractFeatures(url: string): number[] {
 	return features;
 }
 
-function engine_xgboost(url: string) {
-	const features = extractFeatures(url);
-	const sum = features.reduce((a, b) => a + b, 0);
-	const isPhishing = sum >= 2 || url.includes('login') || url.includes('verify') || url.includes('phish') || url.includes('update');
+function engine_xgboost(urls: string[]) {
+	let maxPhishing = false;
+	let highestFeatures = [0, 0, 0, 0, 0, 0, 0, 0];
+
+	for (const url of urls) {
+		const features = extractFeatures(url);
+		const sum = features.reduce((a, b) => a + b, 0);
+		const isPhishing = sum >= 2 || url.includes('login') || url.includes('verify') || url.includes('phish') || url.includes('update');
+		if (isPhishing) {
+			maxPhishing = true;
+			highestFeatures = features;
+			break;
+		}
+		highestFeatures = features;
+	}
 	
 	return {
 		name: "XGBoost AI",
-		malicious: isPhishing,
-		data: { features },
+		malicious: maxPhishing,
+		data: { features: highestFeatures },
 		error: null
 	};
 }
@@ -300,7 +335,7 @@ function parseWhoisFromVT(vtRawWhois: string) {
 		}
 	}
 	
-	return { registrar, creationDate };
+	return { registrar, creation_date: creationDate };
 }
 
 // Ping endpoint
@@ -311,7 +346,24 @@ app.get('/api/ping', (c) => {
 // Verify endpoint
 app.post('/api/verify', async (c) => {
 	const body = await c.req.json();
-	const targetUrl = body.url || "";
+	const rawInput = (body.url || "").trim();
+	if (!rawInput) {
+		return c.json({ error: "URL is required" }, 400);
+	}
+
+	let targetUrls: string[] = [];
+	let primaryUrl = "";
+	let isDualProtocol = false;
+
+	if (rawInput.startsWith('http://') || rawInput.startsWith('https://')) {
+		primaryUrl = rawInput;
+		targetUrls = [rawInput];
+	} else {
+		// Default to https://, and scan both https:// and http://
+		primaryUrl = `https://${rawInput}`;
+		targetUrls = [`https://${rawInput}`, `http://${rawInput}`];
+		isDualProtocol = true;
+	}
 	
 	const env = c.env as any;
 	const cleanKey = (key: any) => {
@@ -327,15 +379,15 @@ app.post('/api/verify', async (c) => {
 	const geminiKey = cleanKey(env?.GEMINI_API_KEY || "");
 
 	// Special check for Gist malware test link
-	const isGistMalware = targetUrl.includes('gist.githubusercontent.com') && targetUrl.includes('raw');
+	const isGistMalware = targetUrls.some(u => u.includes('gist.githubusercontent.com') && u.includes('raw'));
 
-	// Run all threat checks concurrently
+	// Run all threat checks concurrently across all target protocol variants
 	const [gsbRes, urlhausRes, vtRes, cfRes, xgbRes] = await Promise.all([
-		engine_google_safe_browsing(targetUrl, googleKey),
-		engine_urlhaus(targetUrl, urlhausKey),
-		engine_virustotal(targetUrl, vtKey),
-		engine_cloudflare(targetUrl, cfAccountId, cfApiToken),
-		Promise.resolve(engine_xgboost(targetUrl))
+		engine_google_safe_browsing(targetUrls, googleKey),
+		engine_urlhaus(targetUrls, urlhausKey),
+		engine_virustotal(targetUrls, vtKey),
+		engine_cloudflare(targetUrls, cfAccountId, cfApiToken),
+		Promise.resolve(engine_xgboost(targetUrls))
 	]);
 
 	// Consensus calculation (override by blocklists GS/URLhaus or >= 2 engines flag malicious)
@@ -375,16 +427,16 @@ app.post('/api/verify', async (c) => {
 					validTo: 1740873600
 				}
 			],
-			requests: [{ method: "GET", status: 200, url: targetUrl, primary_ip: "185.199.108.133" }],
-			risks: [{ name: "URLhaus Malware Distribution Blocklist", description: "This specific URL is cataloged in the Abuse.ch URLhaus threat feed as hosting remote malware payloads.", url: targetUrl }],
+			requests: [{ method: "GET", status: 200, url: primaryUrl, primary_ip: "185.199.108.133" }],
+			risks: [{ name: "URLhaus Malware Distribution Blocklist", description: "This specific URL is cataloged in the Abuse.ch URLhaus threat feed as hosting remote malware payloads.", url: primaryUrl }],
 			links: []
 		} : {
 			asn: "AS13335 CLOUDFLARENET",
 			ip: "104.21.57.174",
 			server_location: "United States (US)",
 			certificates: [{ subjectName: "*.phish-x.workers.dev", issuer: "Cloudflare Inc ECC CA-3", validFrom: 1715497200, validTo: 1747052400 }],
-			requests: [{ method: "GET", status: 200, url: targetUrl, primary_ip: "104.21.57.174" }],
-			risks: isPhishing ? [{ name: "Phishing Pattern Match", description: "The layout contains social engineering keywords matching known credential harvesting campaign templates.", url: targetUrl }] : [],
+			requests: [{ method: "GET", status: 200, url: primaryUrl, primary_ip: "104.21.57.174" }],
+			risks: isPhishing ? [{ name: "Phishing Pattern Match", description: "The layout contains social engineering keywords matching known credential harvesting campaign templates.", url: primaryUrl }] : [],
 			links: ["google.com", "cloudflare.com"]
 		};
 	}
@@ -393,10 +445,11 @@ app.post('/api/verify', async (c) => {
 	let geminiAnalysis = "";
 	if (geminiKey) {
 		try {
-			const prompt = `You are an expert cybersecurity URL analysis system. I am providing you with a URL: ${targetUrl}.
+			const prompt = `You are an expert cybersecurity URL analysis system. I am providing you with a URL: ${primaryUrl}${isDualProtocol ? ' (Checked both HTTP and HTTPS protocols)' : ''}.
 My Multi-Engine Consensus Algorithm classified this URL as: ${isPhishing ? 'PHISHING/MALICIOUS' : 'SAFE/CLEAN'}.
 Details:
 - Consensus: ${maliciousCount} / 5 engines flagged it.
+- Protocols Evaluated: ${targetUrls.join(', ')}
 - Registrar: ${whoisData.registrar} (Created: ${whoisData.creation_date})
 - Cloudflare ASN: ${cloudflareReport.asn} (IP: ${cloudflareReport.ip})
 Please provide a brief, professional 2-3 sentence technical assessment explaining the risk factors or why this URL is safe. Keep the response technical and concise.`;
@@ -420,14 +473,16 @@ Please provide a brief, professional 2-3 sentence technical assessment explainin
 
 	if (!geminiAnalysis) {
 		geminiAnalysis = isGistMalware
-			? `The URL '${targetUrl}' was flagged by URLhaus as an active malware distribution channel. Resolving to a raw GitHub Gist file, it has been identified as a staging point for remote access tools or malicious script configurations.`
+			? `The URL '${primaryUrl}' was flagged by URLhaus as an active malware distribution channel. Resolving to a raw GitHub Gist file, it has been identified as a staging point for remote access tools or malicious script configurations.`
 			: (isPhishing 
-				? `The URL '${targetUrl}' was assessed by our AI engine as HIGH RISK. It exhibits structures mimicking secure sign-in screens, lacks verified registrar credentials, and uses suspicious keyword sequences frequently associated with credentials harvesting campaigns.`
-				: `The URL '${targetUrl}' was scanned and verified as CLEAN. The domain registry aligns with standard operations, TLS certificates are fully valid, and no malicious signatures were returned from active database queries.`);
+				? `The target '${primaryUrl}' was assessed by our AI engine as HIGH RISK across verified protocols. It exhibits structures mimicking secure sign-in screens, lacks verified registrar credentials, and uses suspicious keyword sequences frequently associated with credentials harvesting campaigns.`
+				: `The target '${primaryUrl}' was scanned across ${isDualProtocol ? 'both HTTP and HTTPS protocols' : 'secure TLS'} and verified as CLEAN. The domain registry aligns with standard operations, TLS certificates are valid, and no malicious signatures were returned from active threat database queries.`);
 	}
 
 	return c.json({
-		url: targetUrl,
+		url: primaryUrl,
+		checked_urls: targetUrls,
+		dual_protocol: isDualProtocol,
 		is_phishing: isPhishing,
 		features_extracted: xgbRes.data?.features || [0, 0, 0, 0, 0, 0, 0, 0],
 		gemini_analysis: geminiAnalysis,
