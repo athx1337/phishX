@@ -31,6 +31,7 @@ export default {
       fontFamily: {
         display: ["Space Grotesk", "sans-serif"],
         sans: ["Noto Sans", "sans-serif"],
+        serif: ["'Instrument Serif'", "'Playfair Display'", "Georgia", "serif"],
       },
       borderRadius: {
         DEFAULT: "0.25rem",

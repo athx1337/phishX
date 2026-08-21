@@ -29,6 +29,19 @@
     filter: drop-shadow(0px 4px 12px rgba(168, 85, 247, 0.25));
   }
 
+  .phishing-italic {
+    font-family: 'Instrument Serif', 'Playfair Display', Georgia, serif;
+    font-style: italic;
+    background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 35%, #a855f7 70%, #7e22ce 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0px 0px 30px rgba(168, 85, 247, 0.5));
+    line-height: 1.05;
+    padding-bottom: 0.12em;
+    padding-top: 0.05em;
+    display: inline-block;
+  }
+
   .purple-glow {
     background: radial-gradient(circle at center, rgba(139, 92, 246, 0.12) 0%, rgba(5, 5, 7, 0) 70%);
   }

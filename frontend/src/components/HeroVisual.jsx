@@ -7,8 +7,14 @@ export default function HeroVisual() {
   useEffect(() => {
     if (!mountRef.current) return;
 
-    const width = mountRef.current.clientWidth;
-    const height = mountRef.current.clientHeight;
+    // Clear any previous canvas on mount / HMR
+    const container = mountRef.current;
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
+    }
+
+    const width = container.clientWidth || 450;
+    const height = container.clientHeight || 450;
 
     // 1. Scene setup
     const scene = new THREE.Scene();
@@ -276,10 +282,8 @@ export default function HeroVisual() {
   }, []);
 
   return (
-    <div 
-      ref={mountRef} 
-      className="w-full h-full min-h-[300px] md:min-h-[500px] relative flex items-center justify-center pointer-events-none select-none z-10"
-    >
+    <div className="w-full h-full min-h-[350px] md:min-h-[480px] relative flex items-center justify-center pointer-events-none select-none z-10">
+      <div ref={mountRef} className="absolute inset-0 w-full h-full" />
       {/* Decorative technical coordinate overlay */}
       <div className="absolute top-4 left-4 font-mono text-[8px] text-[#8a8a92]/40 tracking-wider hidden md:block">
         GRID_LOC // 45.92.83.1A <br />

@@ -197,10 +197,16 @@ function App() {
                     /// REAL-TIME URL ANALYSIS
                   </span>
                   
-                  <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[0.9] tracking-tighter uppercase flex flex-col">
-                    <span>DETECT</span>
-                    <span className="text-[#8b5cf6]">PHISHING.</span>
-                    <span className="metallic-text">STAY AHEAD.</span>
+                  <h1 className="flex flex-col tracking-tight uppercase select-none">
+                    <span className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white/95">
+                      DETECT
+                    </span>
+                    <span className="phishing-italic text-6xl sm:text-7xl md:text-8xl lg:text-[6.5rem] tracking-tight font-normal my-0 normal-case">
+                      phishing.
+                    </span>
+                    <span className="metallic-text text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
+                      STAY AHEAD.
+                    </span>
                   </h1>
 
                   <p className="text-[#8a8a92] text-sm max-w-lg leading-relaxed pt-2">
