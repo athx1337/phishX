@@ -70,12 +70,12 @@ export default function Navbar({ serverStatus, onNavClick }) {
         {/* Left Side — Logo */}
         <div ref={logoRef} className="flex items-center gap-4">
           <div className="flex flex-col">
-            <span className="font-sans font-bold tracking-[0.2em] text-lg text-white flex">
+            <span className="font-gothic-block font-black tracking-widest text-2xl text-white flex leading-none">
               {'PHISHX'.split('').map((c, i) => (
                 <span key={i} className="logo-char inline-block" style={{ opacity: 0 }}>{c}</span>
               ))}
             </span>
-            <span className="font-mono text-[9px] tracking-widest text-[#8a8a92] uppercase mt-0.5">
+            <span className="font-techmono text-[9px] tracking-widest text-[#8a8a92] uppercase mt-1">
               BY ATHX1337
             </span>
           </div>

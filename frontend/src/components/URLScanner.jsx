@@ -108,7 +108,7 @@ export default function URLScanner({
 
         <div className="flex flex-col gap-2">
           <label
-            className="font-mono text-[10px] font-bold text-[#8a8a92] uppercase tracking-widest"
+            className="font-gothic-block text-sm font-black text-[#8a8a92] uppercase tracking-widest"
             htmlFor="url-input"
           >
             ENTER URL TO SCAN
@@ -126,7 +126,7 @@ export default function URLScanner({
                 onChange={e => setUrl(e.target.value)}
                 required
                 disabled={loading || isWaitingForWake}
-                className="block w-full rounded border border-white/10 bg-black/40 py-4 pl-12 pr-4 text-sm text-white placeholder:text-[#8a8a92]/40 focus:border-[#8b5cf6]/40 focus:ring-1 focus:ring-[#8b5cf6]/20 transition-all outline-none font-mono text-xs sm:text-sm"
+                className="block w-full rounded border border-white/10 bg-black/40 py-4 pl-12 pr-4 text-sm text-white placeholder:text-[#8a8a92]/40 focus:border-[#8b5cf6]/40 focus:ring-1 focus:ring-[#8b5cf6]/20 transition-all outline-none font-techmono text-xs sm:text-sm"
                 placeholder="example.com or https://example.com/..."
                 autoComplete="off"
                 spellCheck="false"
@@ -137,7 +137,7 @@ export default function URLScanner({
               ref={btnRef}
               type="submit"
               disabled={loading || isWaitingForWake}
-              className="flex items-center justify-center rounded bg-[#8b5cf6] hover:bg-[#8b5cf6]/90 text-white px-8 py-4 text-xs font-mono tracking-widest uppercase font-bold transition-colors disabled:opacity-50 disabled:cursor-wait shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
+              className="flex items-center justify-center rounded bg-[#8b5cf6] hover:bg-[#8b5cf6]/90 text-white px-10 py-4 text-base font-gothic-block tracking-widest uppercase font-black transition-colors disabled:opacity-50 disabled:cursor-wait shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
               onMouseEnter={e => {
                 if (!loading && !isWaitingForWake) {
                   animate(e.currentTarget, { scale: 1.04, duration: 180, easing: 'easeOutCubic' });

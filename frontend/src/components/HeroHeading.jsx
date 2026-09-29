@@ -93,14 +93,14 @@ export default function HeroHeading() {
       </span>
 
       {/* Headline Typewriter */}
-      <h1 className="flex flex-col tracking-tight uppercase select-none overflow-hidden min-h-[220px]">
+      <h1 className="flex flex-col tracking-tighter uppercase select-none overflow-hidden min-h-[180px] md:min-h-[220px]">
         {step >= 1 && (
           <TypewriterText
             text="DETECT"
             speed={60}
             showCursor={step === 1}
             onComplete={() => setStep(2)}
-            className="text-3xl sm:text-4xl md:text-5xl font-gothic-block font-black tracking-tight text-white/95 inline-block"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-gothic-block font-black tracking-tighter text-white inline-block leading-none"
           />
         )}
 
@@ -110,7 +110,7 @@ export default function HeroHeading() {
             speed={80}
             showCursor={step === 2}
             onComplete={() => setStep(3)}
-            className="phishing-italic text-6xl sm:text-7xl md:text-8xl lg:text-[6.5rem] tracking-tight font-normal my-0 normal-case inline-block text-white"
+            className="phishing-italic text-6xl sm:text-7xl md:text-8xl lg:text-[7.5rem] tracking-tight font-normal my-0 normal-case inline-block text-white leading-none -mt-1 sm:-mt-2"
           />
         )}
 
@@ -120,7 +120,7 @@ export default function HeroHeading() {
             speed={60}
             showCursor={step === 3}
             onComplete={() => setTimeout(() => setStep(4), 200)}
-            className="metallic-text text-3xl sm:text-4xl md:text-5xl font-gothic-block font-black tracking-tight inline-block"
+            className="metallic-text text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-gothic-block font-black tracking-tighter inline-block leading-none mt-1 sm:mt-2"
           />
         )}
       </h1>

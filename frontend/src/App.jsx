@@ -235,8 +235,7 @@ function App() {
                   <span className="font-mono text-xs text-[#8b5cf6] tracking-[0.2em] uppercase">
                     // SCAN RESULT IDENTIFIED
                   </span>
-                  
-                  <h2 className="text-3xl font-bold tracking-tight text-white">Is this URL safe?</h2>
+                  <h2 className="text-3xl md:text-4xl font-gothic-block font-black tracking-tighter text-white uppercase">Is this URL safe?</h2>
                   
                   <div className="relative flex w-full max-w-xl items-center mt-2">
                     <span className="absolute left-4 text-[#8a8a92] material-symbols-outlined">link</span>
@@ -270,7 +269,7 @@ function App() {
                     </div>
                     
                     <div className="text-center px-4">
-                      <h3 className="text-lg font-black tracking-widest uppercase">
+                      <h3 className="text-3xl font-gothic-block font-black tracking-widest uppercase text-white">
                         {result.is_phishing ? 'MALICIOUS LINK DETECTED' : 'SAFE TO VISIT'}
                       </h3>
                       <p className="text-[#8a8a92] text-[10px] mt-1 font-mono uppercase tracking-wide">
@@ -611,7 +610,7 @@ function App() {
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in">
           <div className="glass-panel w-full max-w-lg rounded shadow-2xl overflow-hidden relative">
             <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
-              <h2 className="font-sans font-bold text-lg text-white">
+              <h2 className="font-gothic-block font-black tracking-widest text-2xl text-white">
                 {activeModal === 'privacy' ? 'PRIVACY POLICY' : 'TERMS OF SERVICE'}
               </h2>
               <button 
