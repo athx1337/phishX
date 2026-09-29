@@ -165,7 +165,7 @@ export default function URLScanner({
 
           {/* Wake Warning */}
           {isWaitingForWake && (
-            <div className="mt-3 p-4 rounded border border-[#8b5cf6]/20 bg-[#8b5cf6]/5 flex items-start gap-3 animate-in">
+            <div className="mt-3 p-4 rounded border border-[#8b5cf6]/20 bg-[#8b5cf6]/5 flex items-start gap-3 animate-in glass-panel">
               <span className="material-symbols-outlined text-[#8b5cf6] animate-pulse mt-0.5">cloud_sync</span>
               <div className="flex flex-col gap-1">
                 <p className="text-xs font-mono font-bold text-[#8b5cf6]">// WAKING CLOUD BACKEND</p>

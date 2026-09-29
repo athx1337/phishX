@@ -256,7 +256,7 @@ function App() {
                 </div>
 
                 {/* Verdict Display Panel */}
-                <div className={`flex flex-col rounded border-2 overflow-hidden w-full ${
+                <div className={`glass-panel flex flex-col rounded border-2 overflow-hidden w-full ${
                   result.is_phishing 
                     ? 'border-[#ef4444]/40 bg-red-950/10 shadow-[0_0_30px_rgba(239,68,68,0.05)]' 
                     : 'border-[#22c55e]/40 bg-emerald-950/10 shadow-[0_0_30px_rgba(34,197,94,0.05)]'

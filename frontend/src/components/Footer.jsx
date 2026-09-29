@@ -39,7 +39,7 @@ export default function Footer({ onLegalClick }) {
   return (
     <footer
       ref={footerRef}
-      className="border-t border-white/5 py-12 bg-black/[0.2] font-mono text-[10px] tracking-wider text-[#8a8a92] relative z-20"
+      className="border-t border-white/5 py-12 glass-panel font-mono text-[10px] tracking-wider text-[#8a8a92] relative z-20"
     >
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
 
