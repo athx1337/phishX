@@ -98,8 +98,9 @@ function buildAsciiRenderer(glRenderer, camera, chars, fontSize, color) {
 
         if (char === ' ') continue;
 
-        // Tint the character with the model's own colour but blend with theme
-        ctx2d.fillStyle = `rgba(${r},${g},${b},${Math.min(a / 255 + 0.3, 1)})`;
+        // Tint the character with the model's own colour but multiply brightness heavily
+        const boost = 2.2;
+        ctx2d.fillStyle = `rgba(${Math.min(r * boost, 255)},${Math.min(g * boost, 255)},${Math.min(b * boost, 255)},${Math.min(a / 255 + 0.4, 1)})`;
         ctx2d.fillText(char, col * fontSize, row * fontSize);
       }
     }

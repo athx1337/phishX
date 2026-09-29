@@ -100,7 +100,7 @@ export default function HeroHeading() {
             speed={60}
             showCursor={step === 1}
             onComplete={() => setStep(2)}
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-gothic-block font-black tracking-tighter text-white inline-block leading-none"
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-gothic-block font-extrabold tracking-tighter text-white inline-block leading-none"
           />
         )}
 
@@ -120,7 +120,7 @@ export default function HeroHeading() {
             speed={60}
             showCursor={step === 3}
             onComplete={() => setTimeout(() => setStep(4), 200)}
-            className="metallic-text text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-gothic-block font-black tracking-tighter inline-block leading-none mt-1 sm:mt-2"
+            className="metallic-text text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-gothic-block font-extrabold tracking-tighter inline-block leading-none mt-1 sm:mt-2"
           />
         )}
       </h1>

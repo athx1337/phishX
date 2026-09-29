@@ -11,7 +11,7 @@ export default function HeroVisual() {
     <div className="w-full h-full min-h-[350px] md:min-h-[480px] relative flex items-center justify-center select-none z-10">
 
       {/* Subtle dark orb to separate ASCII from the chaotic background waves */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[350px] bg-black/70 blur-[80px] rounded-full pointer-events-none z-0"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[450px] h-[450px] bg-black/90 blur-[90px] rounded-full pointer-events-none z-0"></div>
 
       {/* ── ASCII Simulation (skiper14 equivalent) ─────────────────────────────
           modelPath: tries to load /public/models/shield.glb

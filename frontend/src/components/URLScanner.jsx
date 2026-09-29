@@ -108,7 +108,7 @@ export default function URLScanner({
 
         <div className="flex flex-col gap-2">
           <label
-            className="font-gothic-block text-sm font-black text-[#8a8a92] uppercase tracking-widest"
+            className="font-techmono text-xs font-bold text-[#8a8a92] uppercase tracking-widest"
             htmlFor="url-input"
           >
             ENTER URL TO SCAN
@@ -137,7 +137,7 @@ export default function URLScanner({
               ref={btnRef}
               type="submit"
               disabled={loading || isWaitingForWake}
-              className="flex items-center justify-center rounded bg-[#8b5cf6] hover:bg-[#8b5cf6]/90 text-white px-10 py-4 text-base font-gothic-block tracking-widest uppercase font-black transition-colors disabled:opacity-50 disabled:cursor-wait shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
+              className="flex items-center justify-center rounded bg-[#8b5cf6] hover:bg-[#8b5cf6]/90 text-white px-10 py-4 text-sm font-sans tracking-[0.2em] uppercase font-bold transition-colors disabled:opacity-50 disabled:cursor-wait shrink-0 shadow-[0_0_15px_rgba(139,92,246,0.2)]"
               onMouseEnter={e => {
                 if (!loading && !isWaitingForWake) {
                   animate(e.currentTarget, { scale: 1.04, duration: 180, easing: 'easeOutCubic' });
