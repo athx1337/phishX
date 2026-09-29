@@ -626,14 +626,14 @@ function App() {
                 <>
                   <p className="font-mono text-[#8b5cf6] font-bold text-sm tracking-wider uppercase">// EDUCATION PLATFORM GUIDELINES</p>
                   <p>PhishX is an educational sandbox built by athx1337 for pattern analysis and URL threat visualization.</p>
-                  <p>Submitted URLs are forwarded to Cloudflare Radar endpoints and model classifiers purely to compute threat metrics. No permanent logs are saved.</p>
+                  <p>Submitted URLs are forwarded to third-party security engines (including Cloudflare Radar, VirusTotal, Google Safe Browsing, URLhaus, and Google Gemini API) purely to compute threat metrics. PhishX does not retain permanent logs of scanned URLs.</p>
                   <p>This software utilizes standard TLS encryption tunnels. User credentials, locations, or identities are never tracked.</p>
                 </>
               )}
               {activeModal === 'tos' && (
                 <>
                   <p className="font-mono text-[#8b5cf6] font-bold text-sm tracking-wider uppercase">// PLATFORM WARNING & DISCLAIMERS</p>
-                  <p>All safety score outputs represent algorithmic predictions calculated by an experimental XGBoost decision tree.</p>
+                  <p>All safety score outputs and classifications represent algorithmic predictions calculated by an experimental Multi-Engine Consensus Algorithm (incorporating local heuristics and third-party threat intel APIs).</p>
                   <p>This tool is served purely for demonstration. Never rely on this service as your sole cybersecurity firewall provider.</p>
                   <p>The system operator disclaims all liability for breaches, malicious link interactions, or network exploits resulting from external navigations.</p>
                 </>
