@@ -30,7 +30,7 @@
   }
 
   .phishing-italic {
-    font-family: "PP Editorial New", "Instrument Serif", Georgia, serif;
+    font-family: 'Instrument Serif', 'Playfair Display', Georgia, serif;
     font-style: italic;
     background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 35%, #a855f7 70%, #7e22ce 100%);
     -webkit-background-clip: text;
@@ -101,53 +101,4 @@
   .ascii-mount {
     animation: ascii-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
- * GlitchText Animations
- * ───────────────────────────────────────────────────────────────────────────── */
-.glitch-wrapper {
-  transform: translateZ(0);
-}
-
-.glitch-layer-1, .glitch-layer-2 {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: transparent;
-  pointer-events: none;
-}
-
-.glitch-layer-1 {
-  left: 2px;
-  text-shadow: -1px 0 rgba(255, 0, 193, 0.5);
-  clip-path: polygon(0 0, 100% 0, 100% 45%, 0 45%);
-  animation: glitch-anim-1 var(--glitch-duration) infinite linear alternate-reverse;
-}
-
-.glitch-layer-2 {
-  left: -2px;
-  text-shadow: -1px 0 rgba(0, 255, 249, 0.5);
-  clip-path: polygon(0 80%, 100% 20%, 100% 100%, 0 100%);
-  animation: glitch-anim-2 var(--glitch-duration) infinite linear alternate-reverse;
-}
-
-@keyframes glitch-anim-1 {
-  0% { clip-path: inset(20% 0 80% 0); transform: translate(2px, 1px); }
-  20% { clip-path: inset(60% 0 10% 0); transform: translate(-2px, -1px); }
-  40% { clip-path: inset(40% 0 50% 0); transform: translate(2px, -1px); }
-  60% { clip-path: inset(80% 0 5% 0); transform: translate(-2px, 1px); }
-  80% { clip-path: inset(10% 0 70% 0); transform: translate(2px, 1px); }
-  100% { clip-path: inset(30% 0 50% 0); transform: translate(-2px, -1px); }
-}
-
-@keyframes glitch-anim-2 {
-  0% { clip-path: inset(10% 0 60% 0); transform: translate(-2px, 1px); }
-  20% { clip-path: inset(30% 0 20% 0); transform: translate(2px, -1px); }
-  40% { clip-path: inset(70% 0 10% 0); transform: translate(-2px, 1px); }
-  60% { clip-path: inset(20% 0 50% 0); transform: translate(2px, -1px); }
-  80% { clip-path: inset(50% 0 30% 0); transform: translate(-2px, 1px); }
-  100% { clip-path: inset(5% 0 80% 0); transform: translate(2px, -1px); }
 }

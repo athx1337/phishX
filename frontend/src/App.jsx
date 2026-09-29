@@ -4,7 +4,9 @@ import Navbar from './components/Navbar';
 import HeroVisual from './components/HeroVisual';
 import HUDCard from './components/HUDCard';
 import URLScanner from './components/URLScanner';
+import HeroHeading from './components/HeroHeading';
 import Footer from './components/Footer';
+import ChromaWaves from './components/ui/chroma-waves';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -177,7 +179,21 @@ function App() {
     <div className="bg-[#050507] text-[#f5f5f5] min-h-screen flex flex-col font-sans antialiased selection:bg-[#8b5cf6]/20 selection:text-[#c084fc] relative">
       
       {/* Background Layers */}
-      <div className="fixed inset-0 grid-bg pointer-events-none z-0"></div>
+      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.45]">
+        <ChromaWaves 
+          color="#ffffff"
+          backgroundColor="#130826"
+          waveFrequency={0.2}
+          waveAmplitude={0.8}
+          distortion={1.2}
+          chromaShift={0.5}
+          noiseLevel={0.06}
+          speed={0.15}
+          quality="low"
+        />
+      </div>
+      {/* Dark vignette to ensure text legibility */}
+      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_100%_100%_at_0%_20%,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0)_80%)]"></div>
       <div className="fixed inset-0 purple-glow pointer-events-none z-0"></div>
 
       {/* Navigation */}
@@ -188,30 +204,12 @@ function App() {
         <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 w-full">
           
           {/* Left Column: Dynamics (Scanner/Welcome OR Results Display) */}
-          <div className="lg:col-span-7 space-y-8 text-left animate-in w-full">
+          <div className="lg:col-span-7 space-y-8 text-left w-full">
             {!result ? (
               /* SCANNER & WELCOME TEXT */
               <div className="space-y-8">
                 <div className="space-y-4">
-                  <span className="font-mono text-xs text-[#8b5cf6] tracking-[0.3em] uppercase block">
-                    /// REAL-TIME URL ANALYSIS
-                  </span>
-                  
-                  <h1 className="flex flex-col tracking-tight uppercase select-none">
-                    <span className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white/95">
-                      DETECT
-                    </span>
-                    <span className="phishing-italic text-6xl sm:text-7xl md:text-8xl lg:text-[6.5rem] tracking-tight font-normal my-0 normal-case">
-                      phishing.
-                    </span>
-                    <span className="metallic-text text-3xl sm:text-4xl md:text-5xl font-black tracking-tight">
-                      STAY AHEAD.
-                    </span>
-                  </h1>
-
-                  <p className="text-[#8a8a92] text-sm max-w-lg leading-relaxed pt-2">
-                    phishX analyzes suspicious URLs instantly using machine learning, global threat intelligence and deep heuristics to keep you safe from credentials theft and online exploits.
-                  </p>
+                  <HeroHeading />
                 </div>
 
                 {/* Glassmorphic Scanner Box */}
