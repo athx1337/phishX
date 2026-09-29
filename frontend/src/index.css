@@ -89,8 +89,8 @@
 
   /* ── ASCII Simulation (skiper14 equivalent) ────────────────────────────── */
   .ascii-canvas {
-    /* Subtle purple bloom on the character field */
-    filter: drop-shadow(0 0 6px rgba(192, 132, 252, 0.35));
+    /* Enhanced bright bloom on the character field to make it stand out */
+    filter: drop-shadow(0 0 3px rgba(255, 255, 255, 0.3)) drop-shadow(0 0 8px rgba(192, 132, 252, 0.8));
     image-rendering: pixelated;
   }
 
