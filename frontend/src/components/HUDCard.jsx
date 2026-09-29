@@ -39,6 +39,70 @@ function useCountUp(ref, target, shouldRun, duration = 800) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Custom hook for mouse proximity 3D tilt
+function useProximityTilt(ref) {
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    let rafId = null;
+    let targetRotateX = 0, targetRotateY = 0, targetScale = 1;
+    let targetTx = 0, targetTy = 0;
+    
+    let currentRotateX = 0, currentRotateY = 0, currentScale = 1;
+    let currentTx = 0, currentTy = 0;
+
+    const handleMouseMove = (e) => {
+      const rect = el.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      
+      const distX = e.clientX - centerX;
+      const distY = e.clientY - centerY;
+      const distance = Math.sqrt(distX ** 2 + distY ** 2);
+      
+      const maxDist = 300;
+      if (distance < maxDist) {
+        const intensity = Math.pow(1 - (distance / maxDist), 1.5); // Smoother falloff
+        
+        // Tilt towards the mouse
+        targetRotateX = -(distY / (maxDist/2)) * 15 * intensity;
+        targetRotateY = (distX / (maxDist/2)) * 15 * intensity;
+        
+        // Push slightly away for a "magnetic repulsion" feel
+        targetTx = -(distX / (maxDist/2)) * 8 * intensity;
+        targetTy = -(distY / (maxDist/2)) * 8 * intensity;
+        
+        targetScale = 1 + 0.04 * intensity;
+      } else {
+        targetRotateX = 0; targetRotateY = 0;
+        targetTx = 0; targetTy = 0;
+        targetScale = 1;
+      }
+    };
+
+    const animateLoop = () => {
+      currentRotateX += (targetRotateX - currentRotateX) * 0.15;
+      currentRotateY += (targetRotateY - currentRotateY) * 0.15;
+      currentScale += (targetScale - currentScale) * 0.15;
+      currentTx += (targetTx - currentTx) * 0.15;
+      currentTy += (targetTy - currentTy) * 0.15;
+      
+      el.style.transform = `perspective(800px) translateX(${currentTx}px) translateY(${currentTy}px) rotateX(${currentRotateX}deg) rotateY(${currentRotateY}deg) scale(${currentScale})`;
+      rafId = requestAnimationFrame(animateLoop);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    rafId = requestAnimationFrame(animateLoop);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function HUDCard({ type, loading, result, error }) {
   const cardRef  = useRef(null);
@@ -61,22 +125,25 @@ export default function HUDCard({ type, loading, result, error }) {
 
     const info = getScoreInfo();
 
+    const innerRef = useRef(null);
     useHUDEntrance(cardRef, 'left', 600);
     useCountUp(scoreRef, info.score, !!info.score);
+    useProximityTilt(innerRef);
 
     return (
-      <div ref={cardRef} style={{ opacity: 0 }}
-        className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left">
-        <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
-        <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// SAFETY SCORE</span>
-        <div className="flex items-baseline gap-1 mt-2">
-          <span ref={scoreRef} className="text-3xl font-black text-white">
-            {info.displayScore}
-          </span>
-          <span className="text-xs text-[#8a8a92]">/100</span>
-        </div>
-        <div className={`mt-3 py-1 px-2 rounded text-[9px] font-bold tracking-widest text-center ${info.color} ${info.bg} border`}>
-          {info.text}
+      <div ref={cardRef} style={{ opacity: 0 }} className="z-20">
+        <div ref={innerRef} className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left will-change-transform shadow-xl">
+          <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
+          <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// SAFETY SCORE</span>
+          <div className="flex items-baseline gap-1 mt-2">
+            <span ref={scoreRef} className="text-3xl font-black text-white">
+              {info.displayScore}
+            </span>
+            <span className="text-xs text-[#8a8a92]">/100</span>
+          </div>
+          <div className={`mt-3 py-1 px-2 rounded text-[9px] font-bold tracking-widest text-center ${info.color} ${info.bg} border`}>
+            {info.text}
+          </div>
         </div>
       </div>
     );
@@ -94,15 +161,18 @@ export default function HUDCard({ type, loading, result, error }) {
     };
 
     const info = getThreatInfo();
+    const innerRef = useRef(null);
     useHUDEntrance(cardRef, 'right', 700);
+    useProximityTilt(innerRef);
 
     return (
-      <div ref={cardRef} style={{ opacity: 0 }}
-        className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left">
-        <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
-        <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// THREAT INTEL</span>
-        <p className="text-sm font-bold text-white mt-2 leading-none">{info.text}</p>
-        <span className="text-[8px] text-[#8a8a92]/60 mt-3 block tracking-widest uppercase">{info.detail}</span>
+      <div ref={cardRef} style={{ opacity: 0 }} className="z-20">
+        <div ref={innerRef} className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left will-change-transform shadow-xl">
+          <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
+          <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// THREAT INTEL</span>
+          <p className="text-sm font-bold text-white mt-2 leading-none">{info.text}</p>
+          <span className="text-[8px] text-[#8a8a92]/60 mt-3 block tracking-widest uppercase">{info.detail}</span>
+        </div>
       </div>
     );
   }
@@ -119,16 +189,19 @@ export default function HUDCard({ type, loading, result, error }) {
     };
 
     const info = getAIInfo();
+    const innerRef = useRef(null);
     useHUDEntrance(cardRef, 'left', 800);
+    useProximityTilt(innerRef);
 
     return (
-      <div ref={cardRef} style={{ opacity: 0 }}
-        className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left">
-        <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
-        <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// AI ANALYSIS</span>
-        <p className="text-sm font-bold text-white mt-2 leading-none truncate" title={info.text}>{info.text}</p>
-        <div className="mt-3 w-full bg-white/5 h-[1px]" />
-        <span className="text-[8px] text-[#8a8a92]/60 mt-2 block tracking-widest uppercase">{info.detail}</span>
+      <div ref={cardRef} style={{ opacity: 0 }} className="z-20">
+        <div ref={innerRef} className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left will-change-transform shadow-xl">
+          <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
+          <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// AI ANALYSIS</span>
+          <p className="text-sm font-bold text-white mt-2 leading-none truncate" title={info.text}>{info.text}</p>
+          <div className="mt-3 w-full bg-white/5 h-[1px]" />
+          <span className="text-[8px] text-[#8a8a92]/60 mt-2 block tracking-widest uppercase">{info.detail}</span>
+        </div>
       </div>
     );
   }
@@ -146,7 +219,9 @@ export default function HUDCard({ type, loading, result, error }) {
     };
 
     const info = getVerdictInfo();
+    const innerRef = useRef(null);
     useHUDEntrance(cardRef, 'right', 900);
+    useProximityTilt(innerRef);
 
     // Pop the icon when verdict arrives
     const iconRef = useRef(null);
@@ -162,13 +237,14 @@ export default function HUDCard({ type, loading, result, error }) {
     }, [result]);
 
     return (
-      <div ref={cardRef} style={{ opacity: 0 }}
-        className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left">
-        <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
-        <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// FINAL VERDICT</span>
-        <div className="flex items-center gap-3 mt-2">
-          <span ref={iconRef} className={`text-2xl font-black ${info.color} inline-block`}>{info.icon}</span>
-          <span className="text-xs font-bold text-white uppercase tracking-wider">{info.text}</span>
+      <div ref={cardRef} style={{ opacity: 0 }} className="z-20">
+        <div ref={innerRef} className="glass-panel relative p-4 rounded border border-white/5 bg-white/[0.01] w-48 font-mono text-left will-change-transform shadow-xl">
+          <GlowingEffect spread={40} glow={true} disabled={false} proximity={64} inactiveZone={0.01} />
+          <span className="text-[9px] text-[#8a8a92] block tracking-wider uppercase">// FINAL VERDICT</span>
+          <div className="flex items-center gap-3 mt-2">
+            <span ref={iconRef} className={`text-2xl font-black ${info.color} inline-block`}>{info.icon}</span>
+            <span className="text-xs font-bold text-white uppercase tracking-wider">{info.text}</span>
+          </div>
         </div>
       </div>
     );
