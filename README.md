@@ -1,187 +1,289 @@
-# phishX
+<div align="center">
+  <a href="https://phish-x.vercel.app">
+    <img src="docs/assets/phishx-cover.svg" alt="phishX — evidence-driven URL threat analysis" width="100%" />
+  </a>
 
-### Understand a URL's threat signals—not a made-up safety score.
+  <h1>phishX</h1>
+  <p><strong>Detect phishing. Understand the evidence.</strong></p>
+  <p>A free, educational URL scanner combining threat intelligence, local machine learning,<br />and explainable signals in one clear report.</p>
 
-**phishX** is a free, evidence-driven URL threat analysis app. It combines real XGBoost model output and explainable URL rules with optional reputation checks from Google Safe Browsing, URLhaus, VirusTotal, and Cloudflare URL Scanner.
+  <p>
+    <a href="https://github.com/athx1337/phishX/actions/workflows/ci.yml"><img src="https://github.com/athx1337/phishX/actions/workflows/ci.yml/badge.svg" alt="Verify phishX workflow status" /></a>
+    <a href="LICENSE"><img src="https://img.shields.io/badge/code-MIT-a78bfa?style=flat-square" alt="Code license: MIT" /></a>
+    <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/Node.js-22.12%2B-86efac?style=flat-square" alt="Node.js 22.12 or later" /></a>
+    <a href="model/MODEL-CARD.md"><img src="https://img.shields.io/badge/local_model-XGBoost-c4b5fd?style=flat-square" alt="Local XGBoost model" /></a>
+  </p>
 
-The original animated background, typewriter/glitch heading, ASCII X and floating glass panels surround the audited scanner. Motion can be paused and respects reduced-motion settings. Gemini assistance is visible near the verdict with its actual completion or fallback status.
+  <p>
+    <a href="https://phish-x.vercel.app"><strong>Open the app ↗</strong></a>
+    &nbsp; · &nbsp; <a href="docs/API.md">Read the docs</a>
+    &nbsp; · &nbsp; <a href="https://github.com/athx1337/phishX/issues">Report an issue</a>
+  </p>
+</div>
 
-> **A missing detection is not proof of safety.** Every report distinguishes findings from gaps, errors, and pending checks. Model output is supporting evidence—not a verdict or a numerical probability that a site is safe.
+<br />
 
-[Open the app](https://phish-x.vercel.app) · [API](https://backend-worker.phish-x.workers.dev) · [API docs](docs/API.md) · [Deployment guide](docs/DEPLOYMENT.md)
+<a href="https://phish-x.vercel.app"><img src="docs/assets/phishx-preview.jpg" alt="phishX production homepage with purple animated waves, URL input, floating glass panels, and an ASCII X" width="100%" /></a>
+<p align="center"><sub>The production interface: animated waves, a typewriter heading, and the scanner at the center.</sub></p>
 
----
+<p align="center">
+  <a href="#why-phishx">Features</a> ·
+  <a href="#read-the-result">Verdicts</a> ·
+  <a href="#how-it-works">Architecture</a> ·
+  <a href="#run-locally">Quick start</a> ·
+  <a href="#verify-your-changes">Verification</a> ·
+  <a href="#the-model-and-its-limits">Model</a> ·
+  <a href="#privacy-by-design-and-by-choice">Privacy</a> ·
+  <a href="#documentation">Docs</a>
+</p>
 
-## What makes a report useful
+## Why phishX
 
-- **Evidence, not guesses.** Verdicts are tied to recorded findings, coverage, provider status, and observation time.
-- **Uncertainty stays visible.** Errors never become clean findings; unresolved shorteners remain unverified; missing reports stay missing.
-- **Explanations stay grounded.** Reasons come from recorded evidence. Optional Gemini can select evidence for deterministic explanations, but cannot change a verdict.
-- **No false reassurance.** “No known threats detected” means just that—it does not establish that a URL is legitimate or safe.
+A useful scan explains what was observed, where the information came from, and which checks are still missing. phishX brings those details together without compressing uncertainty into a safety score.
 
-### Verdicts at a glance
+| Capability | What you get |
+| :--- | :--- |
+| **Evidence you can inspect** | Four outcomes, attributed reasons, observation times, coverage, and explicit pending/error states. |
+| **Trained local XGBoost** | A real URL-only model running inside the Worker: 69 features and 160 trees, with no separate Python inference service. |
+| **Four remote sources** | Reputation from Google Safe Browsing, URLhaus and VirusTotal, plus active inspection from Cloudflare URL Scanner, each with its actual status and findings. |
+| **Grounded Gemini assistance** | Gemini 2.5 Flash selects existing evidence IDs for an explanation. Production displays its completion or fallback status; it cannot override the verdict. |
+| **An expressive interface** | Restored waves, typewriter/glitch text, ASCII X, floating glass panels, responsive reports, and pause/reduced-motion controls. |
+| **Deliberate data handling** | Sensitive-link consent, opt-in redacted browser history capped at 50 entries/seven days, and short-lived active scan jobs. |
 
-| Verdict | What it means |
-| --- | --- |
+## Read the result
+
+| Report label | Meaning |
+| :--- | :--- |
 | **Malicious URL** | Strong threat-intelligence evidence was found. Avoid interacting with the URL. |
-| **Suspicious URL** | Deceptive URL structure, weaker or stale positive intelligence, or conflicting findings warrant caution. |
+| **Suspicious URL** | Deceptive structure, weaker or stale positive intelligence, or conflicting findings warrant caution. |
 | **No known threats detected** | Sufficient fresh reputation checks found no known threat or warning. This is not a safety guarantee. |
-| **Unable to determine** | Evidence is insufficient, unknown, unavailable, failed, or still pending. |
+| **Unable to determine** | Evidence is insufficient, unknown, unavailable, failed, or pending. |
 
-An ordinary `/login` path is not a phishing finding by itself. A raw GitHub Gist is not automatically malicious.
+A clean conclusion requires fresh results from at least two independent reputation sources for every requested protocol, with no warning or pending active inspection. Local model output does not count as remote coverage. Missing checks never become clean votes.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A[React client] --> B[Hono Worker]
-    B --> C[Validation and explainable URL rules]
-    B --> D[XGBoost inference]
-    B --> E[RDAP and bounded destination reassessment]
-    B --> F[Reputation providers]
-    B --> G[Budgets, concurrency, circuits, metrics]
-    C --> H[Evidence and coverage policy]
-    D --> H
-    E --> H
-    F --> H
-    G --> H
-    H --> I[Versioned report]
-    I --> A
-    B -. optional .-> J[Cloudflare URL Scanner job]
-    J -. poll for updated report .-> A
+    UI[React scanner] --> API[Hono API /api/verify]
+    API --> Local[URL rules + local XGBoost]
+    API --> Remote[Safe Browsing · URLhaus<br/>VirusTotal · Cloudflare]
+    API --> RDAP[RDAP registration]
+    Local --> Policy[Evidence + coverage policy]
+    Remote --> Policy
+    RDAP --> Policy
+    Policy --> Report[Structured v2 report]
+    Report --> UI
+    API <--> Control[Global Durable Object<br/>budgets · leases · circuits]
+    API <--> KV[Optional KV<br/>caches · reservations]
+    API <--> Job[Per-scan Durable Object<br/>active job + expiry alarm]
+    UI -. /api/scans/:scan_id .-> API
 ```
 
-The Worker calls fixed provider endpoints; it does not crawl submitted websites itself. Cloudflare can perform optional remote active inspection. Optional KV supports scoped caching and bounded scan jobs; a per-scan Durable Object coordinates canonical job state and cleanup. Browser history is optional and redacted.
+The Worker contacts fixed provider endpoints rather than fetching arbitrary submitted pages. Cloudflare can perform remote active inspection; observed destinations receive bounded reassessment. Pending jobs return a polling path and timing, and each poll returns a complete updated report.
 
-| Area | Responsibility |
-| --- | --- |
-| `shared/scan.ts` | v2 types, verdict labels, runtime validation, and privacy helpers |
-| `backend-worker/src/` | Validation, heuristics, provider adapters, policy, caching/jobs, and routes |
-| `frontend/src/` | Scanner, evidence report, coverage, domain metadata, and history |
-| `frontend/test/`, `tests/` | Component/workflow and shared contract/privacy regressions |
-| `frontend/e2e/` | Controlled browser tests with mocked API responses |
-| `ml/`, `model/` | Reproducible training, native/edge parity, held-out evaluation, and model artifacts |
-| `ops/`, `scripts/` | Aggregate monitoring, tested alerts, and real secret/artifact checks |
-| `.planning/` | Audit-derived requirements, plan review, and verification records |
-| `repo/` | Archived research; never loaded by the production scanner |
+Production requires managed route limiters and a global Durable Object coordinator. Separate per-scan objects preserve canonical job state and delete it on a fixed deadline; optional KV supports caches and submission reservations. [Explore the API contract →](docs/API.md)
 
-## Get started
+| Layer | Technology |
+| :--- | :--- |
+| Interface | React 19, Vite 7, Tailwind CSS, Motion, Three.js |
+| API and runtime | TypeScript, Hono, Cloudflare Workers |
+| Coordination and storage | Durable Objects, optional Workers KV, managed rate limits |
+| Analysis | Local XGBoost, URL heuristics, RDAP, four remote providers |
+| Explanation | Deterministic templates; optional Gemini 2.5 Flash evidence selection |
+| Verification | Node test runner, Vitest, Playwright/axe, model parity, Prometheus rules |
 
-### Requirements
+```text
+phishX/
+├── frontend/         React interface and browser tests
+├── backend-worker/   Worker routes, providers, policy, and coordination
+├── shared/           Versioned report types and runtime validation
+├── tests/            Contract, privacy, and monitor regressions
+├── ml/               Reproducible training and model verification
+├── model/            Active artifacts, evaluation, and model card
+├── docs/             API, privacy, deployment, and research guides
+└── ops/ + scripts/   Monitoring rules and verification tooling
+```
 
-- **Node.js 22.12 or later** (Node 24 is the development and CI default; see `.nvmrc`)
-- **PowerShell** for the commands below
+## Run locally
 
-### Install
+Use **Node.js 24** (recommended; `.nvmrc` and CI), or Node **22.12+**, and npm. Python is needed only for training/pipeline work, not for running the app or serving the checked-in model.
 
-Install each app from its lockfile and create local environment files:
+### 1. Clone and install
 
-```powershell
+```bash
+git clone https://github.com/athx1337/phishX.git
+cd phishX
 npm ci --prefix backend-worker
 npm ci --prefix frontend
+```
+
+Create fresh local configuration files:
+
+```bash
+cp backend-worker/.dev.vars.example backend-worker/.dev.vars
+cp frontend/.env.example frontend/.env
+```
+
+<details>
+<summary><strong>Windows PowerShell</strong></summary>
+
+Use the same clone/install commands, then copy the templates with:
+
+```powershell
 Copy-Item backend-worker/.dev.vars.example backend-worker/.dev.vars
 Copy-Item frontend/.env.example frontend/.env
 ```
 
-### Run locally
+</details>
 
-Start the API and web app in separate terminals:
+### 2. Start both apps
 
-```powershell
+In one terminal:
+
+```bash
 npm run dev:api
 ```
 
-```powershell
+In a second terminal:
+
+```bash
 npm run dev:web
 ```
 
-By default, the API is at `http://localhost:8787` and Vite is at `http://localhost:5173`. Set `VITE_API_URL` to change the API target; it is embedded at **build time**.
+Open [localhost:5173](http://localhost:5173). The API runs at [localhost:8787](http://localhost:8787); `frontend/.env` sets `VITE_API_URL` for the frontend build.
 
-No provider key is needed to start development. Without reputation credentials, ordinary URLs return **Unable to determine**; suspicious structures can still produce explainable warnings. Health checks confirm API reachability, not provider health.
+Provider keys are optional for local development. Without them, ordinary URLs generally return **Unable to determine**, while URL rules or the local model can still raise warnings. `/api/ping` confirms reachability; it does not test provider health. The example enables `DEV_MODE` only for localhost and disables Gemini locally.
 
-## Configuration
+<details>
+<summary><strong>Configure providers and runtime bindings</strong></summary>
 
-| Binding | Purpose |
-| --- | --- |
-| `GOOGLE_SAFE_BROWSING_API_KEY` | Independently configured Safe Browsing v5 reputation |
-| `URLHAUS_API_KEY` | Malware-distribution lookup |
-| `VIRUSTOTAL_API_KEY` | URL intelligence and actual domain metadata |
-| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` | URL Scanner v2; token requires Scanner read/write permissions |
-| `SCAN_CACHE` | Optional KV for reports and active-scan jobs |
-| `ALLOWED_ORIGINS` | Comma-separated list of exact permitted frontend origins |
-| `CACHE_CONFIG_VERSION` | Operator-controlled cache generation when provider configuration changes |
-| `SCAN_RATE_LIMITER`, `POLL_RATE_LIMITER` | Managed scan-creation and poll rate-limit bindings in Wrangler |
-| `SCAN_COORDINATOR`, `CLIENT_ID_SECRET` | Durable Object budgets, concurrency, and privacy-safe client identity |
-| `METRICS_TOKEN` | Independent bearer token for aggregate metrics |
-| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Bounded evidence selection; enabled in production, with explicit success/fallback status |
+| Setting or binding | Purpose |
+| :--- | :--- |
+| `GOOGLE_SAFE_BROWSING_API_KEY` | Safe Browsing v5 reputation checks |
+| `URLHAUS_API_KEY` | Malware-distribution intelligence |
+| `VIRUSTOTAL_API_KEY` | URL intelligence and domain metadata |
+| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` | URL Scanner v2; Scanner read/write permissions required |
+| `SCAN_CACHE` | Optional KV for cached observations/reports and active-scan reservations |
+| `SCAN_COORDINATOR`, `REQUIRE_COORDINATOR` | Production admission, concurrency, circuits, metrics, and per-scan job state |
+| `SCAN_RATE_LIMITER`, `POLL_RATE_LIMITER` | Required managed creation/poll budgets |
+| `CLIENT_ID_SECRET`, `METRICS_TOKEN` | Independent client-identity HMAC and protected metrics secrets |
+| `ALLOWED_ORIGINS` | Exact frontend origins accepted by CORS |
+| `CACHE_CONFIG_VERSION` | Cache generation; increment after provider/policy changes |
+| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Optional bounded evidence selection; production uses `gemini-2.5-flash` |
 
-Managed limiters and production coordination are required for scan routes; missing infrastructure fails closed with HTTP 503. Follow `.dev.vars.example` for localhost development. Local Wrangler provides configured bindings. KV is optional: reputation and heuristic results still work without it, but Cloudflare scan jobs do not. Store production credentials as Cloudflare secrets. A Gemini key does not replace a Safe Browsing key.
+Keep local credentials in ignored `.dev.vars` files. Set production credentials through Wrangler secret bindings, for example from `backend-worker/`:
 
-> **Provider terms:** Google Safe Browsing is intended for non-commercial use. Before commercial deployment, evaluate [Google Web Risk](https://cloud.google.com/web-risk) or another suitable licensed alternative. Review every provider's terms and quotas.
-
-## Verify changes
-
-Run the project checks:
-
-```powershell
-npm run check
+```bash
+npx wrangler secret put GOOGLE_SAFE_BROWSING_API_KEY
 ```
 
-This runs backend type checking, frontend lint, shared/backend/frontend tests, and a production build. Useful individual commands include:
+Repeat for the independent secrets you enable. Missing required production infrastructure fails scan routes closed with HTTP 503. Without KV, active jobs are unavailable. Provision resources for your own account using the [deployment guide](docs/DEPLOYMENT.md).
 
-```powershell
-npm run test:contract
-npm run test:api
-npm run test:web
-npm run lint
-npm run build
+Google Safe Browsing is intended for non-commercial use. For commercial deployments, review [Google Web Risk](https://cloud.google.com/web-risk), along with every provider's license, quota, and retention terms.
+
+</details>
+
+## Use the API
+
+```bash
+curl http://localhost:8787/api/ping
+
+curl -X POST http://localhost:8787/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"url":"https://example.com","refresh":false,"sensitive_url_consent":false}'
 ```
 
-Run controlled browser tests with:
+When a response includes `deep_scan`, wait until its `next_poll_at`, then request the returned `poll_path` (the `/api/scans/:scan_id` route). Follow the timing from each fresh response and replace the previous report. The scan ID is a temporary read capability; keep it private.
 
-```powershell
-cd frontend
-npx playwright install chromium
-npm run test:e2e
+```bash
+curl "http://localhost:8787/api/scans/SCAN_ID_FROM_RESPONSE"
 ```
 
-Tests use synthetic fixtures and do not call live scanners. The verification records in `.planning/phases/02-complete-audit/` document expanded checks and live-provider observations; `phase01` records the earlier baseline. Mocked tests do not prove live account permissions or detection accuracy.
+Only public HTTP(S) destinations are supported. A bare domain requests HTTP and HTTPS; an explicit scheme requests one protocol. See [API v2](docs/API.md) for consent, validation, freshness, polling, errors, and exact response fields.
 
-For dependency, model, secret, and operations checks:
+## Verify your changes
 
-```powershell
-npm audit --prefix frontend
-npm audit --prefix backend-worker
-npm run test:model
-npm run scan:secrets
-npm run check:ops
+```bash
+npm run check          # typecheck, lint, contract/API/web tests, production build
+npm run test:model     # checked-in model integrity and native/edge parity
+npm run scan:secrets   # redacted Gitleaks source and history scan
+npm run check:ops      # operations configuration checks
 ```
 
-CI gates full dependency trees, model parity, real secret scanning, and alert rules. Evaluate development-tool advisories separately from shipped code; an audit pass is not a security certification.
+For browser coverage:
 
-## Limitations and research
+```bash
+npm --prefix frontend exec -- playwright install chromium
+npm --prefix frontend run test:e2e
+```
 
-No held-out benchmark establishes that phishX outperforms SENTINEL-X or another scanner. The comparison audit supplied requirements, not comparative detection measurements. URLhaus focuses on malware distribution, not all phishing. VirusTotal provides historical vendor intelligence, not fresh independent scans of every submitted URL. Explainable heuristics are not calibrated probabilities.
+On Windows, the Playwright configuration defaults to installed Chrome at `C:/Program Files/Google/Chrome/Application/chrome.exe`. For portable Chrome/Chromium, set `$env:PLAYWRIGHT_CHROMIUM_EXECUTABLE` to its executable path before running the tests.
 
-The new model has an executed temporal/domain-disjoint held-out evaluation, with documented false positives and substantial false negatives, in `model/`. Archived notebook accuracy does not describe this scanner. [Research limitations](docs/RESEARCH.md) cover duplicate rows, leakage risk, extractor defects, and environment gaps. Newly created, targeted, compromised, or cloaked sites can evade reputation checks and URL-only analysis.
+| Verification recorded on 3 November 2026 | Coverage |
+| :--- | :--- |
+| Contract and monitor tests | 44 cases |
+| Backend tests | 176 cases |
+| Frontend tests | 54 cases; **274 combined cases** across these three suites |
+| Controlled browser tests | 26 desktop/mobile cases |
+| Model verification | 100 native/edge prediction fixtures and 23 feature controls |
+| Python training pipeline | Five cases in the earlier recorded pipeline run; not a new run |
 
-**A report says “No known threats detected”—never “safe to visit.”**
+Controlled browser/provider fixtures check behavior, not live detection accuracy or account permissions. CI also runs dependency audits, the controlled benchmark, a Worker dry run, and browser tests. See the [current UI/Gemini verification](.planning/quick/261103-ltf-restore-original-animated-ui-and-visible/261103-ltf-VERIFICATION.md) and [full audit verification](.planning/phases/02-complete-audit/02-VERIFICATION.md) for evidence and scope.
 
-## Docs and operations
+## The model and its limits
 
-- [API v2](docs/API.md)
-- [Privacy and retention](docs/PRIVACY.md)
-- [Threat model](docs/THREAT-MODEL.md)
-- [Deployment](docs/DEPLOYMENT.md)
-- [Operations](docs/OPERATIONS.md)
-- [Technical audit](docs/TECHNICAL-AUDIT.md)
-- [Audit traceability](docs/AUDIT-TRACEABILITY.md)
-- [Research limitations](docs/RESEARCH.md)
+The checked-in XGBoost model is trained from URL structure using PhiUSIIL and PhreshPhish data. Its 69-feature implementation is shared between training and serving; the Worker evaluates 160 numeric trees locally. HTTP/HTTPS alone cannot change its estimate.
 
-A [free GitHub Actions availability monitor](docs/FREE-MONITORING.md) is prepared and live-tested. Source publication, a repository metrics secret, and verified notification delivery are still required; a temporary successful Prometheus scrape does not establish ongoing alerting.
+The current operating point favors few false positives and misses many phishing URLs. These are **historical fixed-test results on 103,379 URLs**, not production accuracy:
+
+| Precision | Recall | False negative rate | False positive rate | AUROC |
+| :---: | :---: | :---: | :---: | :---: |
+| 99.148% | 48.657% | **51.343%** | 0.4293% | 0.95607 |
+
+**The same fixed test had already been viewed for v1.** The v2 result is a repeated evaluation, not a fresh untouched benchmark. Dataset prevalence and historical labels also limit interpretation; these metrics do not establish superiority over another scanner. Newly created, targeted, compromised, or cloaked sites can evade URL-only analysis and reputation services.
+
+Model estimates support warnings; they are not probabilities that visiting a site is safe. Read the [model card](model/MODEL-CARD.md) for splits, known false positives, calibration, and experiment history, or [reproduce the pipeline](ml/README.md).
+
+## Privacy by design and by choice
+
+- **Submission is sharing.** Configured reputation/active-scan providers may receive the URL, including its path and query. Sensitive-parameter consent cannot recognize every secret; avoid confidential or single-use links.
+- **Unlisted is not private.** Cloudflare scans request unlisted visibility, but a report identifier can still grant access. Providers apply their own retention rules; cancellation cannot undo an accepted submission.
+- **History stays optional.** Browser history is off by default, capped at 50 summaries/seven days, and redacts query values/fragments. Sensitive path segments may remain.
+- **Jobs expire quickly.** Active jobs have a three-minute deadline; production object deletion is scheduled for that deadline plus sixty seconds. Cache values can still contain URL/report data.
+- **Gemini gets compact context.** It receives the verdict, bounded evidence IDs/titles/severity, and aggregate provider coverage/status. The submitted URL, path/query, and page content are excluded. Validated IDs drive deterministic displayed wording.
+
+[Read the full privacy and retention policy →](docs/PRIVACY.md)
+
+## Deploy and operate
+
+Deploy the Worker first, then build the frontend against its HTTPS origin. Set exact CORS origins, regenerate binding types after configuration changes, and allow that API origin in the frontend CSP. Never enable the localhost development bypass publicly. [Follow the deployment guide →](docs/DEPLOYMENT.md)
+
+Protected OpenMetrics expose aggregate provider, verdict, and admission metrics without URL/client labels. Six Prometheus alert rules have tested behavior. The GitHub availability workflow is published; its repository secret and notification delivery remain unverified. Continuous provider alerts require a persistent monitoring host and verified delivery. [Operations](docs/OPERATIONS.md) · [Free monitoring](docs/FREE-MONITORING.md)
+
+## Documentation
+
+| Guide | Start here when you want to… |
+| :--- | :--- |
+| [API reference](docs/API.md) | Integrate scans and understand the v2 report contract |
+| [Deployment](docs/DEPLOYMENT.md) | Configure and release the Worker and frontend |
+| [Privacy](docs/PRIVACY.md) | Understand third-party sharing, storage, and retention |
+| [Threat model](docs/THREAT-MODEL.md) | Review trust boundaries and mitigations |
+| [Operations](docs/OPERATIONS.md) | Manage budgets, secrets, metrics, and alerts |
+| [Free monitoring](docs/FREE-MONITORING.md) | Configure the published availability workflow |
+| [Model card](model/MODEL-CARD.md) | Assess training data, measured results, and limitations |
+| [ML workflow](ml/README.md) | Verify artifacts or reproduce training |
+| [Research notes](docs/RESEARCH.md) | Explore historical experiments and research caveats |
+| [Audit traceability](docs/AUDIT-TRACEABILITY.md) | Follow requirements through implementation and verification |
+
+## Contribute
+
+Open an [issue](https://github.com/athx1337/phishX/issues) with a reproducible example and expected behavior. Keep confidential URLs and credentials out of reports. For code changes, create a scoped branch, run the relevant checks above, and update docs when behavior or configuration changes. Use synthetic fixtures for provider tests.
+
+Maintained by [athx1337](https://github.com/athx1337). Contributions that improve evidence quality, accessibility, test coverage, and reproducibility are welcome.
 
 ## Credits and license
 
-Historical research was adapted from [Shreya Gopal's project](https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques). phishX is licensed under MIT; see [LICENSE](LICENSE).
+Code is available under the [MIT license](LICENSE). Training datasets and model derivatives carry separate [CC BY 4.0 attribution and terms](model/LICENSE-DATA.md); the code license does not replace them. Unicode confusables include the [Unicode V3 notice](backend-worker/src/data/UNICODE-LICENSE.txt).
 
-Unicode confusables carry their [Unicode V3 notice](backend-worker/src/data/UNICODE-LICENSE.txt). Training datasets and model derivatives have separate [attribution and terms](model/LICENSE-DATA.md); the code's MIT license does not replace those terms.
+Historical research was adapted from [Shreya Gopal's phishing-detection project](https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques). Dataset authors and contributors are credited in the model documentation.
