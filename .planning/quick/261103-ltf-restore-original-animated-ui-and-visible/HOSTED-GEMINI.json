@@ -1,0 +1,93 @@
+{
+  "checked_at": "2026-11-03T13:36:43.104Z",
+  "checks": [
+    {
+      "check": "zero-warning-control",
+      "http_status": 200,
+      "seconds": 2.705,
+      "verdict": "unknown",
+      "ai": {
+        "source": "gemini",
+        "status": "complete",
+        "model": "gemini-2.5-flash",
+        "evidence_ids": []
+      },
+      "coverage": {
+        "total": 4,
+        "completed": 3,
+        "detected": 0,
+        "no_detection": 3,
+        "unavailable": 0,
+        "error": 0,
+        "pending": 1,
+        "unknown": 0,
+        "sufficient": true
+      },
+      "model": "xgb-url-2026-11-03-v2",
+      "provider_statuses": [
+        {
+          "id": "gsb",
+          "status": "no_detection"
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection"
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection"
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "check": "official-google-positive",
+      "http_status": 200,
+      "seconds": 2.309,
+      "verdict": "malicious",
+      "ai": {
+        "source": "gemini",
+        "status": "complete",
+        "model": "gemini-2.5-flash",
+        "evidence_ids": [
+          "gsb-0",
+          "vt-vendor-flags",
+          "xgboost-warning"
+        ]
+      },
+      "coverage": {
+        "total": 4,
+        "completed": 3,
+        "detected": 2,
+        "no_detection": 1,
+        "unavailable": 0,
+        "error": 1,
+        "pending": 0,
+        "unknown": 0,
+        "sufficient": true
+      },
+      "model": "xgb-url-2026-11-03-v2",
+      "provider_statuses": [
+        {
+          "id": "gsb",
+          "status": "detected"
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection"
+        },
+        {
+          "id": "virustotal",
+          "status": "detected"
+        },
+        {
+          "id": "cloudflare",
+          "status": "error"
+        }
+      ]
+    }
+  ]
+}

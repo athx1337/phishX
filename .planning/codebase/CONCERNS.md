@@ -22,7 +22,7 @@ Analysis date: 2026-11-03
 - Unlisted remote reports can be accessible to anyone with provider report IDs.
 - Full URL paths may carry secrets that parameter heuristics cannot detect.
 - Full frontend/backend dependency audits now report zero advisories; future dependency drift still needs continuous review.
-- Optional 3D chunk is large but excluded from the initial load and user-enabled.
+- Decorative 3D chunk remains large; restored waves/X load automatically on capable default-motion browsers. Pause/reduced motion, low-power and static fallbacks bound the animation lifecycle.
 
 ## Research concerns
 - Executed historical time/domain-isolated model benchmark exists; repeated fixed-test evaluation, source bias, substantial FNR and real-traffic calibration remain explicit limits.
@@ -32,4 +32,4 @@ Analysis date: 2026-11-03
 - Genuine v2 model inference is active; FNR51.343%, FPR0.4293% on the historical fixed test, with a documented benign Gist false positive. A fresh independently collected benchmark and campaign-level analysis remain necessary before broad accuracy claims.
 
 ## Current release boundary
-Matching public Vercel/Worker releases are live and verified; see phase02 production evidence. A real temporary Prometheus scraper worked and was stopped. The free GitHub availability workflow is prepared/live-tested locally; publication, a repository metrics secret and personal failure-notification preferences remain pending. Persistent provider-rate monitoring, delivery, platform retention and billing settings remain operational requirements. The existing working tree is uncommitted/unpushed.
+Matching public Vercel/Worker releases are live and verified; see phase02 production evidence. A real temporary Prometheus scraper worked and was stopped. The free GitHub availability workflow is prepared/live-tested locally; a repository metrics secret and personal failure-notification preferences remain pending. Persistent provider-rate monitoring, delivery, platform retention and billing settings remain operational requirements. The initial source release was committed and pushed as `dc1b315`; later UI/Gemini changes are tracked as quick task `261103-ltf`.

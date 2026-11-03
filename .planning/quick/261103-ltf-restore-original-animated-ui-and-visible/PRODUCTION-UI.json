@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-11-03T13:47:38.289Z",
+  "checks": [
+    {
+      "device": "desktop",
+      "host_status": 200,
+      "animations_running": true,
+      "ascii_present": true,
+      "api_status": 200,
+      "verdict": "unknown",
+      "gemini": {
+        "source": "gemini",
+        "status": "complete",
+        "model": "gemini-2.5-flash"
+      },
+      "model": "xgb-url-2026-11-03-v2",
+      "overflow": false,
+      "axe_violations": [],
+      "page_errors": [],
+      "audit_console_notes": [
+        "axe stylesheet inspection blocked by existing connect-src policy; ordinary stylesheet loading succeeded"
+      ]
+    },
+    {
+      "device": "mobile",
+      "host_status": 200,
+      "animations_running": true,
+      "ascii_present": true,
+      "api_status": 200,
+      "verdict": "malicious",
+      "gemini": {
+        "source": "gemini",
+        "status": "complete",
+        "model": "gemini-2.5-flash"
+      },
+      "model": "xgb-url-2026-11-03-v2",
+      "overflow": false,
+      "axe_violations": [],
+      "page_errors": [],
+      "audit_console_notes": [
+        "axe stylesheet inspection blocked by existing connect-src policy; ordinary stylesheet loading succeeded"
+      ]
+    }
+  ]
+}

@@ -12,7 +12,7 @@ Analysis date: 2026-11-03
 - Frontend React 19 with Vite 7.
 - Tailwind 3/PostCSS styling.
 - Motion animation library.
-- Optional Three.js visual loaded on explicit user action.
+- Original Three.js wave background and ASCII X restored automatically for capable default-motion browsers; pause/reduced-motion/static fallback retained.
 
 ## Packages
 - Hono routing and body-limit middleware.

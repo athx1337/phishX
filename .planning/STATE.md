@@ -24,13 +24,19 @@ Last activity: 2026-11-03 — matching public frontend/API deployed; real model/
 Progress: 100% of the two implementation plans; not a claim that ongoing alert delivery or all research limitations are resolved.
 
 ## Accumulated Context
-Baseline: existing dirty worktree, preserved. No project commits requested.
-Current verification: 43 shared/monitor tests, 144 backend tests, 45 frontend tests, 16 browser cases and five Python pipeline tests. Native/edge parity passed for 100 predictions and 23 feature fixtures. Full dependency audits report zero vulnerabilities; real Gitleaks/promtool checks pass. See phases/02-complete-audit/02-VERIFICATION.md and docs/AUDIT-TRACEABILITY.md.
-Live: https://phish-x.vercel.app and https://backend-worker.phish-x.workers.dev. Worker ff7d48c9-1257-43a1-84f8-b5195cc8b6f6; Vercel dpl_GRoyafL8SgXfCX5prbwSDkQspUKK. Genuine model xgb-url-2026-11-03-v2.
-Next: Publish reviewed source when authorized, add the GitHub repository metrics secret and verify failure-notification delivery; see docs/FREE-MONITORING.md. No authenticated GitHub write session is established. Do not auto-commit the pre-existing dirty tree.
+Baseline: earlier user changes were preserved and included in the user-authorized source release `dc1b315`, pushed to `athx1337/phishX` on main with author athx1337 <standoffak92@gmail.com>.
+Current verification: 44 shared/monitor tests, 176 backend tests, 54 frontend tests and 26 browser cases. The unchanged ML pipeline previously passed five Python tests. Native/edge parity passed for 100 predictions and 23 feature fixtures. Full dependency audits report zero vulnerabilities; real Gitleaks/promtool checks pass. See phases/02-complete-audit/02-VERIFICATION.md and docs/AUDIT-TRACEABILITY.md.
+Live: https://phish-x.vercel.app and https://backend-worker.phish-x.workers.dev. Worker 2c80f543-c4e1-43fb-8c3c-a08c502f181e; Vercel dpl_Bu6qzmnXKStPoH1fLVtdDvDcwBBL. UI/Gemini code commit 5308218. Genuine model xgb-url-2026-11-03-v2.
+Next: Review user feedback on the restored original design. Monitoring still needs the repository metrics secret and verified notification delivery; source publication/Git authentication and the UI/Gemini deployment are verified.
 
 ### Blockers/Concerns
-Cloudflare/Vercel logins, actual provider calls and public deployment are verified; prior permission/account uncertainty is superseded. OAuth MCP/plugin setup requires a Codex reload to expose newly registered tools in this chat. Ongoing alerts are not active: a temporary real Prometheus scraper was stopped, and the free GitHub availability workflow exists locally only. Provider billing alerts, enforced rotation/log-retention policy, human assistive-technology review and multi-region load checks are unverified. Model recall48.657% / FNR51.343%, benign Gist false positive, source bias and repeated fixed-test evaluation are disclosed; a fresh independent benchmark is still needed. Temporary isolated Cloudflare audit Worker/KV resources remain for review. Source changes are uncommitted/unpushed.
+Cloudflare/Vercel logins, actual provider calls and public deployment are verified; prior permission/account uncertainty is superseded. OAuth MCP/plugin setup requires a Codex reload to expose newly registered tools in this chat. A temporary real Prometheus scraper was stopped; the free GitHub availability workflow is published but its metrics secret and delivery remain unverified. Provider billing alerts, enforced rotation/log-retention policy, human assistive-technology review and multi-region load checks are unverified. Model recall48.657% / FNR51.343%, benign Gist false positive, source bias and repeated fixed-test evaluation are disclosed; a fresh independent benchmark is still needed. Temporary isolated Cloudflare audit Worker/KV resources remain for review.
+
+## Quick Tasks Completed
+
+| Task | Description | Date | Code commit | Verification |
+| --- | --- | --- | --- | --- |
+| [261103-ltf](quick/261103-ltf-restore-original-animated-ui-and-visible/261103-ltf-SUMMARY.md) | Original animated UI and visible working Gemini restored; audited features preserved | 2026-11-03 | 5308218 | Passed local suites and actual public desktop/mobile scans |
 
 ## Session Continuity
-Last session: 2026-11-03. Resumed GSD state, completed free-monitor research/configuration and reconciled formal verification. Read phase02 SUMMARY/VERIFICATION, docs/TECHNICAL-AUDIT.md and docs/FREE-MONITORING.md before further work.
+Last session: 2026-11-03. Completed original-design/Gemini restoration. Read quick 261103-ltf SUMMARY/VERIFICATION for current release; phase02 records the prior audit baseline. Gemini 2.5 Flash status/provenance is real and visible; no security/evidence policy was reverted.
