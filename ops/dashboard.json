@@ -1,0 +1,155 @@
+{
+  "title": "phishX aggregate health",
+  "uid": "phishx-health",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "label": "Prometheus",
+        "type": "datasource",
+        "query": "prometheus"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Provider request rate",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (provider, outcome) (rate(phishx_provider_requests_total[5m]))",
+          "legendFormat": "{{provider}} {{outcome}} {{verdict}} {{route}} {{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Provider p95 latency",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 0,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.95, sum by (provider, le) (rate(phishx_provider_duration_seconds_bucket[10m])))",
+          "legendFormat": "{{provider}} {{outcome}} {{verdict}} {{route}} {{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Official verdict rate",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (verdict) (rate(phishx_scan_results_total[5m]))",
+          "legendFormat": "{{provider}} {{outcome}} {{verdict}} {{route}} {{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Active concurrency leases",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 8,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "phishx_active_leases",
+          "legendFormat": "{{provider}} {{outcome}} {{verdict}} {{route}} {{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Admission rejections",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (route, reason) (rate(phishx_admission_rejected_total[5m]))",
+          "legendFormat": "{{provider}} {{outcome}} {{verdict}} {{route}} {{reason}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "Open provider circuits",
+      "type": "timeseries",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 16,
+        "w": 12,
+        "h": 8
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "phishx_provider_circuit_open",
+          "legendFormat": "{{provider}} {{outcome}} {{verdict}} {{route}} {{reason}}"
+        }
+      ]
+    }
+  ]
+}

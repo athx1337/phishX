@@ -1,0 +1,27 @@
+{
+  "name": "phishx",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Evidence-driven URL threat analysis",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev:api": "npm --prefix backend-worker run dev",
+    "dev:web": "npm --prefix frontend run dev",
+    "typecheck": "npm --prefix backend-worker run typecheck",
+    "lint": "npm --prefix frontend run lint",
+    "test:api": "npm --prefix backend-worker run test -- --run",
+    "test:web": "npm --prefix frontend run test",
+    "test:contract": "node --experimental-strip-types --test tests/*.test.mjs",
+    "test": "npm run test:contract && npm run test:api && npm run test:web",
+    "build": "npm --prefix frontend run build",
+    "check": "npm run typecheck && npm run lint && npm run test && npm run build",
+    "scan:secrets": "node scripts/secret-scan.mjs",
+    "check:ops": "node scripts/check-ops.mjs",
+    "test:model": "node ml/verify.mjs",
+    "benchmark:controlled": "npm --prefix backend-worker run build:check -- --outdir .wrangler/benchmark && node scripts/benchmark-controlled.mjs --record",
+    "package:web": "node scripts/package-web.mjs"
+  }
+}

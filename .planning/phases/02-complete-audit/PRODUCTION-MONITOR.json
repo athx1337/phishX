@@ -1,0 +1,8 @@
+{
+  "check": "actual-prometheus-production-scrape",
+  "runtime": "Checksummed Prometheus3.15.1 temporary private local process; actual public Worker metrics",
+  "health": "up",
+  "last_error": "",
+  "scrape_seconds": 0.5962549,
+  "loaded_rules": 6
+}

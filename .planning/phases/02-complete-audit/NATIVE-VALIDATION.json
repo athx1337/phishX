@@ -1,0 +1,173 @@
+{
+  "runtime": "Actual local workerd via Wrangler with native SQLite Durable Object and local KV, live external providers",
+  "checks": [
+    {
+      "check": "native-worker-with-real-DO-KV-providers",
+      "status": 200,
+      "seconds": 3.015,
+      "verdict": "unknown",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "unavailable",
+          "errors": [
+            "MISSING_CREDENTIALS"
+          ]
+        },
+        {
+          "id": "virustotal",
+          "status": "unavailable",
+          "errors": [
+            "MISSING_CREDENTIALS"
+          ]
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "actual_cloudflare_reports": 0,
+      "destinations": 0,
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "native-active-poll-1",
+      "status": 200,
+      "seconds": 2.659,
+      "verdict": "unknown",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "unavailable",
+          "errors": [
+            "MISSING_CREDENTIALS"
+          ]
+        },
+        {
+          "id": "virustotal",
+          "status": "unavailable",
+          "errors": [
+            "MISSING_CREDENTIALS"
+          ]
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "actual_cloudflare_reports": 0,
+      "destinations": 0,
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "native-active-poll-2",
+      "status": 200,
+      "seconds": 2.531,
+      "verdict": "unknown",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "unavailable",
+          "errors": [
+            "MISSING_CREDENTIALS"
+          ]
+        },
+        {
+          "id": "virustotal",
+          "status": "unavailable",
+          "errors": [
+            "MISSING_CREDENTIALS"
+          ]
+        },
+        {
+          "id": "cloudflare",
+          "status": "error",
+          "errors": [
+            "SCAN_FAILED"
+          ]
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "actual_cloudflare_reports": 0,
+      "destinations": 0,
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "real-DO-metrics",
+      "status": 200,
+      "provider_counters": true,
+      "active_leases": [
+        "phishx_active_leases{route=\"scan\"} 0",
+        "phishx_active_leases{route=\"poll\"} 0",
+        "phishx_active_leases{route=\"active\"} 0"
+      ]
+    }
+  ]
+}

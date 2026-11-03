@@ -1,0 +1,36 @@
+# GSD plan review — 2026-11-03
+
+Verdict: Approved after the following parent-accepted policy is incorporated into implementation and tests. The planned architecture correctly addresses the supplied audit and the local code audit. No implementation rewrite or live superiority claim is necessary.
+
+## Parent-accepted decisions
+
+- Coverage denominator is four remote providers: Google Safe Browsing, URLhaus, VirusTotal, and Cloudflare. A provider is completed only when every requested protocol has a fresh conclusive target result (`detected` or `no_detection`). Heuristics never inflate this count.
+- `no_known_threats` requires at least two independent fresh reputation providers among GSB/URLhaus/VT, each covering every requested target, and no suspicious/detected evidence. Optional unavailable Cloudflare and other unavailable/error providers remain visible but need not veto sufficient reputation coverage. Pending active inspection prevents a no-threat verdict until terminal. Positive malicious/suspicious evidence takes precedence over pending/failed checks.
+- A stale VirusTotal positive contributes suspicious evidence; a stale negative is unknown and contributes no clean coverage. Implement explicit freshness thresholds and documented strong/weak VT counts.
+- Async jobs use a cryptographically unpredictable UUID, no-store responses, application-enforced expiry, separate polling budget and persistent lifecycle. Job/storage errors fail closed without replacing confirmed evidence. Do not expose provider identifiers.
+- Parent will tighten shared runtime validation before delegation. The remaining review requirements below become implementation/test acceptance criteria.
+
+## Blocking clarifications
+
+1. **Define coverage and verdict policy as a pure function before both executors begin.** The plan says "sufficient fresh coverage" without a numeric policy. Specify the denominator (reputation/active targets versus heuristic engine slots), minimum qualifying providers, the required protocols, and freshness thresholds. A heuristic pass must not make reputation coverage sufficient. One successful protocol cannot make a dual-protocol provider clean. Pending, unknown, stale, missing and error states must not count toward clean coverage. A positive finding must survive unrelated partial failures. Define weak versus strong VirusTotal thresholds and stale-positive handling as explicit documented policy, not calibrated confidence.
+2. **Strengthen the shared runtime validator.** The current `isScanReport` accepts malformed domain/WHOIS/coverage/privacy fields, invalid timestamps, invalid engine kinds, missing observation fields, and malformed nested certificates/requests/links. Validate every field the UI consumes, enum values, bounded arrays, finite nonnegative integer coverage and consistent totals, actual ISO timestamps, nullable field types and safe relative polling paths. Reject unknown schema versions rather than adapting them into no-threat results. Cache/job reads require the same trust boundary. Provider response validation must distinguish `{}` from a successful clean response.
+3. **Specify async job lifecycle and privacy.** Generate at least 128 bits of unpredictable scan ID; treat it as an expiring capability. Every API response containing URLs, report data or status must use `Cache-Control: no-store`. Do not expose provider task IDs. Enforce expiry at the application layer independently of KV TTL. Rate-limit creation and polling separately, respect `next_poll_at` server-side, and terminate pending work with an explicit incomplete/error state at the deadline. Test job write/read failures and eventual missing reads; do not repeat paid scan submission as a fallback. Preserve already confirmed evidence when later polls fail.
+
+## Important implementation requirements
+
+- Document that CORS limits browser access, not unauthenticated API usage. Never rely on caller-selected `X-Forwarded-For` as a trustworthy rate-limit identity; retain a managed global/route budget where anonymous identity is unavailable. Missing limiter bindings must have a deliberate development versus production policy.
+- Partition hashed cache keys by the exact sorted protocol targets, policy/schema version, and provider configuration generation. Do not hash or log raw secret values unnecessarily. Negative expiry must be the minimum applicable provider validity, not a blanket TTL. Refresh must remain rate-limited. Test stale cached positives and malformed/legacy cache data.
+- Confirm the GSB v5 response/cache fields from current documentation before implementing. Treat threat matches as source evidence; never infer a per-target clean record from a malformed combined response. URLhaus indicates malware, not automatically credential phishing.
+- Use Public Suffix List boundaries and explicit legitimate brand-domain sets. Detect `paypal.com.verify-account.example.com` without flagging actual PayPal or ordinary login paths. IDN presence alone is not malicious; confusable/typo matches need bounded, explainable corroboration.
+- Reject credentials, control characters, unsupported schemes and prohibited IP forms. Validate every DNS answer used for active submission; explicitly document that the Worker does not control the provider's later DNS resolution or redirects, so it cannot guarantee provider-side rebinding defenses.
+- No-KV behavior must be functional: reputation/heuristic result still returns, active scanner is unavailable, and the UI does not poll. Distinguish pending from unavailable and never silently start polling a stale report URL.
+- Sensitive-query consent must be enforced server-side; checkboxes are not a backend boundary. Preserve the URL path/query for provider checks after consent. Opt-in history should not migrate old raw history silently; clear legacy data or require explicit migration policy.
+- Frontend cancellation must abort current request/polling and suppress late state updates. Poll results must match the original scan ID and target scope. Make cancel/refresh/new-scan actions and history state updates deterministic during polling.
+- Test rendered unknown/suspicious/malicious/no-known-threat states, provider partials, malformed schema responses, consent rejection, reduced-motion history content, focus restoration/Escape, timeout and poll cancellation.
+- The workstream dependencies must be observed: backend package/config mutations stay with the backend owner; frontend test tooling and source exports need coordination. Parent owns shared contract changes and final integration.
+
+## Verification recommendation
+
+Use a regression fixture matrix with expected verdict, source status, per-target coverage and fake telemetry absence. Include all-provider outage, one-VT-positive, strong-VT-positive, mixed protocols, stale VT, malformed provider JSON, GSB expired results, raw Gist, `microsoft.com`, uppercase schemes, IDNs and alternate private IPv4/IPv6 spellings. Use controlled asynchronous provider fixtures for cloud jobs and client polling. Full live-provider and held-out-dataset accuracy remain explicitly unverified.
+
+The clarified plan is suitable for execution without further product approval. Implementation verification must establish the accepted decisions rather than merely checking a happy-path build.

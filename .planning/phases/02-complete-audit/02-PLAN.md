@@ -1,0 +1,28 @@
+---
+phase: 02-complete-audit
+plan: 01
+type: execute
+wave: 1
+autonomous: true
+requirements: [ML-01, ML-02, ML-03, RES-01, ABUSE-01, DETECT-02, DETECT-03, AI-01, OBS-01, SEC-01, A11Y-01, AUDIT-ALL]
+---
+# Complete the remaining TXT concerns with genuine model inference
+
+## Task 1 — research, data, trained model and benchmark (ML owner)
+Own ml/**, model/**, backend-worker/src/ml.ts and backend-worker/test/ml*.spec.ts. Research primary XGBoost/data papers. Acquire legally reusable URL/label data with manifests/checksums/dates. Use exact same feature code for training and serving; remove duplicates/conflicts and split by registrable domain with train/validation/calibration/test isolation. Use timestamped holdout or external later dataset where possible; disclose unavailable timestamps/sampling limitations rather than imply temporal proof. Train actual XGBoost, select thresholds/calibration only on validation data, export real trees for deterministic bounded Worker inference. Verify native Python vs edge parity with numeric tolerance and corrupt-artifact rejection. Record precision/recall/FPR/FNR/AUC/calibration/coverage and p50/p95 inference latency, including low base-rate limitations and slices. Model positives are warning evidence; no model negative can make a URL safe. Produce reproducible scripts, dependencies, artifacts, card and heldout report, not merely scaffolding.
+
+## Task 2 — backend reliability, detection and operations (backend owner)
+Own backend-worker/** excluding ML-owned files, plus its package/lockfiles/Wrangler/types. Add resilient fixed-origin HTTP transport with whole-scan deadline, bounded selective retry/backoff and circuit breakers (never retry submission blindly). Add a Durable Object coordinator for shared route/client budgets, global concurrency leases, expiry/release and provider circuit/aggregate metric state, keeping managed fallback fail-closed. Do not trust forwarded caller identity; use trusted edge address hashed with a separate privacy secret, no raw IP storage. Add IANA-bootstrap RDAP lookup and explainable recent-registration supporting signals. Add a maintained Unicode confusable implementation with bounded branded-word matching and false-positive controls. Reassess observed final destinations through reputation/model without recursive crawling, bounded followups, preserving original protocol scope and surfacing unknown followup coverage. Validate provider-reported target/scope and prohibited destinations before active submission; no claim to control Cloudflare's internal DNS/redirects. Optional Gemini returns only validated existing evidence IDs/template choices; deterministic rendering and fixed verdict remain authoritative. Add protected aggregate metrics endpoint, provider failure/latency measurements, redacted logs and alert-ready measurements. Integrate real ML and shared extensions, preserve positive evidence on every failure. Full regressions, typegen, dry-run and local runtime tests.
+
+## Task 3 — product, accessibility, supply chain and operational evidence (product owner)
+Own frontend/** except shared/model files, plus docs/**, .github/**, operational scripts/config and root package scripts (root coordinates shared). Review this plan first and report blocking gaps, then implement. Surface genuine model identity/observations and new RDAP/destination/AI evidence without safety guarantees. Implement actual-domain copy, screen-reader result focus/announcements, viewport-visible animation lifecycle, robust cancellation and keyboard/mobile flows. Add axe accessibility checks and missing failure/screen-reader/browser cases. Close development dependency advisories with supported upgrades and tests, not silent exclusions. Add real secret-scanning CI with redacted reports, reproducible model/feature parity verification, monitoring alert rules/dashboard/runbook and credential rotation/environment separation procedures. Add full TXT section/roadmap/acceptance-criteria traceability, distinguishing real code completion from required live-account/hosted validation. Do not mark benchmark/production verification as done just because a test fixture exists.
+
+## Task 4 — root integration and independent verification
+Root owns shared API model/destination/registration/explanation contracts and adapters, GSD records and integration fixes. Preserve schema v2 compatibility where optional fields suffice, bump policy generation when model/detection semantics change; model kind excluded from remote coverage. Run end-to-end actual model parity/native inference and public-data benchmark, complete suites/lint/build/typechecks/secret scan/dependency checks, Wrangler dry-run and controlled live capability checks where credentials legitimately exist. Independently review every audit concern; don't leave uncovered lines behind a narrower milestone declaration. Record external resource/permission blockers precisely and continue independent code work. Stop only after all feasible implementation/evaluation is finished and remaining external validation is concrete and reviewable.
+
+## Gates
+- A genuine trained artifact must execute for a submitted URL in actual Worker runtime, with native-prediction parity.
+- Heldout numbers must come from executed evaluation; duplicate/domain leakage and unavailable dates are explicit.
+- No source outage/model negative/deadline/partial redirect investigation can produce unsupported reassurance.
+- Every TXT section and roadmap item has a linked implementation/test or explicit external verification requirement.
+- Existing phase01 regression suite remains passing; integration tests cover all new services in degraded modes.

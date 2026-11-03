@@ -17,8 +17,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+/lib/
+/lib64/
 parts/
 sdist/
 var/
@@ -44,3 +44,13 @@ debug.log
 # OS
 .DS_Store
 Thumbs.db
+
+# Test artifacts
+coverage/
+playwright-report/
+test-results/
+.cache/
+.vercel/
+
+# Locally installed agent tooling (project plans remain versioned)
+/.agents/

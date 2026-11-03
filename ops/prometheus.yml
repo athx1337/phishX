@@ -1,0 +1,18 @@
+global:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+rule_files:
+  - alerts.yml
+scrape_configs:
+  - job_name: phishx
+    scheme: https
+    metrics_path: /api/metrics
+    authorization:
+      type: Bearer
+      credentials_file: /run/secrets/phishx_metrics_token
+    static_configs:
+      - targets: ['backend-worker.phish-x.workers.dev']
+        labels:
+          environment: production
+# Mount the private token file; no secret belongs in this configuration.
+# Configure your existing Alertmanager route separately; no recipient is assumed.

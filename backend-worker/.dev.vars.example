@@ -1,0 +1,15 @@
+# Independent provider credentials; empty providers are explicitly unavailable.
+GOOGLE_SAFE_BROWSING_API_KEY=
+URLHAUS_API_KEY=
+VIRUSTOTAL_API_KEY=
+CLOUDFLARE_ACCOUNT_ID=
+CLOUDFLARE_API_TOKEN=
+# Generate independent random 32+ character values; use Wrangler secrets in production.
+CLIENT_ID_SECRET=
+METRICS_TOKEN=
+# This bypass only works for localhost requests; never enable in deployed environments.
+DEV_MODE=true
+# Optional evidence selection only. Gemini cannot change verdicts or author displayed facts.
+GEMINI_API_KEY=
+GEMINI_ENABLED=false
+# Increment CACHE_CONFIG_VERSION in wrangler.jsonc after credential/policy changes.

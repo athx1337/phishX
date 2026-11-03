@@ -1,0 +1,15 @@
+{
+  "mobile": {
+    "check": "real-production-mobile-positive",
+    "malicious_heading": true,
+    "genuine_model_visible": true,
+    "axe_violations": [],
+    "horizontal_overflow": false,
+    "page_errors": []
+  },
+  "optional_visual": {
+    "check": "real-production-optional-3d",
+    "decorative_chunk_loaded": true,
+    "page_errors": []
+  }
+}

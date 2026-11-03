@@ -1,0 +1,21 @@
+{
+  "verified": true,
+  "model_version": "xgb-url-2026-11-03-v2",
+  "trees": 160,
+  "features": 69,
+  "native_parity": {
+    "fixtures": 100,
+    "max_raw_probability_delta": 7.961486414576058e-8,
+    "max_margin_delta": 2.384185791015625e-7,
+    "max_calibrated_probability_delta": 6.527519014198901e-8
+  },
+  "serving_features_fixtures": 23,
+  "latency": {
+    "environment": "Node v24.19.0 win32/x64",
+    "scope": "local synchronous feature extraction plus edge tree inference, warmed up; excludes HTTP/providers",
+    "samples": 10000,
+    "p50_ms": 0.006599999999991724,
+    "p95_ms": 0.039500000000003865,
+    "p99_ms": 0.05289999999999395
+  }
+}

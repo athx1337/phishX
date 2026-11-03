@@ -1,658 +1,207 @@
-import { useState, useEffect } from 'react';
-import CloudflareDeepAnalysis from './CloudflareDeepAnalysis';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
+import { MotionConfig, useReducedMotion } from 'motion/react';
+import { hasSensitiveParameters } from '../../shared/scan';
 import Navbar from './components/Navbar';
-import HeroVisual from './components/HeroVisual';
-import HUDCard from './components/HUDCard';
-import URLScanner from './components/URLScanner';
-import HeroHeading from './components/HeroHeading';
 import Footer from './components/Footer';
-import ChromaWaves from './components/ui/chroma-waves';
+import URLScanner from './components/URLScanner';
+import ResultsDashboard from './components/ResultsDashboard';
+import HistoryDrawer from './components/HistoryDrawer';
+import Dialog from './components/Dialog';
+import HUDCard from './components/HUDCard';
+import { useReportExpiry } from './hooks/use-report-expiry';
+import { requestScan, pollScan, pingApi } from './lib/api';
+import { addToHistory, clearHistory, readHistory, readHistoryPreference, saveHistory, setHistoryPreference } from './lib/history';
+
+const HeroVisual = lazy(() => import('./components/HeroVisual'));
 
 function App() {
   const [url, setUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
-
-  // Modal states for legal docs
-  const [activeModal, setActiveModal] = useState(null);
-
-  // Loading animation states
-  const [progress, setProgress] = useState(0);
-  const [scanStep, setScanStep] = useState(0);
-
-  // System Status State ('checking', 'waking', 'awake', 'offline')
+  const [pollError, setPollError] = useState(null);
+  const [pollCancelled, setPollCancelled] = useState(false);
+  const [pollRetry, setPollRetry] = useState({ attempt: 0, next: 0, notice: null });
+  const [sensitiveConsent, setSensitiveConsent] = useState(false);
+  const [rememberHistory, setRememberHistory] = useState(readHistoryPreference);
+  const [history, setHistory] = useState(readHistory);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [legal, setLegal] = useState(null);
   const [serverStatus, setServerStatus] = useState('checking');
-  const [isWaitingForWake, setIsWaitingForWake] = useState(false);
+  const [visualEnabled, setVisualEnabled] = useState(false);
+  const requestController = useRef(null);
+  const requestVersion = useRef(0);
+  const reduceMotion = useReducedMotion();
+  const lowPower = typeof navigator !== 'undefined' && navigator.hardwareConcurrency <= 4;
+  const polling = Boolean(result?.deep_scan) && !pollError && !pollCancelled;
+  const reportExpired = useReportExpiry(result);
 
-  // Tab UI State
-  const [activeTab, setActiveTab] = useState('overview');
-
-  // Global effect to wake up backend on page load and keep it alive
   useEffect(() => {
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8787';
-
-    const pingServer = () => {
-      const timeout = setTimeout(() => {
-        setServerStatus(prev => prev === 'checking' ? 'waking' : prev);
-      }, 2000);
-
-      fetch(`${apiUrl}/api/ping`)
-        .then(res => {
-          if (res.ok || res.status === 404) setServerStatus('awake');
-          else setServerStatus('offline');
-        })
-        .catch(() => {
-          setServerStatus('waking');
-        })
-        .finally(() => {
-          clearTimeout(timeout);
-        });
-    };
-
-    pingServer();
-
-    // Heartbeat every 10 minutes to keep worker active
-    const heartbeatTimer = setInterval(pingServer, 10 * 60 * 1000);
-
-    return () => {
-      clearInterval(heartbeatTimer);
-    };
+    const controller = new AbortController();
+    pingApi({ signal: controller.signal }).then(() => setServerStatus('awake')).catch(() => {
+      if (!controller.signal.aborted) setServerStatus('offline');
+    });
+    return () => controller.abort();
   }, []);
 
-  // Simulated scan progress effect
-  useEffect(() => {
-    let interval;
-    if (loading) {
-      setProgress(0);
-      setScanStep(0);
+  useEffect(() => () => {
+    requestVersion.current += 1;
+    requestController.current?.abort();
+  }, []);
 
-      const startTime = Date.now();
-
-      interval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 95) return 95;
-
-          const newProgress = prev + Math.random() * 8;
-          const elapsedSeconds = (Date.now() - startTime) / 1000;
-
-          if (newProgress > 60) setScanStep(2);
-          else if (newProgress > 30) setScanStep(1);
-
-          if (elapsedSeconds > 15) {
-            setScanStep(3);
-          }
-
-          return newProgress;
-        });
-      }, 400);
-    } else {
-      setProgress(100);
-      setTimeout(() => {
-        setScanStep(0);
-        setProgress(0);
-      }, 500);
+  const applyReport = useCallback((report) => {
+    setResult(report);
+    if (rememberHistory) {
+      setHistory(previous => {
+        const next = addToHistory(previous, report);
+        saveHistory(next);
+        return next;
+      });
     }
+  }, [rememberHistory]);
 
-    return () => clearInterval(interval);
-  }, [loading]);
-
-  // Rapid polling effect when waiting for wake
   useEffect(() => {
-    let pollInterval;
-    if (isWaitingForWake) {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8787';
+    if (!polling || !result?.deep_scan) return;
+    const job = result.deep_scan;
+    const controller = new AbortController();
+    const deadline = Date.parse(job.expires_at);
+    const deadlineTimer = setTimeout(() => {
+      controller.abort();
+      setPollError('Active inspection expired. The report below is partial; do not treat missing checks as reassurance.');
+    }, Math.max(0, deadline - Date.now()));
+    const timer = setTimeout(async () => {
+      if (Date.now() >= deadline) {
+        setPollError('Active inspection expired. The report below is partial; do not treat missing checks as reassurance.');
+        return;
+      }
+      try {
+        const updated = await pollScan(job.poll_path, { signal: controller.signal });
+        if (controller.signal.aborted) return;
+        if (Date.now() >= deadline) {
+          setPollError('Active inspection expired before its response arrived. The last report remains partial.');
+          return;
+        }
+        if (updated.scan_id !== result.scan_id || updated.url !== result.url ||
+            updated.checked_urls.length !== result.checked_urls.length ||
+            updated.checked_urls.some((target, index) => target !== result.checked_urls[index])) {
+          throw new Error('The scan service returned a report for a different URL or inspection scope.');
+        }
+        if (!controller.signal.aborted) {
+          setPollRetry({ attempt: 0, next: 0, notice: null });
+          applyReport(updated);
+        }
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          if ([404, 503].includes(err.status) && pollRetry.attempt < 3 && Date.now() + 10000 < deadline) {
+            setPollRetry({ attempt: pollRetry.attempt + 1, next: Date.now() + 10000,
+              notice: `The active report is temporarily unavailable. Retrying (${pollRetry.attempt + 1}/3); the observations below remain partial.` });
+          } else setPollError(`${err.message} The last report remains partial.`);
+        }
+      }
+    }, Math.max(1000, Math.min(Math.max(Date.parse(job.next_poll_at), pollRetry.next), deadline) - Date.now()));
+    return () => { clearTimeout(timer); clearTimeout(deadlineTimer); controller.abort(); };
+  }, [result, polling, applyReport, pollRetry]);
 
-      const poll = () => {
-        fetch(`${apiUrl}/api/ping`)
-          .then(res => {
-            if (res.ok || res.status === 404) {
-              setServerStatus('awake');
-            }
-          })
-          .catch(() => {
-            setServerStatus('waking');
-          });
-      };
+  const changeUrl = (value) => { setUrl(value); setSensitiveConsent(false); setError(null); };
+  const changeRememberHistory = (enabled) => {
+    setRememberHistory(enabled);
+    setHistoryPreference(enabled);
+    if (!enabled) { clearHistory(); setHistory([]); }
+  };
 
-      pollInterval = setInterval(poll, 3000);
-      poll();
-    }
-    return () => {
-      if (pollInterval) clearInterval(pollInterval);
-    };
-  }, [isWaitingForWake]);
-
-  const checkUrl = async (e) => {
-    if (e && e.preventDefault) e.preventDefault();
-    if (!url) return;
-
-    if (serverStatus !== 'awake') {
-      setIsWaitingForWake(true);
+  const startScan = async (targetUrl, refresh = false) => {
+    if (!targetUrl.trim() || loading) return;
+    if (hasSensitiveParameters(targetUrl) && !sensitiveConsent) {
+      setError('Please acknowledge the sensitive information warning before submitting this URL.');
       return;
     }
-
-    setLoading(true);
-    setResult(null);
-    setError(null);
-    setIsWaitingForWake(false);
-
+    requestController.current?.abort();
+    const controller = new AbortController();
+    requestController.current = controller;
+    const version = ++requestVersion.current;
+    setLoading(true); setResult(null); setError(null); setPollError(null); setPollCancelled(false);
+    setPollRetry({ attempt: 0, next: 0, notice: null });
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8787';
-      const response = await fetch(`${apiUrl}/api/verify`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ url })
-      });
-
-      if (!response.ok) {
-        throw new Error("Verification failed. Server returned an error.");
+      const report = await requestScan({ url: targetUrl, refresh, sensitive_url_consent: sensitiveConsent }, { signal: controller.signal });
+      if (!controller.signal.aborted && version === requestVersion.current) {
+        applyReport(report);
+        setServerStatus('awake');
       }
-
-      const data = await response.json();
-      setResult(data);
     } catch (err) {
-      setError(err.message);
+      if (!controller.signal.aborted && version === requestVersion.current) setError(err.message);
     } finally {
-      setLoading(false);
+      if (version === requestVersion.current) setLoading(false);
     }
   };
 
-  // Effect to auto-start the scan once the server announces it is awake
-  useEffect(() => {
-    if (isWaitingForWake && serverStatus === 'awake' && url) {
-      setIsWaitingForWake(false);
-      checkUrl();
-    }
-  }, [serverStatus, isWaitingForWake]);
-
+  const cancelRequest = () => {
+    requestVersion.current += 1;
+    requestController.current?.abort();
+    setLoading(false); setError('Request cancelled. Providers may still finish requests already submitted.');
+  };
   const resetScan = () => {
-    setResult(null);
-    setUrl('');
-    setError(null);
-    setActiveTab('overview');
+    requestVersion.current += 1;
+    requestController.current?.abort();
+    setLoading(false); setResult(null); setError(null); setPollError(null); setPollCancelled(false);
+    setPollRetry({ attempt: 0, next: 0, notice: null });
   };
 
   return (
-    <div className="bg-[#050507] text-[#f5f5f5] min-h-screen flex flex-col font-sans antialiased selection:bg-[#8b5cf6]/20 selection:text-[#c084fc] relative">
-      
-      {/* Background Layers */}
-      <div className="fixed inset-0 pointer-events-none z-0 opacity-[0.45]">
-        <ChromaWaves 
-          color="#ffffff"
-          backgroundColor="#130826"
-          waveFrequency={0.2}
-          waveAmplitude={0.8}
-          distortion={1.2}
-          chromaShift={0.5}
-          noiseLevel={0.06}
-          speed={0.15}
-          quality="low"
-        />
+    <MotionConfig reducedMotion="user">
+      <div className="min-h-screen bg-[#050507] text-[#f5f5f5] flex flex-col font-sans antialiased relative overflow-x-hidden">
+        <a href="#main" className="skip-link">Skip to scanner</a>
+        <div aria-hidden="true" className="pointer-events-none fixed inset-0 purple-glow" />
+        <Navbar serverStatus={serverStatus} onHistoryClick={() => setHistoryOpen(true)} />
+        <main id="main" tabIndex={-1} className="flex-1 relative pt-28 pb-16 px-5 sm:px-8">
+          <div className="max-w-7xl mx-auto grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
+            <div className="min-w-0 space-y-8">
+              {!result && <div className="space-y-4">
+                <p className="text-violet-400 font-mono text-xs tracking-[0.2em]">/// EVIDENCE BEFORE TRUST</p>
+                <h1 className="font-gothic-block text-5xl sm:text-7xl leading-[0.95] font-extrabold tracking-tight">DETECT<br /><span className="phishing-italic normal-case">phishing.</span><br />STAY INFORMED.</h1>
+                <p className="text-sm text-slate-300 max-w-xl leading-relaxed">Understand an unfamiliar URL with explainable URL analysis and independent threat intelligence. See what was found, what was checked, and what remains unknown.</p>
+              </div>}
+              {!result ? <URLScanner url={url} setUrl={changeUrl} loading={loading} error={error}
+                onSubmit={event => { event.preventDefault(); startScan(url); }} onCancel={cancelRequest}
+                sensitiveConsent={sensitiveConsent} setSensitiveConsent={setSensitiveConsent}
+                rememberHistory={rememberHistory} setRememberHistory={changeRememberHistory} />
+                : <><h1 className="sr-only">URL inspection report</h1><ResultsDashboard result={result} resetScan={resetScan} onRescan={() => startScan(result.url, true)}
+                  expired={reportExpired}
+                  polling={polling} pollError={pollError} pollNotice={pollRetry.notice} pollingStopped={pollCancelled} onCancelPolling={() => setPollCancelled(true)} />
+                  {error && <p role="alert" className="text-sm text-red-300">{error}</p>}</>}
+            </div>
+            <aside aria-label="Scan information" className="space-y-4 lg:sticky lg:top-28 min-w-0">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <HUDCard type="verdict" loading={loading} result={result} error={error} expired={reportExpired} />
+                <HUDCard type="coverage" loading={loading} result={result} error={error} expired={reportExpired} />
+                <HUDCard type="model" loading={loading} result={result} expired={reportExpired} />
+                <HUDCard type="provenance" loading={loading} result={result} expired={reportExpired} />
+              </div>
+              {!reduceMotion && !lowPower && <div className="hidden lg:block rounded-lg border border-white/5 min-h-20 overflow-hidden">
+                {visualEnabled ? <Suspense fallback={<p className="p-6 text-xs text-slate-400">Loading optional visualization…</p>}><div className="h-80" aria-hidden="true"><HeroVisual /></div></Suspense>
+                  : <button type="button" onClick={() => setVisualEnabled(true)} className="w-full p-6 text-xs text-violet-300 hover:bg-white/5">Enable decorative 3D visualization</button>}
+              </div>}
+              <p className="text-xs leading-relaxed text-slate-400 px-1">A report is a snapshot of available evidence. Newly created attacks and cloaked content can evade checks. No result guarantees that a website is safe.</p>
+            </aside>
+          </div>
+        </main>
+        <Footer onLegalClick={setLegal} />
+        <HistoryDrawer isOpen={historyOpen} onClose={() => setHistoryOpen(false)} history={history}
+          onClear={() => { clearHistory(); setHistory([]); }} rememberHistory={rememberHistory} onRememberChange={changeRememberHistory} />
+        <Dialog open={Boolean(legal)} onClose={() => setLegal(null)} title={legal === 'privacy' ? 'Privacy and data sharing' : 'Terms and limitations'}>
+          {legal === 'privacy' ? <div className="space-y-4 text-sm leading-relaxed text-slate-300">
+            <p>Submitting a URL shares its address, including its path and query parameters, with the configured Google Safe Browsing, URLhaus, VirusTotal and Cloudflare services. Registration lookups send the domain name to its RDAP registry, discovered through IANA. These providers apply their own retention policies.</p>
+            <p>Cloudflare active scans are requested as unlisted. Unlisted reports are accessible to anyone who knows their report ID; this does not mean private or immediately deleted.</p>
+            <p>When configured, the backend keeps short-lived scan jobs and cached reports with observation and expiry times. Provider requests already submitted cannot be recalled when you cancel the browser request.</p>
+            <p>History is off by default. Enabling it saves up to 50 redacted summaries on this device for seven days. Query values and fragments are omitted; a sensitive value embedded in a path may still be present. You can clear history or turn it off at any time.</p>
+            <p>Do not submit confidential or single-use links. The sensitive-parameter warning is a convenience and cannot recognize every secret.</p>
+          </div> : <div className="space-y-4 text-sm leading-relaxed text-slate-300">
+            <p>phishX is an educational URL analysis tool. Its official outcomes are malicious, suspicious, no known threats detected, and unable to determine.</p>
+            <p>URL heuristics and the trained XGBoost URL model are separate local evidence sources. A model output is not the probability that visiting a URL is safe. Missing, stale, failed and pending checks do not establish trust. No-known-threats describes available observations and is not permission to visit a URL.</p>
+            <p>Use independent judgment and established security controls. The operator cannot guarantee detection of new threats or third-party service availability.</p>
+          </div>}
+        </Dialog>
       </div>
-      {/* Dark vignette to ensure text legibility */}
-      <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(ellipse_100%_100%_at_0%_20%,rgba(0,0,0,0.85)_0%,rgba(0,0,0,0)_80%)]"></div>
-      <div className="fixed inset-0 purple-glow pointer-events-none z-0"></div>
-
-      {/* Navigation */}
-      <Navbar serverStatus={serverStatus} onNavClick={setActiveModal} />
-
-      {/* Main Container */}
-      <main className="flex-1 flex flex-col pt-24 relative z-10">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center py-12 w-full">
-          
-          {/* Left Column: Dynamics (Scanner/Welcome OR Results Display) */}
-          <div className="lg:col-span-7 space-y-8 text-left w-full">
-            {!result ? (
-              /* SCANNER & WELCOME TEXT */
-              <div className="space-y-8">
-                <div className="space-y-4">
-                  <HeroHeading />
-                </div>
-
-                {/* Glassmorphic Scanner Box */}
-                <div className="max-w-xl">
-                  <URLScanner 
-                    url={url} 
-                    setUrl={setUrl} 
-                    onSubmit={checkUrl}
-                    loading={loading} 
-                    isWaitingForWake={isWaitingForWake} 
-                    error={error}
-                    progress={progress} 
-                    scanStep={scanStep}
-                  />
-                </div>
-              </div>
-            ) : (
-              /* RESULTS DASHBOARD */
-              <div className="space-y-8 animate-in w-full">
-                
-                {/* Result Title & Rescan */}
-                <div className="flex flex-col gap-4">
-                  <span className="font-mono text-xs text-[#8b5cf6] tracking-[0.2em] uppercase">
-                    // SCAN RESULT IDENTIFIED
-                  </span>
-                  <h2 className="text-3xl md:text-4xl font-gothic-block font-extrabold tracking-tighter text-white uppercase">Is this URL safe?</h2>
-                  
-                  <div className="relative flex w-full max-w-xl items-center mt-2">
-                    <span className="absolute left-4 text-[#8a8a92] material-symbols-outlined">link</span>
-                    <input
-                      className="w-full h-14 pl-12 pr-32 rounded bg-black/40 border border-white/10 text-white focus:outline-none text-xs font-mono"
-                      type="text"
-                      readOnly
-                      value={result.url}
-                    />
-                    <button 
-                      onClick={resetScan} 
-                      className="absolute right-2 h-10 px-6 rounded bg-[#8b5cf6] text-white text-xs font-mono tracking-wider font-bold hover:bg-[#8b5cf6]/90 transition-colors"
-                    >
-                      RESCAN
-                    </button>
-                  </div>
-                </div>
-
-                {/* Verdict Display Panel */}
-                <div className={`glass-panel flex flex-col rounded border-2 overflow-hidden w-full ${
-                  result.is_phishing 
-                    ? 'border-[#ef4444]/40 bg-red-950/10 shadow-[0_0_30px_rgba(239,68,68,0.05)]' 
-                    : 'border-[#22c55e]/40 bg-emerald-950/10 shadow-[0_0_30px_rgba(34,197,94,0.05)]'
-                }`}>
-                  
-                  <div className="flex flex-col items-center justify-center gap-4 py-8 border-b border-white/5 bg-white/[0.01]">
-                    <div className={`size-12 rounded-full flex items-center justify-center text-black font-black text-xl shadow-lg ${
-                      result.is_phishing ? 'bg-[#ef4444]' : 'bg-[#22c55e]'
-                    }`}>
-                      {result.is_phishing ? '✗' : '✓'}
-                    </div>
-                    
-                    <div className="text-center px-4">
-                      <h3 className="text-3xl font-gothic-block font-extrabold tracking-widest uppercase text-white">
-                        {result.is_phishing ? 'MALICIOUS LINK DETECTED' : 'SAFE TO VISIT'}
-                      </h3>
-                      <p className="text-[#8a8a92] text-[10px] mt-1 font-mono uppercase tracking-wide">
-                        {result.is_phishing 
-                          ? 'This URL exhibits strong patterns matching known phishing techniques.' 
-                          : 'No security threats were identified by our analytics engines.'}
-                      </p>
-                      
-                      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                        {result.dual_protocol && (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[#8b5cf6]/10 border border-[#8b5cf6]/30 text-[#c084fc] font-mono text-[9px] tracking-wider uppercase font-bold">
-                            <span className="material-symbols-outlined text-[10px] text-[#8b5cf6]">sync_alt</span>
-                            <span>HTTP & HTTPS TESTED</span>
-                          </div>
-                        )}
-                        {result.cloudflare_report && (
-                          <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-white/[0.02] border border-white/5 text-[#8a8a92] font-mono text-[9px] tracking-wider uppercase">
-                            <span className="material-symbols-outlined text-[10px] text-[#8b5cf6]">shield</span>
-                            <span>Verified via {result.cloudflare_report.asn}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Sub-Tab Navigation for Result View */}
-                  <div className="bg-black/40 border-b border-white/5 flex font-mono text-[10px] tracking-wider">
-                    <button 
-                      onClick={() => setActiveTab('overview')} 
-                      className={`flex-1 py-3 text-center font-bold border-b-2 transition-colors ${
-                        activeTab === 'overview' 
-                          ? 'border-[#8b5cf6] text-[#8b5cf6] bg-[#8b5cf6]/5' 
-                          : 'border-transparent text-[#8a8a92] hover:text-white'
-                      }`}
-                    >
-                      OVERVIEW
-                    </button>
-                    <button 
-                      onClick={() => setActiveTab('deep')} 
-                      className={`flex-1 py-3 text-center font-bold border-b-2 transition-colors ${
-                        activeTab === 'deep' 
-                          ? 'border-[#8b5cf6] text-[#8b5cf6] bg-[#8b5cf6]/5' 
-                          : 'border-transparent text-[#8a8a92] hover:text-white'
-                      }`}
-                    >
-                      DEEP REPORT
-                    </button>
-                  </div>
-
-                  {/* Result Details Container */}
-                  <div className="p-4 bg-black/20">
-                    {activeTab === 'overview' ? (
-                      <div className="space-y-6">
-                        
-                        {/* Indicators checklist */}
-                        <div className="border border-white/10 rounded overflow-hidden">
-                          <div className="border-b border-white/10 bg-white/[0.02] px-4 py-3">
-                            <h4 className="font-mono text-[10px] font-bold text-white tracking-widest uppercase flex items-center gap-2">
-                              <span className="material-symbols-outlined text-xs text-[#8b5cf6]">dns</span>
-                              TECHNICAL INDICATORS
-                            </h4>
-                          </div>
-                          
-                          <div className="divide-y divide-white/5 font-sans text-xs">
-                            {/* Indicator HTTPS */}
-                            <div className="flex items-start gap-3 p-4 hover:bg-white/[0.01] transition-colors">
-                              <span className={`material-symbols-outlined text-sm mt-0.5 ${
-                                result.url.startsWith('https') ? 'text-emerald-500' : 'text-[#ef4444]'
-                              }`}>
-                                {result.url.startsWith('https') ? 'lock' : 'lock_open'}
-                              </span>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center mb-0.5">
-                                  <span className="font-bold text-white uppercase text-[10px]">HTTPS Support</span>
-                                  <span className={`font-mono text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                    result.url.startsWith('https') ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-[#ef4444]'
-                                  }`}>
-                                    {result.url.startsWith('https') ? 'Secure' : 'Warning'}
-                                  </span>
-                                </div>
-                                <p className="text-[#8a8a92] text-[11px] leading-relaxed">
-                                  {result.url.startsWith('https') 
-                                    ? 'The site has a secure, encrypted HTTPS connection.' 
-                                    : 'The link is insecure (HTTP), opening possibilities for sniffing.'}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Indicator IP Host */}
-                            <div className="flex items-start gap-3 p-4 hover:bg-white/[0.01] transition-colors">
-                              <span className={`material-symbols-outlined text-sm mt-0.5 ${
-                                result.features_extracted[0] === 1 ? 'text-[#ef4444]' : 'text-emerald-500'
-                              }`}>
-                                alternate_email
-                              </span>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center mb-0.5">
-                                  <span className="font-bold text-white uppercase text-[10px]">IP Domain Format</span>
-                                  <span className={`font-mono text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                    result.features_extracted[0] === 1 ? 'bg-red-500/10 text-[#ef4444]' : 'bg-emerald-500/10 text-emerald-500'
-                                  }`}>
-                                    {result.features_extracted[0] === 1 ? 'Alert' : 'Clean'}
-                                  </span>
-                                </div>
-                                <p className="text-[#8a8a92] text-[11px] leading-relaxed">
-                                  {result.features_extracted[0] === 1 
-                                    ? 'Host uses a raw IP address instead of a DNS domain.' 
-                                    : 'Domain name resolves standard DNS notation.'}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Indicator Shortener */}
-                            <div className="flex items-start gap-3 p-4 hover:bg-white/[0.01] transition-colors">
-                              <span className={`material-symbols-outlined text-sm mt-0.5 ${
-                                result.features_extracted[4] === 1 ? 'text-yellow-500' : 'text-emerald-500'
-                              }`}>
-                                link
-                              </span>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center mb-0.5">
-                                  <span className="font-bold text-white uppercase text-[10px]">Link Shortener</span>
-                                  <span className={`font-mono text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                    result.features_extracted[4] === 1 ? 'bg-yellow-500/10 text-yellow-500' : 'bg-emerald-500/10 text-emerald-500'
-                                  }`}>
-                                    {result.features_extracted[4] === 1 ? 'Flagged' : 'Clean'}
-                                  </span>
-                                </div>
-                                <p className="text-[#8a8a92] text-[11px] leading-relaxed">
-                                  {result.features_extracted[4] === 1 
-                                    ? 'A URL shortening service is used to mask the destination path.' 
-                                    : 'No known shortening pattern detected.'}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Indicator Redirects */}
-                            <div className="flex items-start gap-3 p-4 hover:bg-white/[0.01] transition-colors">
-                              <span className={`material-symbols-outlined text-sm mt-0.5 ${
-                                result.features_extracted[2] === 1 ? 'text-yellow-500' : 'text-emerald-500'
-                              }`}>
-                                alt_route
-                              </span>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center mb-0.5">
-                                  <span className="font-bold text-white uppercase text-[10px]">Suspicious Redirects</span>
-                                  <span className={`font-mono text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                    result.features_extracted[2] === 1 ? 'bg-yellow-500/10 text-yellow-500' : 'bg-emerald-500/10 text-emerald-500'
-                                  }`}>
-                                    {result.features_extracted[2] === 1 ? 'Flagged' : 'Clean'}
-                                  </span>
-                                </div>
-                                <p className="text-[#8a8a92] text-[11px] leading-relaxed">
-                                  {result.features_extracted[2] === 1 
-                                    ? 'Multiple sequential HTTP redirects occur during analysis.' 
-                                    : 'No abnormal redirect loops found.'}
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* Indicator XGBoost */}
-                            <div className="flex items-start gap-3 p-4 hover:bg-white/[0.01] transition-colors">
-                              <span className={`material-symbols-outlined text-sm mt-0.5 ${
-                                result.is_phishing ? 'text-[#ef4444]' : 'text-emerald-500'
-                              }`}>
-                                psychology
-                              </span>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-center mb-0.5">
-                                  <span className="font-bold text-white uppercase text-[10px]">XGBoost AI Model</span>
-                                  <span className={`font-mono text-[8px] font-bold uppercase px-1.5 py-0.5 rounded ${
-                                    result.is_phishing ? 'bg-red-500/10 text-[#ef4444]' : 'bg-emerald-500/10 text-emerald-500'
-                                  }`}>
-                                    {result.is_phishing ? 'Malicious' : 'Clean'}
-                                  </span>
-                                </div>
-                                <p className="text-[#8a8a92] text-[11px] leading-relaxed">
-                                  {result.is_phishing 
-                                    ? 'The AI model decision tree flagged the combined structure of this URL as high risk.' 
-                                    : 'The URL structure matches benign safety patterns.'}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* AI Threat Analysis Summary */}
-                        <div className="border border-white/10 rounded p-4 bg-white/[0.01]">
-                          <h4 className="font-mono text-[10px] font-bold text-white tracking-widest uppercase flex items-center gap-2 mb-3">
-                            <span className="material-symbols-outlined text-xs text-[#8b5cf6]">auto_awesome</span>
-                            AI ASSESSMENT
-                          </h4>
-                          <div className="border-l-2 border-[#8b5cf6] pl-3 py-0.5">
-                            <p className="text-[11px] text-[#8a8a92] leading-relaxed font-mono">
-                              {result.gemini_analysis || "No advanced AI assessor analysis returned."}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Domain Metrics (WHOIS OSINT) */}
-                        <div className="border border-white/10 rounded p-4 bg-white/[0.01]">
-                          <h4 className="font-mono text-[10px] font-bold text-white tracking-widest uppercase mb-3">// DOMAIN METRICS (OSINT)</h4>
-                          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 font-mono text-[10px] text-[#8a8a92]">
-                            <div>
-                              <span className="text-[8px] text-[#8a8a92]/60 block mb-0.5">REGISTRAR</span>
-                              <span className="text-white font-bold truncate block" title={result.whois?.registrar}>{result.whois?.registrar || 'Unknown'}</span>
-                            </div>
-                            <div>
-                              <span className="text-[8px] text-[#8a8a92]/60 block mb-0.5">CREATION DATE</span>
-                              <span className="text-white font-bold block truncate">{result.whois?.creation_date || 'Unknown'}</span>
-                            </div>
-                            <div>
-                              <span className="text-[8px] text-[#8a8a92]/60 block mb-0.5">ORIGIN ASN</span>
-                              <span className="text-white font-bold truncate block" title={result.cloudflare_report?.asn}>{result.cloudflare_report?.asn || 'Unknown'}</span>
-                            </div>
-                            <div>
-                              <span className="text-[8px] text-[#8a8a92]/60 block mb-0.5">IP ADDRESS</span>
-                              <span className="text-white font-bold block">{result.cloudflare_report?.ip || 'Unknown'}</span>
-                            </div>
-                            <div>
-                              <span className="text-[8px] text-[#8a8a92]/60 block mb-0.5">SERVER LOCATION</span>
-                              <span className="text-white font-bold block truncate" title={result.cloudflare_report?.server_location}>{result.cloudflare_report?.server_location || 'Unknown'}</span>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Engines Scan Details */}
-                        <div className="border border-white/10 rounded p-4 bg-white/[0.01]">
-                          <h4 className="font-mono text-[10px] font-bold text-white tracking-widest uppercase mb-3">// SECURITY ENGINES DETECTION</h4>
-                          <div className="flex items-baseline gap-1 mb-2 font-mono">
-                            <span className={`text-2xl font-black ${result.is_phishing ? 'text-[#ef4444]' : 'text-emerald-500'}`}>
-                              {result.engines ? result.engines.filter(e => e.malicious).length : 0}
-                            </span>
-                            <span className="text-[9px] text-[#8a8a92]">/ {result.engines ? result.engines.length : 1} MALICIOUS FLAGS</span>
-                          </div>
-                          
-                          <div className="w-full bg-white/5 h-1 rounded overflow-hidden mb-3">
-                            <div 
-                              className={`h-full rounded transition-all duration-1000 ${
-                                result.is_phishing ? 'bg-[#ef4444]' : 'bg-emerald-500'
-                              }`} 
-                              style={{ 
-                                width: `${result.engines ? (result.engines.filter(e => e.malicious).length / result.engines.length) * 100 : 0}%` 
-                              }}
-                            ></div>
-                          </div>
-
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[9px] text-[#8a8a92]">
-                            {result.engines && result.engines.map((engine, idx) => (
-                              <div key={idx} className={`flex items-center gap-1 font-bold truncate ${
-                                engine.error ? 'text-orange-500' : (engine.malicious ? 'text-[#ef4444]' : 'text-emerald-500')
-                              }`}>
-                                <span className="material-symbols-outlined text-[10px] shrink-0">
-                                  {engine.error ? 'warning' : (engine.malicious ? 'cancel' : 'check_circle')}
-                                </span>
-                                <span className="truncate">{engine.name}</span>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* VirusTotal stats if present */}
-                        {result.engines && result.engines.find(e => e.name === "VirusTotal")?.data && (
-                          <div className="border border-white/10 rounded p-4 bg-white/[0.01]">
-                            <h4 className="font-mono text-[10px] font-bold text-white tracking-widest uppercase mb-3">// VIRUSTOTAL METRICS</h4>
-                            {(() => {
-                              const vtData = result.engines.find(e => e.name === "VirusTotal").data;
-                              return (
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[9px] text-[#8a8a92] text-center">
-                                  <div className="bg-white/[0.02] border border-white/5 p-2 rounded">
-                                    <p className="text-[#8a8a92]/60">MALICIOUS</p>
-                                    <p className={`text-sm font-bold mt-0.5 ${vtData.malicious_count > 0 ? 'text-[#ef4444]' : 'text-white'}`}>{vtData.malicious_count}</p>
-                                  </div>
-                                  <div className="bg-white/[0.02] border border-white/5 p-2 rounded">
-                                    <p className="text-[#8a8a92]/60">SUSPICIOUS</p>
-                                    <p className="text-sm font-bold text-orange-400 mt-0.5">{vtData.suspicious_count}</p>
-                                  </div>
-                                  <div className="bg-white/[0.02] border border-white/5 p-2 rounded">
-                                    <p className="text-[#8a8a92]/60">HARMLESS</p>
-                                    <p className="text-sm font-bold text-emerald-500 mt-0.5">{vtData.harmless_count}</p>
-                                  </div>
-                                  <div className="bg-white/[0.02] border border-white/5 p-2 rounded">
-                                    <p className="text-[#8a8a92]/60">UNDETECTED</p>
-                                    <p className="text-sm font-bold text-white mt-0.5">{vtData.undetected_count}</p>
-                                  </div>
-                                </div>
-                              )
-                            })()}
-                          </div>
-                        )}
-
-                      </div>
-                    ) : (
-                      <div className="w-full">
-                        <CloudflareDeepAnalysis report={result.cloudflare_report} />
-                      </div>
-                    )}
-                  </div>
-
-                </div>
-
-              </div>
-            )}
-          </div>
-
-          {/* Right Column: Centerpiece (Visual & Telemetry HUD) ALWAYS VISIBLE */}
-          <div className="lg:col-span-5 relative flex items-center justify-center min-h-[450px] md:min-h-[550px] w-full">
-            
-            {/* 3D Visual Centerpiece */}
-            <div className="absolute inset-0 z-10">
-              <HeroVisual />
-            </div>
-
-            {/* Floating HUD Cards (positioned around X centerpiece, dynamically synced to loading/result) */}
-            <div className="hidden md:block absolute top-4 left-0 z-20">
-              <HUDCard type="safety-score" loading={loading} result={result} error={error} />
-            </div>
-            <div className="hidden md:block absolute top-20 right-0 z-20">
-              <HUDCard type="threat-intel" loading={loading} result={result} error={error} />
-            </div>
-            <div className="hidden md:block absolute bottom-24 left-0 z-20">
-              <HUDCard type="ai-analysis" loading={loading} result={result} error={error} />
-            </div>
-            <div className="hidden md:block absolute bottom-8 right-0 z-20">
-              <HUDCard type="verdict" loading={loading} result={result} error={error} />
-            </div>
-
-          </div>
-
-        </div>
-      </main>
-
-      {/* Footer */}
-      <Footer onLegalClick={setActiveModal} />
-
-      {/* Legal Modals */}
-      {activeModal && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in">
-          <div className="glass-panel w-full max-w-lg rounded shadow-2xl overflow-hidden relative">
-            <div className="px-6 py-4 border-b border-white/5 flex justify-between items-center bg-white/[0.01]">
-              <h2 className="font-gothic-block font-extrabold tracking-widest text-2xl text-white">
-                {activeModal === 'privacy' ? 'PRIVACY POLICY' : 'TERMS OF SERVICE'}
-              </h2>
-              <button 
-                onClick={() => setActiveModal(null)} 
-                className="text-[#8a8a92] hover:text-white transition-colors"
-              >
-                <span className="material-symbols-outlined text-sm">close</span>
-              </button>
-            </div>
-            
-            <div className="p-6 text-xs text-[#8a8a92] space-y-4 font-sans leading-relaxed">
-              {activeModal === 'privacy' && (
-                <>
-                  <p className="font-mono text-[#8b5cf6] font-bold text-sm tracking-wider uppercase">// EDUCATION PLATFORM GUIDELINES</p>
-                  <p>PhishX is an educational sandbox built by athx1337 for pattern analysis and URL threat visualization.</p>
-                  <p>Submitted URLs are forwarded to third-party security engines (including Cloudflare Radar, VirusTotal, Google Safe Browsing, URLhaus, and Google Gemini API) purely to compute threat metrics. PhishX does not retain permanent logs of scanned URLs.</p>
-                  <p>This software utilizes standard TLS encryption tunnels. User credentials, locations, or identities are never tracked.</p>
-                </>
-              )}
-              {activeModal === 'tos' && (
-                <>
-                  <p className="font-mono text-[#8b5cf6] font-bold text-sm tracking-wider uppercase">// PLATFORM WARNING & DISCLAIMERS</p>
-                  <p>All safety score outputs and classifications represent algorithmic predictions calculated by an experimental Multi-Engine Consensus Algorithm (incorporating local heuristics and third-party threat intel APIs).</p>
-                  <p>This tool is served purely for demonstration. Never rely on this service as your sole cybersecurity firewall provider.</p>
-                  <p>The system operator disclaims all liability for breaches, malicious link interactions, or network exploits resulting from external navigations.</p>
-                </>
-              )}
-            </div>
-
-            <div className="px-6 py-4 border-t border-white/5 bg-white/[0.01] flex justify-end">
-              <button 
-                onClick={() => setActiveModal(null)} 
-                className="px-6 py-2.5 rounded bg-[#8b5cf6] text-white text-xs font-mono tracking-widest font-bold hover:bg-[#8b5cf6]/90 transition-colors uppercase"
-              >
-                ACKNOWLEDGE
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </div>
+    </MotionConfig>
   );
 }
 

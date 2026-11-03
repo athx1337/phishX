@@ -1,0 +1,51 @@
+groups:
+  - name: phishx
+    rules:
+      - alert: PhishXMetricsUnavailable
+        expr: up{job="phishx"} == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: phishX metrics cannot be scraped
+          description: Check the Worker, coordinator, target and bearer token before interpreting absent metrics as healthy.
+      - alert: PhishXProviderFailures
+        expr: (sum by (provider) (rate(phishx_provider_requests_total{outcome=~"failure|rate_limited|timeout|malformed"}[10m])) / sum by (provider) (rate(phishx_provider_requests_total[10m])) > 0.25) and on (provider) (sum by (provider) (increase(phishx_provider_requests_total[10m])) >= 20)
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Provider failure rate exceeds 25 percent
+          description: Inspect timeout, malformed and rate_limited outcomes. Do not convert provider failures into negative findings.
+      - alert: PhishXProviderQuota
+        expr: sum by (provider) (increase(phishx_provider_requests_total{outcome="rate_limited"}[10m])) > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: Provider is limiting requests
+          description: Inspect account quota and lower admission budgets; do not automatically raise limits or retry submissions.
+      - alert: PhishXProviderCircuitOpen
+        expr: phishx_provider_circuit_open > 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: A provider circuit remains open
+          description: Check provider availability, permissions and authentication without logging credentials.
+      - alert: PhishXProviderLatency
+        expr: histogram_quantile(0.95, sum by (provider, le) (rate(phishx_provider_duration_seconds_bucket[10m]))) > 4
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Provider p95 latency exceeds four seconds
+          description: Inspect latency alongside request failures and whole-scan deadline exhaustion.
+      - alert: PhishXAdmissionPressure
+        expr: sum by (route, reason) (increase(phishx_admission_rejected_total[10m])) > 20
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Admission protection is rejecting sustained traffic
+          description: Review WAF, budgets, active leases and abuse before increasing quotas.

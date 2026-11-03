@@ -1,11 +1,5 @@
-import { defineWorkersConfig } from "@cloudflare/vitest-pool-workers/config";
+import { defineConfig } from 'vitest/config';
 
-export default defineWorkersConfig({
-	test: {
-		poolOptions: {
-			workers: {
-				wrangler: { configPath: "./wrangler.jsonc" },
-			},
-		},
-	},
-});
+// Provider tests run with controlled fetch/KV fixtures, never production credentials.
+// Real Workers compatibility is checked separately by Wrangler dry-run/runtime smoke.
+export default defineConfig({ test: { environment: 'node', include: ['test/**/*.spec.ts'], restoreMocks: true } });

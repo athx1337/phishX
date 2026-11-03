@@ -1,0 +1,39 @@
+name: Verify phishX
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        # Archived research is a gitlink without .gitmodules; it is not runtime input.
+        with:
+          submodules: false
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: |
+            backend-worker/package-lock.json
+            frontend/package-lock.json
+      - run: npm ci --prefix backend-worker
+      - run: npm ci --prefix frontend
+      - run: npm run scan:secrets
+      - run: npm run test:model
+      - run: npm run check:ops
+      - run: npm run check
+      - run: npm run benchmark:controlled
+      - run: npm run build:check
+        working-directory: backend-worker
+      - run: npx playwright install --with-deps chromium
+        working-directory: frontend
+      - run: npm run test:e2e
+        working-directory: frontend
+      - run: npm audit --prefix backend-worker --audit-level=moderate
+      - run: npm audit --prefix frontend --audit-level=moderate

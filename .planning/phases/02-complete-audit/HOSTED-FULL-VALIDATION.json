@@ -1,0 +1,182 @@
+{
+  "runtime": "Actual Cloudflare Workers with production provider secrets and isolated phishx-audit-coordinator + phishx-audit-cache; validation-token protected",
+  "production_traffic_changed": false,
+  "version_urls": [
+    "https://ff2be051-backend-worker.phish-x.workers.dev",
+    "https://audit-validation-backend-worker.phish-x.workers.dev"
+  ],
+  "checks": [
+    {
+      "check": "clean-initial",
+      "status": 200,
+      "seconds": 3.305,
+      "schema": 2,
+      "policy": "2026-11-evidence-v2-xgboost",
+      "verdict": "unknown",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "registration": "available",
+      "explanation": "deterministic",
+      "cloudflare_reports": 0,
+      "destinations": 0,
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "clean-active-poll-1",
+      "status": 200,
+      "seconds": 1.511,
+      "schema": 2,
+      "policy": "2026-11-evidence-v2-xgboost",
+      "verdict": "no_known_threats",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "registration": "available",
+      "explanation": "deterministic",
+      "cloudflare_reports": 1,
+      "destinations": 0,
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "official-google-positive",
+      "status": 200,
+      "seconds": 3.403,
+      "schema": 2,
+      "policy": "2026-11-evidence-v2-xgboost",
+      "verdict": "malicious",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "error",
+          "errors": [
+            "REGISTRATION_NOT_FOUND"
+          ]
+        }
+      ],
+      "registration": "error",
+      "explanation": "deterministic",
+      "cloudflare_reports": 0,
+      "destinations": 0,
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "protected-real-hosted-metrics",
+      "status": 200,
+      "provider_counters": true,
+      "active_leases": [
+        "phishx_active_leases{route=\"scan\"} 0",
+        "phishx_active_leases{route=\"poll\"} 0",
+        "phishx_active_leases{route=\"active\"} 1"
+      ]
+    },
+    {
+      "check": "metrics-requires-independent-token",
+      "unauthorized_401": true
+    }
+  ]
+}

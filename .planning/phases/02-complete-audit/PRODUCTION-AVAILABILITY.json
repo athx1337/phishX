@@ -1,0 +1,12 @@
+{
+  "verified_date": "2026-11-03",
+  "script": "scripts/monitor-production.mjs",
+  "target": "actual public production frontend and Worker",
+  "frontend": "passed",
+  "api_schema_v2": "passed",
+  "anonymous_metrics_rejected": "passed",
+  "authenticated_openmetrics": "passed",
+  "scan_submissions": 0,
+  "scheduled_workflow_active": false,
+  "notification_delivery_verified": false
+}

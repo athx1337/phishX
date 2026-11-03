@@ -1,6 +1,6 @@
 /**
  * AsciiSimulation.jsx
- * Equivalent to @skiper-ui/skiper14 — built manually without a Pro license.
+ * Optional decorative Three.js ASCII renderer.
  *
  * Renders a Three.js scene (or a .glb model) as real-time ASCII characters
  * on a 2D canvas overlay. Compatible with Three.js r185+.
@@ -44,6 +44,7 @@ function buildAsciiRenderer(glRenderer, camera, chars, fontSize, color) {
   // Offscreen pixel-read buffer (low-res)
   const pixelCanvas = document.createElement('canvas');
   const pixelCtx = pixelCanvas.getContext('2d', { willReadFrequently: true });
+  if (!ctx2d || !pixelCtx) throw new Error('Canvas rendering unavailable');
 
   function setSize(w, h) {
     domElement.width = w;
@@ -205,9 +206,21 @@ export default function AsciiSimulation({
 
     let rafId;
     let destroyed = false;
+    let visible = true;
+    let cleanupSetup = () => {};
+    const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(entries => {
+      visible = entries.some(entry => entry.isIntersecting);
+    }, { rootMargin: '80px' }) : null;
+    observer?.observe(wrapper);
 
     // ── WebGL renderer (hidden, used as pixel source) ──────────────────────────
-    const glRenderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    let glRenderer;
+    try {
+      glRenderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
+    } catch {
+      queueMicrotask(() => { if (!destroyed) { setLoadError('webgl-unavailable'); setLoaded(true); } });
+      return () => { destroyed = true; observer?.disconnect(); };
+    }
     glRenderer.setPixelRatio(1); // keep offscreen renderer cheap
     glRenderer.setClearColor(0x000000, 0);
 
@@ -216,7 +229,13 @@ export default function AsciiSimulation({
     camera.position.z = 6;
 
     // ── ASCII canvas overlay ────────────────────────────────────────────────────
-    const ascii = buildAsciiRenderer(glRenderer, camera, chars, fontSize, color);
+    let ascii;
+    try { ascii = buildAsciiRenderer(glRenderer, camera, chars, fontSize, color); }
+    catch {
+      glRenderer.dispose();
+      queueMicrotask(() => { if (!destroyed) { setLoadError('webgl-unavailable'); setLoaded(true); } });
+      return () => { destroyed = true; observer?.disconnect(); };
+    }
     ascii.domElement.style.background = bgColor;
     wrapper.appendChild(ascii.domElement);
 
@@ -260,12 +279,16 @@ export default function AsciiSimulation({
       if (!modelPath) window.addEventListener('mousemove', onMouse);
 
       const clock = new THREE.Clock();
+      let lastFrame = 0;
 
-      function loop() {
+      function loop(now = 0) {
         rafId = requestAnimationFrame(loop);
-        const t = clock.getElapsedTime();
+        if (document.hidden || !visible || now - lastFrame < 32) return;
+        lastFrame = now;
+        const delta = clock.getDelta();
+        const t = clock.elapsedTime;
         if (procedural) procedural.animate(t, mx, my);
-        if (modelAnimMixer) modelAnimMixer.update(clock.getDelta());
+        if (modelAnimMixer) modelAnimMixer.update(delta);
         controls.update();
         ascii.render(scene);
       }
@@ -291,7 +314,14 @@ export default function AsciiSimulation({
       loader.load(
         modelPath,
         (gltf) => {
-          if (destroyed) return;
+          if (destroyed) {
+            gltf.scene.traverse(object => {
+              object.geometry?.dispose();
+              const materials = Array.isArray(object.material) ? object.material : [object.material];
+              materials.forEach(material => material?.dispose());
+            });
+            return;
+          }
           const model = gltf.scene;
 
           // Auto-center & scale
@@ -308,32 +338,46 @@ export default function AsciiSimulation({
           }
 
           controls.autoRotate = true;
-          finishSetup();
+          cleanupSetup = finishSetup() || (() => {});
         },
         undefined,
         (err) => {
+          if (destroyed) return;
           console.warn('[AsciiSimulation] GLB load failed, falling back to procedural.', err);
           setLoadError('model-fallback');
           procedural = buildProceduralScene(scene);
-          finishSetup();
+          cleanupSetup = finishSetup() || (() => {});
         }
       );
     } else {
       // ── Procedural Chrome-X ───────────────────────────────────────────────
       procedural = buildProceduralScene(scene);
       controls.autoRotate = false; // procedural has its own rotation
-      finishSetup();
+      cleanupSetup = finishSetup() || (() => {});
     }
 
     return () => {
       destroyed = true;
+      observer?.disconnect();
       cancelAnimationFrame(rafId);
+      cleanupSetup();
       controls.dispose();
       if (procedural) procedural.dispose();
+      const disposed = new Set();
+      scene.traverse(object => {
+        if (object.geometry && !disposed.has(object.geometry)) { disposed.add(object.geometry); object.geometry.dispose(); }
+        const materials = Array.isArray(object.material) ? object.material : [object.material];
+        materials.forEach(material => {
+          if (!material || disposed.has(material)) return;
+          disposed.add(material);
+          Object.values(material).forEach(value => { if (value?.isTexture && !disposed.has(value)) { disposed.add(value); value.dispose(); } });
+          material.dispose();
+        });
+      });
+      scene.environment?.dispose();
       glRenderer.dispose();
       if (wrapper.contains(ascii.domElement)) wrapper.removeChild(ascii.domElement);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelPath, chars, fontSize, color, bgColor, rotationSpeed, enableZoom, enablePan]);
 
   return (
@@ -358,6 +402,7 @@ export default function AsciiSimulation({
           MODEL LOAD FAILED · PROCEDURAL FALLBACK
         </div>
       )}
+      {loadError === 'webgl-unavailable' && <div className="absolute inset-0 flex items-center justify-center p-8 text-center text-xs text-slate-400">Decorative visualization is unavailable on this device. Scanning is unaffected.</div>}
     </div>
   );
 }

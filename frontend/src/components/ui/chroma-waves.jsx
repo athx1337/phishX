@@ -164,7 +164,10 @@ export default function ChromaWaves({
     const scene = new THREE.Scene();
     const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
     
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: "high-performance" });
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'low-power' }); }
+    catch { return; }
     
     // Performance optimization: Render at a lower resolution and scale up.
     // The waves are soft and blurry, so low resolution looks perfectly fine
@@ -219,8 +222,14 @@ export default function ChromaWaves({
 
     let animationId;
     let clock = new THREE.Clock();
+    let visible = true;
+    const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(entries => {
+      visible = entries.some(entry => entry.isIntersecting);
+    }, { rootMargin: '80px' }) : null;
+    observer?.observe(container);
 
     const render = () => {
+      if (document.hidden || !visible) { animationId = requestAnimationFrame(render); return; }
       uniforms.u_time.value = clock.getElapsedTime();
       
       // Update dynamic uniforms if props changed (React effect deps cover creation, 
@@ -234,6 +243,7 @@ export default function ChromaWaves({
     render();
 
     return () => {
+      observer?.disconnect();
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
       container.removeChild(renderer.domElement);

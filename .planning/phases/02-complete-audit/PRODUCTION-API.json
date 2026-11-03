@@ -1,0 +1,82 @@
+{
+  "worker": "https://backend-worker.phish-x.workers.dev",
+  "checks": [
+    {
+      "check": "metrics-authenticated",
+      "status": 200,
+      "provider_metrics": true,
+      "active_leases": [
+        "phishx_active_leases{route=\"scan\"} 0",
+        "phishx_active_leases{route=\"poll\"} 0",
+        "phishx_active_leases{route=\"active\"} 0"
+      ]
+    },
+    {
+      "check": "cors-denial",
+      "status": 403,
+      "error": {
+        "error": "This origin is not allowed.",
+        "code": "ORIGIN_NOT_ALLOWED"
+      }
+    },
+    {
+      "check": "private-target",
+      "status": 400,
+      "error": {
+        "error": "Use a public domain or publicly routable IP address. Private and reserved destinations are not supported.",
+        "code": "PROHIBITED_DESTINATION"
+      }
+    },
+    {
+      "check": "official-google-positive",
+      "status": 200,
+      "seconds": 2.012,
+      "schema": 2,
+      "verdict": "malicious",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "error",
+          "errors": [
+            "PROVIDER_BUDGET_EXCEEDED"
+          ]
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "error",
+          "errors": [
+            "REGISTRATION_NOT_FOUND"
+          ]
+        }
+      ],
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    }
+  ]
+}

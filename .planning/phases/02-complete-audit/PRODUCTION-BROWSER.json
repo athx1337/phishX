@@ -1,0 +1,30 @@
+{
+  "page": "https://phish-x.vercel.app",
+  "heading": [
+    "No known threats detected"
+  ],
+  "reports": [
+    {
+      "verdict": "unknown",
+      "checked_targets": 2,
+      "completed": 3,
+      "cloudflare_reports": 0,
+      "model": "xgb-url-2026-11-03-v2"
+    },
+    {
+      "verdict": "unknown",
+      "checked_targets": 2,
+      "completed": 3,
+      "cloudflare_reports": 0,
+      "model": "xgb-url-2026-11-03-v2"
+    },
+    {
+      "verdict": "no_known_threats",
+      "checked_targets": 2,
+      "completed": 3,
+      "cloudflare_reports": 1,
+      "model": "xgb-url-2026-11-03-v2"
+    }
+  ],
+  "page_errors": []
+}

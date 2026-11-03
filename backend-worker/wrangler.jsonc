@@ -1,45 +1,39 @@
-/**
- * For more details on how to configure Wrangler, refer to:
- * https://developers.cloudflare.com/workers/wrangler/configuration/
- */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "backend-worker",
-	"main": "src/index.ts",
-	"compatibility_date": "2026-08-08",
-	"observability": {
-		"enabled": true
-	},
-	"upload_source_maps": true,
-	"compatibility_flags": [
-		"nodejs_compat"
-	]
-	/**
-	 * Smart Placement
-	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
-	 */
-	// "placement": {  "mode": "smart" }
-	/**
-	 * Bindings
-	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
-	 * databases, object storage, AI inference, real-time communication and more.
-	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
-	 */
-	/**
-	 * Environment Variables
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
-	 * Note: Use secrets to store sensitive data.
-	 * https://developers.cloudflare.com/workers/configuration/secrets/
-	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
-	/**
-	 * Static Assets
-	 * https://developers.cloudflare.com/workers/static-assets/binding/
-	 */
-	// "assets": {  "directory": "./public/",  "binding": "ASSETS" }
-	/**
-	 * Service Bindings (communicate between multiple Workers)
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
-	 */
-	// "services": [  {   "binding": "MY_SERVICE",   "service": "my-service"  } ]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "backend-worker",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-08-08",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "upload_source_maps": true,
+  "vars": {
+    "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://phish-x.vercel.app",
+    "CACHE_CONFIG_VERSION": "2",
+    "REQUIRE_COORDINATOR": "true",
+    "GLOBAL_SCAN_LIMIT": "60",
+    "GLOBAL_POLL_LIMIT": "600",
+    "CLIENT_SCAN_LIMIT": "5",
+    "CLIENT_POLL_LIMIT": "30",
+    "SCAN_CONCURRENCY": "4",
+    "POLL_CONCURRENCY": "8",
+    "ACTIVE_CONCURRENCY": "3",
+    "GSB_REQUEST_LIMIT": "600",
+    "VT_REQUEST_LIMIT": "4",
+    "URLHAUS_REQUEST_LIMIT": "60",
+    "CLOUDFLARE_REQUEST_LIMIT": "10",
+    "GEMINI_REQUEST_LIMIT": "5",
+    "GEMINI_ENABLED": "false",
+    "GEMINI_MODEL": "gemini-2.5-flash"
+  },
+  // Wrangler provisions a namespace at deploy time; no fabricated namespace IDs.
+  // Remove this binding to disable optional report caching and active scan jobs.
+  "kv_namespaces": [{ "binding": "SCAN_CACHE", "id": "81c38ef6bf7c40f0bf15109fc7512d03" }],
+  "durable_objects": { "bindings": [{ "name": "SCAN_COORDINATOR", "class_name": "ScanCoordinator" }] },
+  "migrations": [{ "tag": "v1-control", "new_sqlite_classes": ["ScanCoordinator"] }],
+  // Anonymous route budgets per Cloudflare location. Counters are approximate,
+  // not a globally atomic billing cap. Choose namespace IDs unique to your account.
+  "ratelimits": [
+    { "name": "SCAN_RATE_LIMITER", "namespace_id": "1001", "simple": { "limit": 10, "period": 60 } },
+    { "name": "POLL_RATE_LIMITER", "namespace_id": "1002", "simple": { "limit": 60, "period": 60 } }
+  ]
 }

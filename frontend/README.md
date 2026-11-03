@@ -1,16 +1,17 @@
-# React + Vite
+# phishX client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React 19/Vite 7 client for the versioned phishX evidence API. See the [project README](../README.md) for architecture, setup, provider configuration and limitations.
 
-Currently, two official plugins are available:
+Use Node 22.12+ (Node 24 recommended), `npm ci`, copy `.env.example` to `.env` and run `npm run dev`. `VITE_API_URL` is embedded at build time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Commands:
 
-## React Compiler
+- `npm run lint` — source/config/test linting.
+- `npm test` — Vitest component, API, privacy/history and workflow regressions.
+- `npm run test:e2e` — Playwright controlled browser checks (install Chromium first).
+- `npm run build` — static production bundle.
+- `npm run preview` — local production preview.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Tests use synthetic fixtures. Unknown/failed/pending results must remain unverified; neither the UI nor the shared contract adapts an old binary result into a safe verdict. History is opt-in, redacted, bounded and clearable. The optional Three.js visualization loads only after an explicit user action and is disabled for reduced motion/low-core devices.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The root CI runs the shared/backend tests as well; frontend tests alone do not prove provider integration or detection accuracy. See [privacy](../docs/PRIVACY.md), [API](../docs/API.md) and [dependency review](../docs/DEPENDENCIES.md).

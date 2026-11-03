@@ -1,0 +1,708 @@
+{
+  "provenance": {
+    "uci_url": "https://archive.ics.uci.edu/static/public/967/phiusiil+phishing+url+dataset.zip",
+    "phresh_manifest_url": "https://datasets-server.huggingface.co/parquet?dataset=phreshphish/phreshphish",
+    "phresh_source_revision": "eca603e0ecd4f698f8d4d226c088659e72681239",
+    "phresh_parquet_revision": "875e5842650e0ec464e911f1cb6d84d14466986a",
+    "sampling": "first two row groups per converted shard, projected url,label,date; no HTML or target URLs fetched",
+    "sha256": {
+      "phiusiil.zip": "0a639fd03aea6308c5b1c10c92aa23c2ce1505447a9137271865cd0badc9a59a",
+      "corpus.jsonl": "a7a970a10c4bace2ecb859e2149362a3dcf6d9ce52d8d1cb3d72d859b13f022d",
+      "phresh-test-0000.parquet.jsonl": "e1314f1195c607f96e8378665fe5f2d8da4be70d2a1b4e1fe6888271fa3d4713",
+      "phresh-test-0001.parquet.jsonl": "078ffb971f3baba77a926016b34a4942e165f572c8b92f54d25181279fd17eaa",
+      "phresh-test-0002.parquet.jsonl": "e3cfdd70bb09deaa3edaa85d3a5acc4c37a6e732e5616b9c18635cb7f70648be",
+      "phresh-test-0003.parquet.jsonl": "ddd767e29926ce46e4561551aebee0f4c2cde9f909da9b1a554e58e011bf6a77",
+      "phresh-test-0004.parquet.jsonl": "6814e856bfef1d25e9ca41e9e5f3459227daff81274104ab38dddc16962822cc",
+      "phresh-test-0005.parquet.jsonl": "f9799e78afae02f5162f0c7fbbb9cfdf97b62b612e42dd691f6d3870a971b662",
+      "phresh-test-0006.parquet.jsonl": "caadca89816f9add377a3127975d83a5dd81fdca6ce628e73634b1f1335f4926",
+      "phresh-test-0007.parquet.jsonl": "c2a7e5cc24b0a61a1bc1fd7bb07dc000c53614997f624db25202f94d28fe7936",
+      "phresh-test-0008.parquet.jsonl": "87452f6555eb73b5a20929f07b9f94e72bf10e482f9c57288ae95ab196a1a2d0",
+      "phresh-test-0009.parquet.jsonl": "3c150e5e5298a912c63fe2440a58c5f4f338bf18c804ae4d3c1bc65417764d26",
+      "phresh-test-0010.parquet.jsonl": "a24907b1d480c19f7887aabdad9411f553466c0bd95a03f7e5945f18c6abd4f7",
+      "phresh-test-0011.parquet.jsonl": "41e3725a289e024a18fa4719745d75aa795e22cef9038d0beb4dbc6b8d515d0e",
+      "phresh-test-0012.parquet.jsonl": "b2843f85dd55d49124c0ac982b956e72b29099b1ff9e4dae240122401e6af18b",
+      "phresh-test-0013.parquet.jsonl": "0c314481c2cca895cc5a860d731b9d895ab95f047da2608373cfb837b96e4bb3",
+      "phresh-test-0014.parquet.jsonl": "04aa7999898bc03259b129ff6ef3560d4e19d2ecc6911b466107e96ed564b34e",
+      "phresh-test-0015.parquet.jsonl": "6075d6c3cde40d39b361d7549a1690711481837670fefea310a3f5c1ae9e06d4",
+      "phresh-test-0016.parquet.jsonl": "d091ee27fdd7b90050cac30cb85b57e562ceeb8976112c57e8532fbd246418be",
+      "phresh-test-0017.parquet.jsonl": "fa26fbdf3154256f158b4e466e172ff3a0a0f309a22c0675ca7fea250e6eb426",
+      "phresh-test-0018.parquet.jsonl": "7df815a9cce3ee55e40fc00f5c8489847061f0053b2e7709e5b7bbbaab4708ef",
+      "phresh-test-0019.parquet.jsonl": "6bba0ad4b98a9bda1554138296019729e300e85adf7be303d7e1e19f6bc71900",
+      "phresh-test-0020.parquet.jsonl": "c1ba45f1bd9db453463310e7f761a764c89df54a82aa089d9ae8526c20a632f8",
+      "phresh-train-0000.parquet.jsonl": "96fff792e02912dce9f3c5c395f80b22d9e48b13ed101744c8b3c754ee0ddbf9",
+      "phresh-train-0001.parquet.jsonl": "ae7817075576c4897b99701d477977d18130705ad1f06b29a315782f9067b174",
+      "phresh-train-0002.parquet.jsonl": "a47be60ae93fd56a85c31ec3aec74aa7288169be6ec6989e4e2f8bf3694f4957",
+      "phresh-train-0003.parquet.jsonl": "f60a0ded3a7d8c7de037c0b7ebdfd9ef0dbad0924a39b214bf64424ca73da9e7",
+      "phresh-train-0004.parquet.jsonl": "3fa566066e091a681107c067992aa12e9643e16d9d374cef556d52aebfb5ee0c",
+      "phresh-train-0005.parquet.jsonl": "3921a7128957003d06ee6be229a0d890ab0d61b4f0ea552af136e49f5d00e0e1",
+      "phresh-train-0006.parquet.jsonl": "ff76ade1028828bc3c05c292e8882e7bec3408b830c03eba0606a51686b18a0a",
+      "phresh-train-0007.parquet.jsonl": "a2e6c2ca7d792d4bebf23988167ab8fa098056c892abb89e3cf22439dccf5685",
+      "phresh-train-0008.parquet.jsonl": "a4dd7d79126ffdb10a7eb3c9a0e7d51735a56f1883fdd26d05ff2c1d03708bec",
+      "phresh-train-0009.parquet.jsonl": "8ce88b93b023ba274725e2a6119af4e29a6d8f749b6d92d340199b77025c7e72",
+      "phresh-train-0010.parquet.jsonl": "54b3728131c44865419150a21d6e4db9c5b96239c1946daa477ab83863ef9dea",
+      "phresh-train-0011.parquet.jsonl": "a4e2738a1a14301832693b5dad43ba4bedc6a1715efa3612521fc962682bf296",
+      "phresh-train-0012.parquet.jsonl": "467630e38830b13ffb9b22adea2cb603c9d3637e19437741ad9659d40ded2244",
+      "phresh-train-0013.parquet.jsonl": "ecd1e3f71fcdf88d9cc0acef81f68af919e3a7366a99885fcf80f9dd550b5f31",
+      "phresh-train-0014.parquet.jsonl": "2047fe9292f887656f9c4f36f5f603f2302555075a82e173c16337a5783b47fa",
+      "phresh-train-0015.parquet.jsonl": "1ed25e6304c5298c9162b80b6c9f8cb055bc4c4e03d1802bbd5d6655544846a2",
+      "phresh-train-0016.parquet.jsonl": "16b587cb84aa3ac49753654bb1dfbd9fa5ede31b81be93a81181dac18659b2b1",
+      "phresh-train-0017.parquet.jsonl": "a1ea1e2a410d5e1cbeb8bd8768d9d50a87d2b1ebc52cce76ad59d30edb0d4ac3",
+      "phresh-train-0018.parquet.jsonl": "b069718abe4b5395b62d76f9846a513848a62bb6761cd84271f1875631809cac",
+      "phresh-train-0019.parquet.jsonl": "2a3f88932f09c6797c8c88441749e2993eff2a892173bb76141bd0da26be7b19",
+      "phresh-train-0020.parquet.jsonl": "e4a7c72270b615a7afe4bc9aa8b68af122cb0ad63502682dcdbfa591b24b8ae0",
+      "phresh-train-0021.parquet.jsonl": "c1b55d8d484d46a5533f3e69d92e8a47d0a339885c1f3a6fc2805a5c1713fb1a",
+      "phresh-train-0022.parquet.jsonl": "0f0ce0292a55db7ae44b06e365ad247af68187b4454b80806d46bd9fa587cfbd",
+      "phresh-train-0023.parquet.jsonl": "5af6bbe7de03eecff0f12c1c27528dff761e86e223a0a5cc1ee3c9f14e2a4409",
+      "phresh-train-0024.parquet.jsonl": "b280d0bd172d6916d021bf28ae75c88e2332d94ac36af6607d6459801aadef89",
+      "phresh-train-0025.parquet.jsonl": "eb7242bf341eda8760ab5e3254aa04aa1a3ce396722c2868482477312ccfc2ab",
+      "phresh-train-0026.parquet.jsonl": "ffd0b703069baeaa92fffd3e23a9031b15792f6a3151ca84dff8867cfe332b9c",
+      "phresh-train-0027.parquet.jsonl": "d2a3d1b0b36711cdc220b9a350a96285498be04c127996c9c51cd4f1e2de2d8c",
+      "phresh-train-0028.parquet.jsonl": "8ebd6027a77061bb757141222a072653dd7d2b0d5306eb7ffd221f64a8b66461",
+      "phresh-train-0029.parquet.jsonl": "9bcc5fc234f23657d2aba45a864950b0f85dc9f91f617cabc60f291fc2cecd90",
+      "phresh-train-0030.parquet.jsonl": "410e5624cef8b8fb6850a234238ff784a42eb6e8f26c332259219c3891edc37d",
+      "phresh-train-0031.parquet.jsonl": "92624a16fab0bb21749f113a47d92910fddc20fd002085bcb33b4892b88ad401",
+      "phresh-train-0032.parquet.jsonl": "024a465414a429e0966c003ef7a5d6811ac1e128ccfde5b7a72b7377f40e995a",
+      "phresh-train-0033.parquet.jsonl": "fb14d014852ce0d03f528ac9e295ed8be8ea4101d916f579d93db2a521a862e9",
+      "phresh-train-0034.parquet.jsonl": "b9d4e57e216fa0ae2235b5c3ed01335ad397da49af6bd31ed95a82bed592a8b3",
+      "phresh-train-0035.parquet.jsonl": "891da2ca46548a6d124fc77a5e65ff7b06ae2018e4c9b72673e2ef21bc46b8b1",
+      "phresh-train-0036.parquet.jsonl": "4ad3442e0e2c38afbf1ec1ce5a478d934df343ea1f353b1a26855a96e63d8186",
+      "phresh-train-0037.parquet.jsonl": "1321dcf8f6ced4d91a76b81cfe735adbfae9442c34c1246d0cc802a5359fbbb2",
+      "phresh-train-0038.parquet.jsonl": "0eb6e404355b84af8aa329329d354d261d6db4af4ee8f3eda34615c451018b04",
+      "phresh-train-0039.parquet.jsonl": "979a5b3f98e99322eb67847b7a6d48c04380226830fa8b102aec366753fd1583",
+      "phresh-train-0040.parquet.jsonl": "156b8018be20661be0baa750b3c5ef952a3085aeecae3c8e524747ba1247dfb2",
+      "phresh-train-0041.parquet.jsonl": "89982acf2957075aee7548bece691a8ed7630063c82df62153274dea3485f1c4",
+      "phresh-train-0042.parquet.jsonl": "63a8c3361a0313f2f58433f961762288e1e05a7a62d954a375861f49d7f83a9d",
+      "phresh-train-0043.parquet.jsonl": "c582ce54738a1c3322add01125603839e4615c6694dd25ad5f010ea2df264037",
+      "phresh-train-0044.parquet.jsonl": "10763d60d8c9a3b4e997de4b80556f64096a0ff780b632121f223c017a7e99d6",
+      "phresh-train-0045.parquet.jsonl": "6f94f01a81e0d1536d6bae9ed9ce9704d2bfb39a143d84a25d7d2b79f4cbd6bf",
+      "phresh-train-0046.parquet.jsonl": "b0195cb04967c0be2e7305b8072a7f4c04f735fc30e1fd76a97ef2405cf2db3a",
+      "phresh-train-0047.parquet.jsonl": "83619886dfbd6a9b5f838c133e1dcf3d585b78d5029c447bd5b78f25eb0c9e89",
+      "phresh-train-0048.parquet.jsonl": "7808ee930bf5073c06dbcb3277b820ca7783936ef1f565813bd48e2b6a120098",
+      "phresh-train-0049.parquet.jsonl": "dda7fd8c86025108fff5696ab82ddf42c57b632636e34f9063380b36b8776674",
+      "phresh-train-0050.parquet.jsonl": "cf1f54d81d36ad290aad833745b09fabb15c2f64003d60ac6d1b09f4633a2ecf",
+      "phresh-train-0051.parquet.jsonl": "f6fd46d2f4c11b204413bbe302785348ff8632b520de995f5e554204d5cfface",
+      "phresh-train-0052.parquet.jsonl": "de3ea331a4001589042f2ccfa5e64d4b302efcdcd1c1a732754f688d7ec2a501",
+      "phresh-train-0053.parquet.jsonl": "ebbd86a9b6c133fc15c72abd2f85915e4d1d75aa379de1ed23d8b548a54b6a07",
+      "phresh-train-0054.parquet.jsonl": "5187384c8a2ac8c5c560451d20a0b48f73b29e18c9f4b0b2ff63f84db2c88211",
+      "phresh-train-0055.parquet.jsonl": "a2663a22c7ed470b25ab0d4ca39fea5725ed26b5dfa689b821631d31d6dcf18b"
+    }
+  },
+  "parquet_files": [
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0000.parquet",
+      "filename": "0000.parquet",
+      "size": 55340975
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0001.parquet",
+      "filename": "0001.parquet",
+      "size": 349640343
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0002.parquet",
+      "filename": "0002.parquet",
+      "size": 309443239
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0003.parquet",
+      "filename": "0003.parquet",
+      "size": 371223967
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0004.parquet",
+      "filename": "0004.parquet",
+      "size": 378348158
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0005.parquet",
+      "filename": "0005.parquet",
+      "size": 401642506
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0006.parquet",
+      "filename": "0006.parquet",
+      "size": 421478326
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0007.parquet",
+      "filename": "0007.parquet",
+      "size": 454488388
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0008.parquet",
+      "filename": "0008.parquet",
+      "size": 456990152
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0009.parquet",
+      "filename": "0009.parquet",
+      "size": 483918414
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0010.parquet",
+      "filename": "0010.parquet",
+      "size": 530323891
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0011.parquet",
+      "filename": "0011.parquet",
+      "size": 500273254
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0012.parquet",
+      "filename": "0012.parquet",
+      "size": 524605977
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0013.parquet",
+      "filename": "0013.parquet",
+      "size": 497270955
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0014.parquet",
+      "filename": "0014.parquet",
+      "size": 478593835
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0015.parquet",
+      "filename": "0015.parquet",
+      "size": 502425981
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0016.parquet",
+      "filename": "0016.parquet",
+      "size": 523758907
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0017.parquet",
+      "filename": "0017.parquet",
+      "size": 516672678
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0018.parquet",
+      "filename": "0018.parquet",
+      "size": 567766583
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0019.parquet",
+      "filename": "0019.parquet",
+      "size": 504129805
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "test",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/test/0020.parquet",
+      "filename": "0020.parquet",
+      "size": 347423824
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0000.parquet",
+      "filename": "0000.parquet",
+      "size": 49639686
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0001.parquet",
+      "filename": "0001.parquet",
+      "size": 322018201
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0002.parquet",
+      "filename": "0002.parquet",
+      "size": 354725131
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0003.parquet",
+      "filename": "0003.parquet",
+      "size": 433568855
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0004.parquet",
+      "filename": "0004.parquet",
+      "size": 403296550
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0005.parquet",
+      "filename": "0005.parquet",
+      "size": 463326261
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0006.parquet",
+      "filename": "0006.parquet",
+      "size": 421664373
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0007.parquet",
+      "filename": "0007.parquet",
+      "size": 470883056
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0008.parquet",
+      "filename": "0008.parquet",
+      "size": 489853296
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0009.parquet",
+      "filename": "0009.parquet",
+      "size": 459330640
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0010.parquet",
+      "filename": "0010.parquet",
+      "size": 496786679
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0011.parquet",
+      "filename": "0011.parquet",
+      "size": 489298015
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0012.parquet",
+      "filename": "0012.parquet",
+      "size": 539858399
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0013.parquet",
+      "filename": "0013.parquet",
+      "size": 516513156
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0014.parquet",
+      "filename": "0014.parquet",
+      "size": 528280696
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0015.parquet",
+      "filename": "0015.parquet",
+      "size": 491305707
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0016.parquet",
+      "filename": "0016.parquet",
+      "size": 481450112
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0017.parquet",
+      "filename": "0017.parquet",
+      "size": 553260365
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0018.parquet",
+      "filename": "0018.parquet",
+      "size": 512599049
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0019.parquet",
+      "filename": "0019.parquet",
+      "size": 531769758
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0020.parquet",
+      "filename": "0020.parquet",
+      "size": 516696945
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0021.parquet",
+      "filename": "0021.parquet",
+      "size": 542055394
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0022.parquet",
+      "filename": "0022.parquet",
+      "size": 519913293
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0023.parquet",
+      "filename": "0023.parquet",
+      "size": 512579781
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0024.parquet",
+      "filename": "0024.parquet",
+      "size": 490380787
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0025.parquet",
+      "filename": "0025.parquet",
+      "size": 522028796
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0026.parquet",
+      "filename": "0026.parquet",
+      "size": 507351379
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0027.parquet",
+      "filename": "0027.parquet",
+      "size": 518847095
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0028.parquet",
+      "filename": "0028.parquet",
+      "size": 519883269
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0029.parquet",
+      "filename": "0029.parquet",
+      "size": 521537139
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0030.parquet",
+      "filename": "0030.parquet",
+      "size": 517131354
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0031.parquet",
+      "filename": "0031.parquet",
+      "size": 546849720
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0032.parquet",
+      "filename": "0032.parquet",
+      "size": 516975992
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0033.parquet",
+      "filename": "0033.parquet",
+      "size": 518462738
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0034.parquet",
+      "filename": "0034.parquet",
+      "size": 523909100
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0035.parquet",
+      "filename": "0035.parquet",
+      "size": 539652745
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0036.parquet",
+      "filename": "0036.parquet",
+      "size": 526415880
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0037.parquet",
+      "filename": "0037.parquet",
+      "size": 528799237
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0038.parquet",
+      "filename": "0038.parquet",
+      "size": 540585532
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0039.parquet",
+      "filename": "0039.parquet",
+      "size": 519866563
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0040.parquet",
+      "filename": "0040.parquet",
+      "size": 516416700
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0041.parquet",
+      "filename": "0041.parquet",
+      "size": 521429018
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0042.parquet",
+      "filename": "0042.parquet",
+      "size": 556020581
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0043.parquet",
+      "filename": "0043.parquet",
+      "size": 517091171
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0044.parquet",
+      "filename": "0044.parquet",
+      "size": 512627533
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0045.parquet",
+      "filename": "0045.parquet",
+      "size": 512117091
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0046.parquet",
+      "filename": "0046.parquet",
+      "size": 513316966
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0047.parquet",
+      "filename": "0047.parquet",
+      "size": 563189367
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0048.parquet",
+      "filename": "0048.parquet",
+      "size": 526941482
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0049.parquet",
+      "filename": "0049.parquet",
+      "size": 493483710
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0050.parquet",
+      "filename": "0050.parquet",
+      "size": 518835096
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0051.parquet",
+      "filename": "0051.parquet",
+      "size": 526031430
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0052.parquet",
+      "filename": "0052.parquet",
+      "size": 510965576
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0053.parquet",
+      "filename": "0053.parquet",
+      "size": 584768973
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0054.parquet",
+      "filename": "0054.parquet",
+      "size": 547814803
+    },
+    {
+      "dataset": "phreshphish/phreshphish",
+      "config": "default",
+      "split": "train",
+      "url": "https://huggingface.co/datasets/phreshphish/phreshphish/resolve/875e5842650e0ec464e911f1cb6d84d14466986a/default/train/0055.parquet",
+      "filename": "0055.parquet",
+      "size": 20213199
+    }
+  ]
+}

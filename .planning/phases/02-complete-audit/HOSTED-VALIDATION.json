@@ -1,0 +1,239 @@
+{
+  "preview_url": "https://audit-validation-backend-worker.phish-x.workers.dev",
+  "production_traffic_changed": false,
+  "validation_header_required": true,
+  "scope": "Actual Workers runtime and stored credentials. Coordinator/KV absent for protected integration probe; not production release config.",
+  "checks": [
+    {
+      "check": "clean",
+      "status": 200,
+      "seconds": 1.461,
+      "schema": 2,
+      "policy": "2026-11-evidence-v2-xgboost",
+      "verdict": "no_known_threats",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "unavailable",
+          "errors": [
+            "JOB_STORAGE_UNAVAILABLE"
+          ]
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "registration": "available",
+      "explanation": "deterministic",
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    },
+    {
+      "check": "official-google-positive",
+      "status": 200,
+      "seconds": 3.1,
+      "schema": 2,
+      "policy": "2026-11-evidence-v2-xgboost",
+      "verdict": "malicious",
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "unavailable",
+          "errors": [
+            "JOB_STORAGE_UNAVAILABLE"
+          ]
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "detected",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "error",
+          "errors": [
+            "REGISTRATION_NOT_FOUND"
+          ]
+        }
+      ],
+      "registration": "error",
+      "explanation": "deterministic",
+      "model": [
+        "xgb-url-2026-11-03-v2"
+      ]
+    }
+  ],
+  "previous_failed_probe": {
+    "preview_url": "https://audit-validation-backend-worker.phish-x.workers.dev",
+    "production_traffic_changed": false,
+    "validation_header_required": true,
+    "scope": "Actual Workers runtime and stored credentials. Coordinator/KV absent for protected integration probe; not production release config.",
+    "checks": [
+      {
+        "check": "clean",
+        "status": 200,
+        "seconds": 1.007,
+        "schema": 2,
+        "policy": "2026-11-evidence-v2-xgboost",
+        "verdict": "unknown",
+        "engines": [
+          {
+            "id": "gsb",
+            "status": "error",
+            "errors": [
+              "NETWORK_ERROR"
+            ]
+          },
+          {
+            "id": "urlhaus",
+            "status": "error",
+            "errors": [
+              "NETWORK_ERROR"
+            ]
+          },
+          {
+            "id": "virustotal",
+            "status": "error",
+            "errors": [
+              "NETWORK_ERROR"
+            ]
+          },
+          {
+            "id": "cloudflare",
+            "status": "unavailable",
+            "errors": [
+              "JOB_STORAGE_UNAVAILABLE"
+            ]
+          },
+          {
+            "id": "heuristics",
+            "status": "no_detection",
+            "errors": []
+          },
+          {
+            "id": "xgboost",
+            "status": "no_detection",
+            "errors": []
+          },
+          {
+            "id": "registration",
+            "status": "no_detection",
+            "errors": []
+          }
+        ],
+        "registration": "error",
+        "explanation": "deterministic",
+        "model": [
+          "xgb-url-2026-11-03-v2"
+        ]
+      },
+      {
+        "check": "official-google-positive",
+        "status": 200,
+        "seconds": 0.489,
+        "schema": 2,
+        "policy": "2026-11-evidence-v2-xgboost",
+        "verdict": "suspicious",
+        "engines": [
+          {
+            "id": "gsb",
+            "status": "error",
+            "errors": [
+              "NETWORK_ERROR"
+            ]
+          },
+          {
+            "id": "urlhaus",
+            "status": "error",
+            "errors": [
+              "NETWORK_ERROR"
+            ]
+          },
+          {
+            "id": "virustotal",
+            "status": "error",
+            "errors": [
+              "NETWORK_ERROR"
+            ]
+          },
+          {
+            "id": "cloudflare",
+            "status": "unavailable",
+            "errors": [
+              "JOB_STORAGE_UNAVAILABLE"
+            ]
+          },
+          {
+            "id": "heuristics",
+            "status": "no_detection",
+            "errors": []
+          },
+          {
+            "id": "xgboost",
+            "status": "detected",
+            "errors": []
+          },
+          {
+            "id": "registration",
+            "status": "no_detection",
+            "errors": []
+          }
+        ],
+        "registration": "error",
+        "explanation": "deterministic",
+        "model": [
+          "xgb-url-2026-11-03-v2"
+        ]
+      }
+    ]
+  },
+  "fix": "Workers-supported redirect manual; refuse all upstream 3xx instead of unsupported redirect error."
+}

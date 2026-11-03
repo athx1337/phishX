@@ -1,0 +1,747 @@
+{
+  "model_version": "xgb-url-2026-11-03-v1",
+  "feature_version": "url-lexical-v1",
+  "seed": 20261103,
+  "datasets": {
+    "downloaded_rows": 902110,
+    "raw_valid_rows": 894698,
+    "feature_eligibility_coverage": 0.9917837070867189,
+    "conflicting_urls_removed": 8,
+    "deduplicated_before_domain_purge": 891806,
+    "purge_counts": {
+      "rows_purged_for_later_domain": 270614,
+      "rows_removed_by_domain_cap": 48690
+    },
+    "partitions": {
+      "calibration": {
+        "rows": 45896,
+        "domains": 37428,
+        "labels": {
+          "0": 31544,
+          "1": 14352
+        },
+        "date_min": "2025-08-01",
+        "date_max": "2025-09-30",
+        "sources": {
+          "phreshphish-1.0.1": 45896
+        }
+      },
+      "test": {
+        "rows": 103379,
+        "domains": 65486,
+        "labels": {
+          "1": 52364,
+          "0": 51015
+        },
+        "date_min": "2025-10-01",
+        "date_max": "2025-12-16",
+        "sources": {
+          "phreshphish-1.0.1": 103379
+        }
+      },
+      "train": {
+        "rows": 393599,
+        "domains": 328147,
+        "labels": {
+          "1": 216018,
+          "0": 177581
+        },
+        "date_min": "2024-07-02",
+        "date_max": "2025-04-23",
+        "sources": {
+          "uci-phiusiil-2024": 205871,
+          "phreshphish-1.0.1": 187728
+        }
+      },
+      "validation": {
+        "rows": 29628,
+        "domains": 24958,
+        "labels": {
+          "0": 16121,
+          "1": 13507
+        },
+        "date_min": "2025-06-05",
+        "date_max": "2025-07-31",
+        "sources": {
+          "phreshphish-1.0.1": 29628
+        }
+      }
+    },
+    "train_test_domain_overlap": 0,
+    "pairwise_domain_overlap": {
+      "calibration:test": 0,
+      "calibration:train": 0,
+      "calibration:validation": 0,
+      "test:train": 0,
+      "test:validation": 0,
+      "train:validation": 0
+    }
+  },
+  "split_policy": "Collection-time train<2025-06,validation June-July,calibration August-September,test October-December; UCI publication-2024 undated prior only in training; earlier observations of later-owned registrable domains purged; max30 URLs/domain.",
+  "threshold_policy": "Maximum validation recall subject to empirical FPR<=0.5%, threshold>=0.5; no test tuning.",
+  "threshold": 0.8777980208396912,
+  "calibration": {
+    "method": "platt",
+    "slope": 0.7260375267729221,
+    "intercept": -0.7156940287160153
+  },
+  "metrics": {
+    "validation": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 16041,
+        "fp": 80,
+        "fn": 6083,
+        "tp": 7424
+      },
+      "precision": 0.9893390191897654,
+      "recall": 0.5496409269267787,
+      "false_positive_rate": 0.004962471310712735,
+      "false_negative_rate": 0.4503590730732213,
+      "fpr_wilson_95": [
+        0.00398941357450925,
+        0.006171396951231995
+      ],
+      "recall_wilson_95": [
+        0.5412374979038679,
+        0.5580161277187252
+      ],
+      "roc_auc": 0.9499051963429723,
+      "average_precision": 0.9507348892574963,
+      "brier": 0.08655250072479248,
+      "ece_10_bins": 0.05416643031849801,
+      "log_loss": 0.29223430941062073,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.052498645641728806,
+        "0.001": 0.09980497176367562,
+        "0.005": 0.35756614762732897,
+        "0.01": 0.5280309504889451,
+        "0.05": 0.8535752875996955
+      }
+    },
+    "calibration": {
+      "samples": 45896,
+      "positives": 14352,
+      "negatives": 31544,
+      "confusion_matrix": {
+        "tn": 31390,
+        "fp": 154,
+        "fn": 7345,
+        "tp": 7007
+      },
+      "precision": 0.978494623655914,
+      "recall": 0.4882246376811594,
+      "false_positive_rate": 0.004882069490235861,
+      "false_negative_rate": 0.5117753623188406,
+      "fpr_wilson_95": [
+        0.0041708639437384246,
+        0.005713852233364845
+      ],
+      "recall_wilson_95": [
+        0.4800509894927006,
+        0.49640458777390933
+      ],
+      "roc_auc": 0.9141201924578958,
+      "average_precision": 0.8845307123565554,
+      "brier": 0.09168100357055664,
+      "ece_10_bins": 0.046921002142214445,
+      "log_loss": 0.3156590448217371,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.0476433780693048,
+        "0.001": 0.09099480754965797,
+        "0.005": 0.33445622538624664,
+        "0.01": 0.5025216203914429,
+        "0.05": 0.840340995585325
+      }
+    },
+    "test": {
+      "samples": 103379,
+      "positives": 52364,
+      "negatives": 51015,
+      "confusion_matrix": {
+        "tn": 50853,
+        "fp": 162,
+        "fn": 26240,
+        "tp": 26124
+      },
+      "precision": 0.993837023510614,
+      "recall": 0.4988923688029944,
+      "false_positive_rate": 0.0031755366068803295,
+      "false_negative_rate": 0.5011076311970056,
+      "fpr_wilson_95": [
+        0.002723310567979711,
+        0.0037025793473235958
+      ],
+      "recall_wilson_95": [
+        0.49461007507133126,
+        0.5031748250358992
+      ],
+      "roc_auc": 0.9512930625707052,
+      "average_precision": 0.9585257111544668,
+      "brier": 0.09544669091701508,
+      "ece_10_bins": 0.07477595276592164,
+      "log_loss": 0.3143708012484913,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.07286514782173067,
+        "0.001": 0.13589156321730214,
+        "0.005": 0.4411759045179877,
+        "0.01": 0.6134396528192536,
+        "0.05": 0.892109761072648
+      }
+    }
+  },
+  "constant_prevalence_baseline": {
+    "validation": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 16121,
+        "fp": 0,
+        "fn": 13507,
+        "tp": 0
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 1.0,
+      "fpr_wilson_95": [
+        0,
+        0.0002382323466872135
+      ],
+      "recall_wilson_95": [
+        2.710505431213761e-20,
+        0.0002843241727321275
+      ],
+      "roc_auc": 0.5,
+      "average_precision": 0.45588632374780613,
+      "brier": 0.2566920669810529,
+      "ece_10_bins": 0.09294129014348929,
+      "log_loss": 0.7065817428361428,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.0,
+        "0.001": 0.0,
+        "0.005": 0.0,
+        "0.01": 0.0,
+        "0.05": 0.0
+      }
+    },
+    "test": {
+      "samples": 103379,
+      "positives": 52364,
+      "negatives": 51015,
+      "confusion_matrix": {
+        "tn": 51015,
+        "fp": 0,
+        "fn": 52364,
+        "tp": 0
+      },
+      "precision": 0.0,
+      "recall": 0.0,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 1.0,
+      "fpr_wilson_95": [
+        0,
+        7.529490499690623e-05
+      ],
+      "recall_wilson_95": [
+        0,
+        7.335530191204931e-05
+      ],
+      "roc_auc": 0.5,
+      "average_precision": 0.5065245359308951,
+      "brier": 0.25174698083581015,
+      "ece_10_bins": 0.04230307796040034,
+      "log_loss": 0.69665995006464,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.0,
+        "0.001": 0.0,
+        "0.005": 0.0,
+        "0.01": 0.0,
+        "0.05": 0.0
+      }
+    }
+  },
+  "validation_operating_points": {
+    "0.5": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 15327,
+        "fp": 794,
+        "fn": 2584,
+        "tp": 10923
+      },
+      "precision": 0.9322352137919263,
+      "recall": 0.8086917894425113,
+      "false_positive_rate": 0.0492525277588239,
+      "false_negative_rate": 0.1913082105574887,
+      "fpr_wilson_95": [
+        0.046018178869700464,
+        0.05270164190409802
+      ],
+      "recall_wilson_95": [
+        0.8019711241356037,
+        0.815236917674094
+      ],
+      "roc_auc": 0.9499051963429723,
+      "average_precision": 0.9507348892574963,
+      "brier": 0.08655250072479248,
+      "ece_10_bins": 0.05416643031849801,
+      "log_loss": 0.29223430941062073,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.008146838315555446,
+        "0.001": 0.01616996566263639,
+        "0.005": 0.0762201692526682,
+        "0.01": 0.1422578011435701,
+        "0.05": 0.46356922329190897
+      }
+    },
+    "0.75": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 15935,
+        "fp": 186,
+        "fn": 4705,
+        "tp": 8802
+      },
+      "precision": 0.979305740987984,
+      "recall": 0.651662101132746,
+      "false_positive_rate": 0.01153774579740711,
+      "false_negative_rate": 0.348337898867254,
+      "fpr_wilson_95": [
+        0.010001693183011227,
+        0.013306533429976612
+      ],
+      "recall_wilson_95": [
+        0.6435851109625358,
+        0.6596528489000776
+      ],
+      "roc_auc": 0.9499051963429723,
+      "average_precision": 0.9507348892574963,
+      "brier": 0.08655250072479248,
+      "ece_10_bins": 0.05416643031849801,
+      "log_loss": 0.29223430941062073,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.02747818578705886,
+        "0.001": 0.053511992898527684,
+        "0.005": 0.2210767569261333,
+        "0.01": 0.363265782921667,
+        "0.05": 0.7482806430475053
+      }
+    },
+    "0.8777980208396912": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 16041,
+        "fp": 80,
+        "fn": 6083,
+        "tp": 7424
+      },
+      "precision": 0.9893390191897654,
+      "recall": 0.5496409269267787,
+      "false_positive_rate": 0.004962471310712735,
+      "false_negative_rate": 0.4503590730732213,
+      "fpr_wilson_95": [
+        0.00398941357450925,
+        0.006171396951231995
+      ],
+      "recall_wilson_95": [
+        0.5412374979038679,
+        0.5580161277187252
+      ],
+      "roc_auc": 0.9499051963429723,
+      "average_precision": 0.9507348892574963,
+      "brier": 0.08655250072479248,
+      "ece_10_bins": 0.05416643031849801,
+      "log_loss": 0.29223430941062073,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.052498645641728806,
+        "0.001": 0.09980497176367562,
+        "0.005": 0.35756614762732897,
+        "0.01": 0.5280309504889451,
+        "0.05": 0.8535752875996955
+      }
+    },
+    "0.95": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 16108,
+        "fp": 13,
+        "fn": 9682,
+        "tp": 3825
+      },
+      "precision": 0.9966128191766546,
+      "recall": 0.28318649589101946,
+      "false_positive_rate": 0.0008064015879908194,
+      "false_negative_rate": 0.7168135041089805,
+      "fpr_wilson_95": [
+        0.00047134442090308057,
+        0.0013793068798804132
+      ],
+      "recall_wilson_95": [
+        0.2756508189562608,
+        0.29084546346616397
+      ],
+      "roc_auc": 0.9499051963429723,
+      "average_precision": 0.9507348892574963,
+      "brier": 0.08655250072479248,
+      "ece_10_bins": 0.05416643031849801,
+      "log_loss": 0.29223430941062073,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.1494243329028982,
+        "0.001": 0.26009483856708665,
+        "0.005": 0.6382956159588289,
+        "0.01": 0.7800845640735218,
+        "0.05": 0.9486726529896882
+      }
+    },
+    "0.99": {
+      "samples": 29628,
+      "positives": 13507,
+      "negatives": 16121,
+      "confusion_matrix": {
+        "tn": 16121,
+        "fp": 0,
+        "fn": 12790,
+        "tp": 717
+      },
+      "precision": 1.0,
+      "recall": 0.0530835862885911,
+      "false_positive_rate": 0.0,
+      "false_negative_rate": 0.9469164137114089,
+      "fpr_wilson_95": [
+        0,
+        0.0002382323466872135
+      ],
+      "recall_wilson_95": [
+        0.04942807620472478,
+        0.05699323465167522
+      ],
+      "roc_auc": 0.9499051963429723,
+      "average_precision": 0.9507348892574963,
+      "brier": 0.08655250072479248,
+      "ece_10_bins": 0.05416643031849801,
+      "log_loss": 0.29223430941062073,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 1.0,
+        "0.001": 1.0,
+        "0.005": 1.0,
+        "0.01": 1.0,
+        "0.05": 1.0
+      }
+    }
+  },
+  "promotion_gates": {
+    "validation_fpr_at_most_0_005": true,
+    "validation_fpr_wilson_upper_at_most_0_01": true,
+    "validation_precision_at_least_0_80": true,
+    "validation_recall_at_least_0_10": true,
+    "artifact_under_1mb": true
+  },
+  "promoted": true,
+  "training_seconds": 2.4596369999999297,
+  "trees": 160,
+  "artifact_bytes": 88058,
+  "libraries": {
+    "python": "3.14.3",
+    "xgboost": "3.2.0",
+    "sklearn": "1.8.0",
+    "numpy": "2.4.2",
+    "pandas": "3.0.1"
+  },
+  "artifact_sha256": "6922bdc2a0e8375d31c41731901e38c3a6e09b614f6c186aaad34c8bf00aaca4",
+  "native_sha256": "cddc8655ee00c4a3286bfbd91011002ee86089bc0bf098b7f6078b98873eb43d",
+  "feature_sha256": "d891760701ca12805cf4cabbaca6b7c8389b38601ba4eb77b1736248bef016f2",
+  "corpus_sha256": "a7a970a10c4bace2ecb859e2149362a3dcf6d9ce52d8d1cb3d72d859b13f022d",
+  "download_provenance": {
+    "uci_url": "https://archive.ics.uci.edu/static/public/967/phiusiil+phishing+url+dataset.zip",
+    "phresh_manifest_url": "https://datasets-server.huggingface.co/parquet?dataset=phreshphish/phreshphish",
+    "phresh_source_revision": "eca603e0ecd4f698f8d4d226c088659e72681239",
+    "phresh_parquet_revision": "875e5842650e0ec464e911f1cb6d84d14466986a",
+    "sampling": "first two row groups per converted shard, projected url,label,date; no HTML or target URLs fetched",
+    "sha256": {
+      "phiusiil.zip": "0a639fd03aea6308c5b1c10c92aa23c2ce1505447a9137271865cd0badc9a59a",
+      "corpus.jsonl": "a7a970a10c4bace2ecb859e2149362a3dcf6d9ce52d8d1cb3d72d859b13f022d",
+      "phresh-test-0000.parquet.jsonl": "e1314f1195c607f96e8378665fe5f2d8da4be70d2a1b4e1fe6888271fa3d4713",
+      "phresh-test-0001.parquet.jsonl": "078ffb971f3baba77a926016b34a4942e165f572c8b92f54d25181279fd17eaa",
+      "phresh-test-0002.parquet.jsonl": "e3cfdd70bb09deaa3edaa85d3a5acc4c37a6e732e5616b9c18635cb7f70648be",
+      "phresh-test-0003.parquet.jsonl": "ddd767e29926ce46e4561551aebee0f4c2cde9f909da9b1a554e58e011bf6a77",
+      "phresh-test-0004.parquet.jsonl": "6814e856bfef1d25e9ca41e9e5f3459227daff81274104ab38dddc16962822cc",
+      "phresh-test-0005.parquet.jsonl": "f9799e78afae02f5162f0c7fbbb9cfdf97b62b612e42dd691f6d3870a971b662",
+      "phresh-test-0006.parquet.jsonl": "caadca89816f9add377a3127975d83a5dd81fdca6ce628e73634b1f1335f4926",
+      "phresh-test-0007.parquet.jsonl": "c2a7e5cc24b0a61a1bc1fd7bb07dc000c53614997f624db25202f94d28fe7936",
+      "phresh-test-0008.parquet.jsonl": "87452f6555eb73b5a20929f07b9f94e72bf10e482f9c57288ae95ab196a1a2d0",
+      "phresh-test-0009.parquet.jsonl": "3c150e5e5298a912c63fe2440a58c5f4f338bf18c804ae4d3c1bc65417764d26",
+      "phresh-test-0010.parquet.jsonl": "a24907b1d480c19f7887aabdad9411f553466c0bd95a03f7e5945f18c6abd4f7",
+      "phresh-test-0011.parquet.jsonl": "41e3725a289e024a18fa4719745d75aa795e22cef9038d0beb4dbc6b8d515d0e",
+      "phresh-test-0012.parquet.jsonl": "b2843f85dd55d49124c0ac982b956e72b29099b1ff9e4dae240122401e6af18b",
+      "phresh-test-0013.parquet.jsonl": "0c314481c2cca895cc5a860d731b9d895ab95f047da2608373cfb837b96e4bb3",
+      "phresh-test-0014.parquet.jsonl": "04aa7999898bc03259b129ff6ef3560d4e19d2ecc6911b466107e96ed564b34e",
+      "phresh-test-0015.parquet.jsonl": "6075d6c3cde40d39b361d7549a1690711481837670fefea310a3f5c1ae9e06d4",
+      "phresh-test-0016.parquet.jsonl": "d091ee27fdd7b90050cac30cb85b57e562ceeb8976112c57e8532fbd246418be",
+      "phresh-test-0017.parquet.jsonl": "fa26fbdf3154256f158b4e466e172ff3a0a0f309a22c0675ca7fea250e6eb426",
+      "phresh-test-0018.parquet.jsonl": "7df815a9cce3ee55e40fc00f5c8489847061f0053b2e7709e5b7bbbaab4708ef",
+      "phresh-test-0019.parquet.jsonl": "6bba0ad4b98a9bda1554138296019729e300e85adf7be303d7e1e19f6bc71900",
+      "phresh-test-0020.parquet.jsonl": "c1ba45f1bd9db453463310e7f761a764c89df54a82aa089d9ae8526c20a632f8",
+      "phresh-train-0000.parquet.jsonl": "96fff792e02912dce9f3c5c395f80b22d9e48b13ed101744c8b3c754ee0ddbf9",
+      "phresh-train-0001.parquet.jsonl": "ae7817075576c4897b99701d477977d18130705ad1f06b29a315782f9067b174",
+      "phresh-train-0002.parquet.jsonl": "a47be60ae93fd56a85c31ec3aec74aa7288169be6ec6989e4e2f8bf3694f4957",
+      "phresh-train-0003.parquet.jsonl": "f60a0ded3a7d8c7de037c0b7ebdfd9ef0dbad0924a39b214bf64424ca73da9e7",
+      "phresh-train-0004.parquet.jsonl": "3fa566066e091a681107c067992aa12e9643e16d9d374cef556d52aebfb5ee0c",
+      "phresh-train-0005.parquet.jsonl": "3921a7128957003d06ee6be229a0d890ab0d61b4f0ea552af136e49f5d00e0e1",
+      "phresh-train-0006.parquet.jsonl": "ff76ade1028828bc3c05c292e8882e7bec3408b830c03eba0606a51686b18a0a",
+      "phresh-train-0007.parquet.jsonl": "a2e6c2ca7d792d4bebf23988167ab8fa098056c892abb89e3cf22439dccf5685",
+      "phresh-train-0008.parquet.jsonl": "a4dd7d79126ffdb10a7eb3c9a0e7d51735a56f1883fdd26d05ff2c1d03708bec",
+      "phresh-train-0009.parquet.jsonl": "8ce88b93b023ba274725e2a6119af4e29a6d8f749b6d92d340199b77025c7e72",
+      "phresh-train-0010.parquet.jsonl": "54b3728131c44865419150a21d6e4db9c5b96239c1946daa477ab83863ef9dea",
+      "phresh-train-0011.parquet.jsonl": "a4e2738a1a14301832693b5dad43ba4bedc6a1715efa3612521fc962682bf296",
+      "phresh-train-0012.parquet.jsonl": "467630e38830b13ffb9b22adea2cb603c9d3637e19437741ad9659d40ded2244",
+      "phresh-train-0013.parquet.jsonl": "ecd1e3f71fcdf88d9cc0acef81f68af919e3a7366a99885fcf80f9dd550b5f31",
+      "phresh-train-0014.parquet.jsonl": "2047fe9292f887656f9c4f36f5f603f2302555075a82e173c16337a5783b47fa",
+      "phresh-train-0015.parquet.jsonl": "1ed25e6304c5298c9162b80b6c9f8cb055bc4c4e03d1802bbd5d6655544846a2",
+      "phresh-train-0016.parquet.jsonl": "16b587cb84aa3ac49753654bb1dfbd9fa5ede31b81be93a81181dac18659b2b1",
+      "phresh-train-0017.parquet.jsonl": "a1ea1e2a410d5e1cbeb8bd8768d9d50a87d2b1ebc52cce76ad59d30edb0d4ac3",
+      "phresh-train-0018.parquet.jsonl": "b069718abe4b5395b62d76f9846a513848a62bb6761cd84271f1875631809cac",
+      "phresh-train-0019.parquet.jsonl": "2a3f88932f09c6797c8c88441749e2993eff2a892173bb76141bd0da26be7b19",
+      "phresh-train-0020.parquet.jsonl": "e4a7c72270b615a7afe4bc9aa8b68af122cb0ad63502682dcdbfa591b24b8ae0",
+      "phresh-train-0021.parquet.jsonl": "c1b55d8d484d46a5533f3e69d92e8a47d0a339885c1f3a6fc2805a5c1713fb1a",
+      "phresh-train-0022.parquet.jsonl": "0f0ce0292a55db7ae44b06e365ad247af68187b4454b80806d46bd9fa587cfbd",
+      "phresh-train-0023.parquet.jsonl": "5af6bbe7de03eecff0f12c1c27528dff761e86e223a0a5cc1ee3c9f14e2a4409",
+      "phresh-train-0024.parquet.jsonl": "b280d0bd172d6916d021bf28ae75c88e2332d94ac36af6607d6459801aadef89",
+      "phresh-train-0025.parquet.jsonl": "eb7242bf341eda8760ab5e3254aa04aa1a3ce396722c2868482477312ccfc2ab",
+      "phresh-train-0026.parquet.jsonl": "ffd0b703069baeaa92fffd3e23a9031b15792f6a3151ca84dff8867cfe332b9c",
+      "phresh-train-0027.parquet.jsonl": "d2a3d1b0b36711cdc220b9a350a96285498be04c127996c9c51cd4f1e2de2d8c",
+      "phresh-train-0028.parquet.jsonl": "8ebd6027a77061bb757141222a072653dd7d2b0d5306eb7ffd221f64a8b66461",
+      "phresh-train-0029.parquet.jsonl": "9bcc5fc234f23657d2aba45a864950b0f85dc9f91f617cabc60f291fc2cecd90",
+      "phresh-train-0030.parquet.jsonl": "410e5624cef8b8fb6850a234238ff784a42eb6e8f26c332259219c3891edc37d",
+      "phresh-train-0031.parquet.jsonl": "92624a16fab0bb21749f113a47d92910fddc20fd002085bcb33b4892b88ad401",
+      "phresh-train-0032.parquet.jsonl": "024a465414a429e0966c003ef7a5d6811ac1e128ccfde5b7a72b7377f40e995a",
+      "phresh-train-0033.parquet.jsonl": "fb14d014852ce0d03f528ac9e295ed8be8ea4101d916f579d93db2a521a862e9",
+      "phresh-train-0034.parquet.jsonl": "b9d4e57e216fa0ae2235b5c3ed01335ad397da49af6bd31ed95a82bed592a8b3",
+      "phresh-train-0035.parquet.jsonl": "891da2ca46548a6d124fc77a5e65ff7b06ae2018e4c9b72673e2ef21bc46b8b1",
+      "phresh-train-0036.parquet.jsonl": "4ad3442e0e2c38afbf1ec1ce5a478d934df343ea1f353b1a26855a96e63d8186",
+      "phresh-train-0037.parquet.jsonl": "1321dcf8f6ced4d91a76b81cfe735adbfae9442c34c1246d0cc802a5359fbbb2",
+      "phresh-train-0038.parquet.jsonl": "0eb6e404355b84af8aa329329d354d261d6db4af4ee8f3eda34615c451018b04",
+      "phresh-train-0039.parquet.jsonl": "979a5b3f98e99322eb67847b7a6d48c04380226830fa8b102aec366753fd1583",
+      "phresh-train-0040.parquet.jsonl": "156b8018be20661be0baa750b3c5ef952a3085aeecae3c8e524747ba1247dfb2",
+      "phresh-train-0041.parquet.jsonl": "89982acf2957075aee7548bece691a8ed7630063c82df62153274dea3485f1c4",
+      "phresh-train-0042.parquet.jsonl": "63a8c3361a0313f2f58433f961762288e1e05a7a62d954a375861f49d7f83a9d",
+      "phresh-train-0043.parquet.jsonl": "c582ce54738a1c3322add01125603839e4615c6694dd25ad5f010ea2df264037",
+      "phresh-train-0044.parquet.jsonl": "10763d60d8c9a3b4e997de4b80556f64096a0ff780b632121f223c017a7e99d6",
+      "phresh-train-0045.parquet.jsonl": "6f94f01a81e0d1536d6bae9ed9ce9704d2bfb39a143d84a25d7d2b79f4cbd6bf",
+      "phresh-train-0046.parquet.jsonl": "b0195cb04967c0be2e7305b8072a7f4c04f735fc30e1fd76a97ef2405cf2db3a",
+      "phresh-train-0047.parquet.jsonl": "83619886dfbd6a9b5f838c133e1dcf3d585b78d5029c447bd5b78f25eb0c9e89",
+      "phresh-train-0048.parquet.jsonl": "7808ee930bf5073c06dbcb3277b820ca7783936ef1f565813bd48e2b6a120098",
+      "phresh-train-0049.parquet.jsonl": "dda7fd8c86025108fff5696ab82ddf42c57b632636e34f9063380b36b8776674",
+      "phresh-train-0050.parquet.jsonl": "cf1f54d81d36ad290aad833745b09fabb15c2f64003d60ac6d1b09f4633a2ecf",
+      "phresh-train-0051.parquet.jsonl": "f6fd46d2f4c11b204413bbe302785348ff8632b520de995f5e554204d5cfface",
+      "phresh-train-0052.parquet.jsonl": "de3ea331a4001589042f2ccfa5e64d4b302efcdcd1c1a732754f688d7ec2a501",
+      "phresh-train-0053.parquet.jsonl": "ebbd86a9b6c133fc15c72abd2f85915e4d1d75aa379de1ed23d8b548a54b6a07",
+      "phresh-train-0054.parquet.jsonl": "5187384c8a2ac8c5c560451d20a0b48f73b29e18c9f4b0b2ff63f84db2c88211",
+      "phresh-train-0055.parquet.jsonl": "a2663a22c7ed470b25ab0d4ca39fea5725ed26b5dfa689b821631d31d6dcf18b"
+    }
+  },
+  "limitations": [
+    "URL-only model; cannot inspect page content or prove safety.",
+    "Historical labels are not current live validity.",
+    "Deterministic first-two-rowgroup shard sampling and domain frequency caps change base rates; this is not the full official PhreshPhish benchmark.",
+    "UCI rows lack individual collection timestamps; publication date is a prior-source assumption, not invented per-row dates.",
+    "No superiority over another scanner is established.",
+    "Calibration and measured probabilities do not guarantee population calibration under distribution shift."
+  ],
+  "benign_protocol_controls": [
+    {
+      "url": "https://example.com/",
+      "calibrated_probability": 0.3806085590170025,
+      "warning": false
+    },
+    {
+      "url": "http://example.com/",
+      "calibrated_probability": 0.9055278501074867,
+      "warning": true
+    },
+    {
+      "url": "https://google.com/",
+      "calibrated_probability": 0.3806085590170025,
+      "warning": false
+    },
+    {
+      "url": "http://google.com/",
+      "calibrated_probability": 0.9055278501074867,
+      "warning": true
+    },
+    {
+      "url": "https://github.com/",
+      "calibrated_probability": 0.3806085590170025,
+      "warning": false
+    },
+    {
+      "url": "http://github.com/",
+      "calibrated_probability": 0.9055278501074867,
+      "warning": true
+    },
+    {
+      "url": "https://wikipedia.org/",
+      "calibrated_probability": 0.17468935749483827,
+      "warning": false
+    },
+    {
+      "url": "http://wikipedia.org/",
+      "calibrated_probability": 0.8542779432571672,
+      "warning": false
+    }
+  ],
+  "test_slices": {
+    "http": {
+      "samples": 9934,
+      "positives": 9584,
+      "negatives": 350,
+      "confusion_matrix": {
+        "tn": 258,
+        "fp": 92,
+        "fn": 1858,
+        "tp": 7726
+      },
+      "precision": 0.988232284471732,
+      "recall": 0.8061352253756261,
+      "false_positive_rate": 0.26285714285714284,
+      "false_negative_rate": 0.19386477462437396,
+      "fpr_wilson_95": [
+        0.21949467430879996,
+        0.3113686661452677
+      ],
+      "recall_wilson_95": [
+        0.7980986205901491,
+        0.8139265182487408
+      ],
+      "roc_auc": 0.8690533329358454,
+      "average_precision": 0.9936073442834675,
+      "brier": 0.03107329085469246,
+      "ece_10_bins": 0.06611899136206933,
+      "log_loss": 0.14276309764213466,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.0015318263923079435,
+        "0.001": 0.003060493307109376,
+        "0.005": 0.015177250824856449,
+        "0.01": 0.03004716741915889,
+        "0.05": 0.1389787454671682
+      }
+    },
+    "https": {
+      "samples": 93445,
+      "positives": 42780,
+      "negatives": 50665,
+      "confusion_matrix": {
+        "tn": 50595,
+        "fp": 70,
+        "fn": 24382,
+        "tp": 18398
+      },
+      "precision": 0.99620965995235,
+      "recall": 0.4300607760635811,
+      "false_positive_rate": 0.001381624395539327,
+      "false_negative_rate": 0.5699392239364189,
+      "fpr_wilson_95": [
+        0.0010938013003003824,
+        0.0017450530069881747
+      ],
+      "recall_wilson_95": [
+        0.4253758143262085,
+        0.43475829715231373
+      ],
+      "roc_auc": 0.9435122014652527,
+      "average_precision": 0.9441030857830703,
+      "brier": 0.10229013860225677,
+      "ece_10_bins": 0.07632839978498698,
+      "log_loss": 0.33261416287967055,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.13473386109509358,
+        "0.001": 0.23756279808820263,
+        "0.005": 0.6100117975074109,
+        "0.01": 0.7586965789445218,
+        "0.05": 0.9424716328965956
+      }
+    },
+    "url_length_over_100": {
+      "samples": 9575,
+      "positives": 5638,
+      "negatives": 3937,
+      "confusion_matrix": {
+        "tn": 3929,
+        "fp": 8,
+        "fn": 1916,
+        "tp": 3722
+      },
+      "precision": 0.9978552278820375,
+      "recall": 0.6601631784320681,
+      "false_positive_rate": 0.002032004064008128,
+      "false_negative_rate": 0.3398368215679319,
+      "fpr_wilson_95": [
+        0.001030014384248697,
+        0.00400481359044271
+      ],
+      "recall_wilson_95": [
+        0.6476942120973637,
+        0.6724140385831694
+      ],
+      "roc_auc": 0.9802569117376617,
+      "average_precision": 0.9878000411263409,
+      "brier": 0.06297630816698074,
+      "ece_10_bins": 0.07670843663477087,
+      "log_loss": 0.22138413747134253,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.13980171616257417,
+        "0.001": 0.245401483544208,
+        "0.005": 0.620144050520521,
+        "0.01": 0.7664448781069534,
+        "0.05": 0.9447486185155982
+      }
+    },
+    "url_length_at_most_100": {
+      "samples": 93804,
+      "positives": 46726,
+      "negatives": 47078,
+      "confusion_matrix": {
+        "tn": 46924,
+        "fp": 154,
+        "fn": 24324,
+        "tp": 22402
+      },
+      "precision": 0.9931725483241709,
+      "recall": 0.4794332919573685,
+      "false_positive_rate": 0.003271166999447725,
+      "false_negative_rate": 0.5205667080426315,
+      "fpr_wilson_95": [
+        0.002794329637192605,
+        0.0038290616567405516
+      ],
+      "recall_wilson_95": [
+        0.4749054514455328,
+        0.48396451387002043
+      ],
+      "roc_auc": 0.9476782779886775,
+      "average_precision": 0.9539223956806213,
+      "brier": 0.09876108914613724,
+      "ece_10_bins": 0.0746137927961497,
+      "log_loss": 0.32386237203082685,
+      "hypothetical_precision_by_base_rate": {
+        "0.0005": 0.06830997460096122,
+        "0.001": 0.12794000100896133,
+        "0.005": 0.4241287951153758,
+        "0.01": 0.5968454253919186,
+        "0.05": 0.8852403230659017
+      }
+    }
+  },
+  "split_manifest_sha256": "f2956a20c69c153d0d42843bb7c87f94917fc937b5336b406bf61c6363c53bc4"
+}

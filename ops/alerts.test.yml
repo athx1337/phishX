@@ -1,0 +1,41 @@
+rule_files:
+  - alerts.yml
+evaluation_interval: 1m
+tests:
+  - name: healthy provider does not trigger failure warning
+    interval: 1m
+    input_series:
+      - series: 'phishx_provider_requests_total{provider="gsb",outcome="success"}'
+        values: '0+100x20'
+      - series: 'phishx_provider_requests_total{provider="gsb",outcome="failure"}'
+        values: '0+0x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: PhishXProviderFailures
+        exp_alerts: []
+  - name: normal absent reports do not count as provider failures
+    interval: 1m
+    input_series:
+      - series: 'phishx_provider_requests_total{provider="virustotal",outcome="not_found"}'
+        values: '0+100x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: PhishXProviderFailures
+        exp_alerts: []
+  - name: persistent failed provider triggers attributed warning
+    interval: 1m
+    input_series:
+      - series: 'phishx_provider_requests_total{provider="gsb",outcome="success"}'
+        values: '0+10x20'
+      - series: 'phishx_provider_requests_total{provider="gsb",outcome="failure"}'
+        values: '0+10x20'
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: PhishXProviderFailures
+        exp_alerts:
+          - exp_labels:
+              provider: gsb
+              severity: warning
+            exp_annotations:
+              summary: Provider failure rate exceeds 25 percent
+              description: Inspect timeout, malformed and rate_limited outcomes. Do not convert provider failures into negative findings.

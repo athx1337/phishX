@@ -1,0 +1,10 @@
+{
+  "commit_docs": false,
+  "workflow": {
+    "research": true,
+    "plan_check": true,
+    "verifier": true
+  },
+  "runtime": "antigravity",
+  "resolve_model_ids": "omit"
+}

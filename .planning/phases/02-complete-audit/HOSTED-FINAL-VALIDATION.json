@@ -1,0 +1,160 @@
+{
+  "runtime": "Actual Workers with isolated audit control/job Durable Objects, KV, preserved hosted provider secrets; validation-token protected",
+  "production_traffic_changed": false,
+  "version_urls": [
+    "https://2cb83086-backend-worker.phish-x.workers.dev",
+    "https://audit-validation-backend-worker.phish-x.workers.dev"
+  ],
+  "checks": [
+    {
+      "check": "bare-domain-real-two-protocol-scan",
+      "status": 200,
+      "seconds": 3.025,
+      "schema": 2,
+      "verdict": "unknown",
+      "checked_targets": 2,
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "cloudflare_reports": 0,
+      "destinations": 0
+    },
+    {
+      "check": "revisioned-active-poll-1",
+      "status": 200,
+      "seconds": 1.251,
+      "schema": 2,
+      "verdict": "unknown",
+      "checked_targets": 2,
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "pending",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "cloudflare_reports": 1,
+      "destinations": 0
+    },
+    {
+      "check": "revisioned-active-poll-2",
+      "status": 200,
+      "seconds": 1.288,
+      "schema": 2,
+      "verdict": "no_known_threats",
+      "checked_targets": 2,
+      "engines": [
+        {
+          "id": "gsb",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "urlhaus",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "virustotal",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "cloudflare",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "heuristics",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "xgboost",
+          "status": "no_detection",
+          "errors": []
+        },
+        {
+          "id": "registration",
+          "status": "no_detection",
+          "errors": []
+        }
+      ],
+      "cloudflare_reports": 2,
+      "destinations": 0
+    },
+    {
+      "check": "real-metrics-after-completed-job",
+      "status": 200,
+      "active_leases": [
+        "phishx_active_leases{route=\"scan\"} 0",
+        "phishx_active_leases{route=\"poll\"} 0",
+        "phishx_active_leases{route=\"active\"} 0"
+      ]
+    }
+  ]
+}

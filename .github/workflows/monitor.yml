@@ -1,0 +1,30 @@
+name: Production availability
+on:
+  schedule:
+    - cron: '7,22,37,52 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-availability
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.repository == 'athx1337/phishX'
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Check public app, API and protected metrics
+        env:
+          PHISHX_METRICS_TOKEN: ${{ secrets.PHISHX_METRICS_TOKEN }}
+        run: node scripts/monitor-production.mjs
