@@ -3,7 +3,9 @@ import AxeBuilder from '@axe-core/playwright';
 
 test.use({ reducedMotion: 'no-preference' });
 
-async function prepare(page) {
+async function prepare(page, hardwareConcurrency = 8) {
+  // Select the device capability being exercised instead of inheriting the CI host's CPU count.
+  await page.addInitScript(cores => Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, get: () => cores }), hardwareConcurrency);
   await page.route('**/api/ping', route => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"status":"ok"}' }));
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'DETECT phishing. STAY AHEAD.' })).toBeVisible();
@@ -47,8 +49,7 @@ test('original waves and X animate automatically with four truthful HUDs; pause 
 });
 
 test('low power devices retain static identity without starting WebGL rendering', async ({ page }) => {
-  await page.addInitScript(() => Object.defineProperty(navigator, 'hardwareConcurrency', { get: () => 2 }));
-  await prepare(page);
+  await prepare(page, 2);
   await expect(page.getByTestId('chroma-waves')).toHaveAttribute('data-motion', 'static');
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.getByTestId('ascii-static')).toBeVisible();
