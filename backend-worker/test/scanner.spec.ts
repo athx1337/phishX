@@ -265,16 +265,46 @@ describe('cache isolation, CORS and quota protection', () => {
 });
 
 describe('unlisted asynchronous Cloudflare inspection', () => {
+  it('does not spend another Gemini request when a due active poll stays pending', async () => {
+    const cache = new MemoryCache(), provider = providerFixtures({ gsbThreat: true, cfPending: true });
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => String(url).includes('generativelanguage.googleapis.com') ?
+      json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ verdict: 'malicious', evidence_ids: ['gsb-0'] }) }] } }] }) : provider(url, init)));
+    const bindings = { ...cloudEnv(cache), GEMINI_ENABLED: 'true', GEMINI_API_KEY: 'test' };
+    const initial = await validReport(await verify(undefined, bindings));
+    vi.setSystemTime(NOW + 10_001);
+    const unchanged = await validReport(await app.request(initial.deep_scan!.poll_path, {}, bindings));
+    expect(unchanged.explanation).toEqual(initial.explanation);
+    expect(vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('generativelanguage.googleapis.com'))).toHaveLength(1);
+  });
+  it('downgrades expired AI context before polling while retaining the historical warning', async () => {
+    const cache = new MemoryCache(), provider = providerFixtures({ gsbThreat: true, cfPending: true, gsbSeconds: 5 });
+    vi.stubGlobal('fetch', vi.fn(async (url, init) => String(url).includes('generativelanguage.googleapis.com') ?
+      json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ verdict: 'malicious', evidence_ids: ['gsb-0'] }) }] } }] }) : provider(url, init)));
+    const bindings = { ...cloudEnv(cache), GEMINI_ENABLED: 'true', GEMINI_API_KEY: 'test' };
+    const initial = await validReport(await verify(undefined, bindings));
+    expect(initial.explanation?.ai_status).toBe('complete');
+    vi.setSystemTime(NOW + 6000);
+    const expired = await validReport(await app.request(initial.deep_scan!.poll_path, {}, bindings));
+    expect(expired.explanation).toMatchObject({ source: 'deterministic', ai_status: 'unavailable', model: 'gemini-2.5-flash', evidence_ids: ['gsb-0'] });
+    expect(expired.verdict).toBe('suspicious');
+    expect(expired.reasons.some(item => item.id === 'gsb-0')).toBe(true);
+    expect(vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('generativelanguage.googleapis.com'))).toHaveLength(1);
+  });
   it('preserves a validated evidence selection when a fresh job update keeps its verdict', async () => {
     const cache = new MemoryCache(), provider = providerFixtures({ gsbThreat: true });
     vi.stubGlobal('fetch', vi.fn(async (url, init) => String(url).includes('generativelanguage.googleapis.com') ?
-      json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ verdict: 'malicious', evidence_ids: ['gsb-0'] }) }] } }] }) : provider(url, init)));
+      json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ verdict: 'malicious', evidence_ids: ['gsb-0'] }) }] } }] }) : provider(url, init)));
     const bindings = { ...cloudEnv(cache), GEMINI_ENABLED: 'true', GEMINI_API_KEY: 'test' };
     const initial = await validReport(await verify(undefined, bindings)); expect(initial.explanation?.source).toBe('gemini');
+    const unchanged = await validReport(await app.request(initial.deep_scan!.poll_path, {}, bindings));
+    expect(unchanged.explanation).toEqual(initial.explanation);
+    expect(vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('generativelanguage.googleapis.com'))).toHaveLength(1);
     vi.setSystemTime(NOW + 10_001);
     const finished = await validReport(await app.request(initial.deep_scan!.poll_path, {}, bindings));
     expect(finished.verdict).toBe('malicious'); expect(finished.explanation?.source).toBe('gemini');
     expect(finished.explanation?.evidence_ids).toEqual(['gsb-0']);
+    expect(finished.explanation?.ai_status).toBe('complete');
+    expect(vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('generativelanguage.googleapis.com'))).toHaveLength(2);
   });
   it.each(['finished', 'Finished'])('accepts the live/documented successful status %s', async cfStatus => {
     vi.stubGlobal('fetch', providerFixtures({ cfStatus }));

@@ -149,7 +149,8 @@ function buildProceduralScene(scene) {
   const bar = new THREE.BoxGeometry(0.5, 2.5, 0.5);
   const b1 = new THREE.Mesh(bar, chrome); b1.rotation.z = Math.PI / 4; xGroup.add(b1);
   const b2 = new THREE.Mesh(bar, chrome); b2.rotation.z = -Math.PI / 4; xGroup.add(b2);
-  const core = new THREE.Mesh(new THREE.OctahedronGeometry(0.5, 0), chrome); xGroup.add(core);
+  const coreGeometry = new THREE.OctahedronGeometry(0.5, 0);
+  const core = new THREE.Mesh(coreGeometry, chrome); xGroup.add(core);
   scene.add(xGroup);
 
   const blobGeom = new THREE.TorusKnotGeometry(0.24, 0.07, 128, 16);
@@ -179,7 +180,7 @@ function buildProceduralScene(scene) {
       blob2.position.set(1.8 + targetX * 0.6, -1.3 + Math.sin(t * 0.5 + 2) * 0.08 + targetY * 0.6, -0.5);
     },
     dispose() {
-      bar.dispose(); blobGeom.dispose(); chrome.dispose(); smoothChrome.dispose(); envTex.dispose();
+      bar.dispose(); coreGeometry.dispose(); blobGeom.dispose(); chrome.dispose(); smoothChrome.dispose(); envTex.dispose();
     },
   };
 }
@@ -216,7 +217,10 @@ export default function AsciiSimulation({
     // ── WebGL renderer (hidden, used as pixel source) ──────────────────────────
     let glRenderer;
     try {
-      glRenderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('webgl2', { antialias: false, alpha: true, powerPreference: 'low-power' });
+      if (!context) throw new Error('WebGL unavailable');
+      glRenderer = new THREE.WebGLRenderer({ canvas, context, antialias: false, alpha: true, powerPreference: 'low-power' });
     } catch {
       queueMicrotask(() => { if (!destroyed) { setLoadError('webgl-unavailable'); setLoaded(true); } });
       return () => { destroyed = true; observer?.disconnect(); };
@@ -278,24 +282,29 @@ export default function AsciiSimulation({
       }
       if (!modelPath) window.addEventListener('mousemove', onMouse);
 
-      const clock = new THREE.Clock();
+      const clock = new THREE.Timer();
+      clock.connect(document);
       let lastFrame = 0;
+      let frames = 0;
 
       function loop(now = 0) {
         rafId = requestAnimationFrame(loop);
         if (document.hidden || !visible || now - lastFrame < 32) return;
         lastFrame = now;
+        clock.update(now);
         const delta = clock.getDelta();
-        const t = clock.elapsedTime;
+        const t = clock.getElapsed();
         if (procedural) procedural.animate(t, mx, my);
         if (modelAnimMixer) modelAnimMixer.update(delta);
         controls.update();
         ascii.render(scene);
+        ascii.domElement.dataset.frame = String(++frames);
       }
       loop();
 
       return () => {
         ro.disconnect();
+        clock.dispose();
         if (!modelPath) window.removeEventListener('mousemove', onMouse);
       };
     }
@@ -402,7 +411,7 @@ export default function AsciiSimulation({
           MODEL LOAD FAILED · PROCEDURAL FALLBACK
         </div>
       )}
-      {loadError === 'webgl-unavailable' && <div className="absolute inset-0 flex items-center justify-center p-8 text-center text-xs text-slate-400">Decorative visualization is unavailable on this device. Scanning is unaffected.</div>}
+      {loadError === 'webgl-unavailable' && <div className="ascii-static" data-testid="ascii-static">X</div>}
     </div>
   );
 }

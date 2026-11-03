@@ -8,11 +8,13 @@ import ResultsDashboard from './components/ResultsDashboard';
 import HistoryDrawer from './components/HistoryDrawer';
 import Dialog from './components/Dialog';
 import HUDCard from './components/HUDCard';
+import HeroHeading from './components/HeroHeading';
 import { useReportExpiry } from './hooks/use-report-expiry';
 import { requestScan, pollScan, pingApi } from './lib/api';
 import { addToHistory, clearHistory, readHistory, readHistoryPreference, saveHistory, setHistoryPreference } from './lib/history';
 
 const HeroVisual = lazy(() => import('./components/HeroVisual'));
+const ChromaWaves = lazy(() => import('./components/ui/chroma-waves'));
 
 function App() {
   const [url, setUrl] = useState('');
@@ -28,11 +30,12 @@ function App() {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [legal, setLegal] = useState(null);
   const [serverStatus, setServerStatus] = useState('checking');
-  const [visualEnabled, setVisualEnabled] = useState(false);
+  const [animationPaused, setAnimationPaused] = useState(false);
   const requestController = useRef(null);
   const requestVersion = useRef(0);
   const reduceMotion = useReducedMotion();
   const lowPower = typeof navigator !== 'undefined' && navigator.hardwareConcurrency <= 4;
+  const animateVisuals = !reduceMotion && !lowPower && !navigator.connection?.saveData && !animationPaused;
   const polling = Boolean(result?.deep_scan) && !pollError && !pollCancelled;
   const reportExpired = useReportExpiry(result);
 
@@ -148,18 +151,18 @@ function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen bg-[#050507] text-[#f5f5f5] flex flex-col font-sans antialiased relative overflow-x-hidden">
+      <div className="min-h-screen bg-[#050507] text-[#f5f5f5] flex flex-col font-sans antialiased relative overflow-x-hidden" data-motion={animateVisuals ? 'running' : 'paused'}>
         <a href="#main" className="skip-link">Skip to scanner</a>
+        <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-0 opacity-[0.45]">
+          <Suspense fallback={<div className="chroma-waves w-full h-full" />}><ChromaWaves color="#ffffff" backgroundColor="#130826" waveFrequency={0.2} waveAmplitude={0.8} distortion={1.2} chromaShift={0.5} noiseLevel={0.06} speed={0.15} quality="low" animated={animateVisuals} /></Suspense>
+        </div>
+        <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-0 original-vignette" />
         <div aria-hidden="true" className="pointer-events-none fixed inset-0 purple-glow" />
         <Navbar serverStatus={serverStatus} onHistoryClick={() => setHistoryOpen(true)} />
-        <main id="main" tabIndex={-1} className="flex-1 relative pt-28 pb-16 px-5 sm:px-8">
-          <div className="max-w-7xl mx-auto grid gap-12 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] items-start">
-            <div className="min-w-0 space-y-8">
-              {!result && <div className="space-y-4">
-                <p className="text-violet-400 font-mono text-xs tracking-[0.2em]">/// EVIDENCE BEFORE TRUST</p>
-                <h1 className="font-gothic-block text-5xl sm:text-7xl leading-[0.95] font-extrabold tracking-tight">DETECT<br /><span className="phishing-italic normal-case">phishing.</span><br />STAY INFORMED.</h1>
-                <p className="text-sm text-slate-300 max-w-xl leading-relaxed">Understand an unfamiliar URL with explainable URL analysis and independent threat intelligence. See what was found, what was checked, and what remains unknown.</p>
-              </div>}
+        <main id="main" tabIndex={-1} className="flex-1 flex flex-col pt-24 relative z-10">
+          <div className={`max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 py-12 w-full ${result ? 'items-start' : 'items-center'}`}>
+            <div className="lg:col-span-7 min-w-0 space-y-8 text-left w-full">
+              {!result && <HeroHeading animated={animateVisuals} />}
               {!result ? <URLScanner url={url} setUrl={changeUrl} loading={loading} error={error}
                 onSubmit={event => { event.preventDefault(); startScan(url); }} onCancel={cancelRequest}
                 sensitiveConsent={sensitiveConsent} setSensitiveConsent={setSensitiveConsent}
@@ -169,18 +172,25 @@ function App() {
                   polling={polling} pollError={pollError} pollNotice={pollRetry.notice} pollingStopped={pollCancelled} onCancelPolling={() => setPollCancelled(true)} />
                   {error && <p role="alert" className="text-sm text-red-300">{error}</p>}</>}
             </div>
-            <aside aria-label="Scan information" className="space-y-4 lg:sticky lg:top-28 min-w-0">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <aside aria-label="Scan information" className="lg:col-span-5 min-w-0 w-full space-y-5 lg:sticky lg:top-28">
+              <div className="hud-composition relative w-full">
+              <div className="hud-visual"><Suspense fallback={<div className="ascii-static" aria-hidden="true">X</div>}><HeroVisual animated={animateVisuals} /></Suspense></div>
+              <div className="hud-position hud-assessment">
                 <HUDCard type="verdict" loading={loading} result={result} error={error} expired={reportExpired} />
-                <HUDCard type="coverage" loading={loading} result={result} error={error} expired={reportExpired} />
-                <HUDCard type="model" loading={loading} result={result} expired={reportExpired} />
-                <HUDCard type="provenance" loading={loading} result={result} expired={reportExpired} />
               </div>
-              {!reduceMotion && !lowPower && <div className="hidden lg:block rounded-lg border border-white/5 min-h-20 overflow-hidden">
-                {visualEnabled ? <Suspense fallback={<p className="p-6 text-xs text-slate-400">Loading optional visualization…</p>}><div className="h-80" aria-hidden="true"><HeroVisual /></div></Suspense>
-                  : <button type="button" onClick={() => setVisualEnabled(true)} className="w-full p-6 text-xs text-violet-300 hover:bg-white/5">Enable decorative 3D visualization</button>}
-              </div>}
-              <p className="text-xs leading-relaxed text-slate-400 px-1">A report is a snapshot of available evidence. Newly created attacks and cloaked content can evade checks. No result guarantees that a website is safe.</p>
+              <div className="hud-position hud-coverage">
+                <HUDCard type="coverage" loading={loading} result={result} error={error} expired={reportExpired} />
+              </div>
+              <div className="hud-position hud-model">
+                <HUDCard type="model" loading={loading} result={result} expired={reportExpired} />
+              </div>
+              <div className="hud-position hud-gemini"><HUDCard type="gemini" loading={loading} result={result} expired={reportExpired} /></div>
+              </div>
+              <div className="space-y-3"><button type="button" onClick={() => setAnimationPaused(previous => !previous)} aria-pressed={animationPaused} className="animation-toggle rounded border border-white/20 glass-panel px-3 py-2 text-xs text-violet-100 hover:bg-white/10">{animationPaused ? 'Resume decorative animation' : 'Pause decorative animation'}</button>
+                {result && <p className="text-xs text-slate-300"><span>{reportExpired ? 'Expired snapshot' : result.cached ? 'Cached report' : 'Current report'}</span> · observed {new Date(result.observed_at).toLocaleString()}</p>}
+                {(reduceMotion || lowPower || navigator.connection?.saveData) && <p className="text-xs text-slate-300">Static presentation follows your device or reduced motion preference.</p>}
+                <p className="text-xs leading-relaxed text-slate-300">A report is a snapshot of available evidence. Newly created attacks and cloaked content can evade checks. No result guarantees that a website is safe.</p>
+              </div>
             </aside>
           </div>
         </main>
@@ -191,6 +201,7 @@ function App() {
           {legal === 'privacy' ? <div className="space-y-4 text-sm leading-relaxed text-slate-300">
             <p>Submitting a URL shares its address, including its path and query parameters, with the configured Google Safe Browsing, URLhaus, VirusTotal and Cloudflare services. Registration lookups send the domain name to its RDAP registry, discovered through IANA. These providers apply their own retention policies.</p>
             <p>Cloudflare active scans are requested as unlisted. Unlisted reports are accessible to anyone who knows their report ID; this does not mean private or immediately deleted.</p>
+            <p>When enabled, Gemini receives only a compact verdict, recorded observation titles and severity, and provider coverage/status. The submitted URL, its path and query, and page content are not sent to Gemini. Gemini selects existing evidence; it cannot change the verdict.</p>
             <p>When configured, the backend keeps short-lived scan jobs and cached reports with observation and expiry times. Provider requests already submitted cannot be recalled when you cancel the browser request.</p>
             <p>History is off by default. Enabling it saves up to 50 redacted summaries on this device for seven days. Query values and fragments are omitted; a sensitive value embedded in a path may still be present. You can clear history or turn it off at any time.</p>
             <p>Do not submit confidential or single-use links. The sensitive-parameter warning is a convenience and cannot recognize every secret.</p>

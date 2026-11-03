@@ -3,6 +3,7 @@ import CloudflareDeepAnalysis from '../CloudflareDeepAnalysis';
 import { useReportExpiry } from '../hooks/use-report-expiry';
 import { useEffect, useRef, useState } from 'react';
 import AnalysisExtensions, { ModelObservation } from './AnalysisExtensions';
+import GeminiExplanation from './GeminiExplanation';
 
 const PRESENTATION = {
   malicious: { border: 'border-red-400/60', background: 'bg-red-500/5', text: 'text-red-300', icon: '✕', recommendation: 'Avoid this URL. Threat evidence was reported by a security source.' },
@@ -14,9 +15,9 @@ const STATUS_LABELS = { detected: 'Evidence found', no_detection: 'No detection'
 const statusColor = status => status === 'detected' ? 'text-amber-200' : status === 'no_detection' ? 'text-sky-200' : 'text-slate-300';
 const time = value => new Date(value).toLocaleString();
 
-function EvidenceList({ evidence }) {
+function EvidenceList({ evidence, anchors = false }) {
   return <ul className="space-y-3">{evidence.map((item, index) => <li key={`${item.id}-${index}`} className="border-l-2 border-violet-400/50 pl-4 space-y-1">
-    <p className="text-sm font-semibold text-white">{item.title}</p>
+    <p id={anchors ? `evidence-${encodeURIComponent(item.id)}` : undefined} className="text-sm font-semibold text-white scroll-mt-28">{item.title}</p>
     <p className="text-sm leading-relaxed text-slate-300">{item.description}</p>
     <p className="text-xs text-slate-400">{item.source} · {item.threat_type.replaceAll('_', ' ')} · <time dateTime={item.observed_at}>{time(item.observed_at)}</time></p>
   </li>)}</ul>;
@@ -44,7 +45,7 @@ export default function ResultsDashboard({ result, resetScan, onRescan, polling,
       <p className="text-sm text-slate-200">Historical assessment: {VERDICT_LABELS[result.verdict]}. These observations are retained for context and do not assess the URL now.</p>
       {['malicious', 'suspicious'].includes(result.verdict) && <p className="text-sm text-amber-200">The previous warning remains visible. Expiry does not establish that the threat has gone away.</p>}
     </div>}
-    <div className={`rounded-lg border-2 p-5 sm:p-7 ${presentation.border} ${presentation.background}`}>
+    <div className={`glass-panel rounded-lg border-2 p-5 sm:p-7 ${presentation.border} ${presentation.background}`}>
       <p className="text-xs font-mono tracking-widest text-violet-300 mb-4">// EVIDENCE REPORT {result.cached ? '· CACHED' : ''}</p>
       <div className="flex items-start gap-4">
         <span aria-hidden="true" className={`text-3xl font-bold ${presentation.text}`}>{presentation.icon}</span>
@@ -55,6 +56,8 @@ export default function ResultsDashboard({ result, resetScan, onRescan, polling,
       </div>
       <p className="mt-5 text-sm leading-relaxed text-slate-300">{isExpired ? 'Historical summary: ' : ''}{result.summary}</p>
     </div>
+
+    <GeminiExplanation result={result} expired={isExpired} />
 
     <div className="glass-panel rounded-lg p-5 space-y-4">
       <div><h3 className="text-xs text-violet-300 uppercase font-mono tracking-widest">URL being checked</h3><p className="mt-2 font-mono text-xs break-all text-slate-200 select-all">{result.url}</p></div>
@@ -74,7 +77,7 @@ export default function ResultsDashboard({ result, resetScan, onRescan, polling,
 
     <div className="glass-panel rounded-lg p-5 space-y-4">
       <h3 className="text-lg font-semibold text-white">Why this assessment</h3>
-      {result.reasons.length ? <EvidenceList evidence={result.reasons} /> : <p className="text-sm text-slate-300">No specific threat evidence was returned. Consult coverage below before drawing a conclusion.</p>}
+      {result.reasons.length ? <EvidenceList evidence={result.reasons} anchors /> : <p className="text-sm text-slate-300">No specific threat evidence was returned. Consult coverage below before drawing a conclusion.</p>}
       <p className="text-xs text-slate-400">This explanation is derived from recorded evidence. Local URL rules and trained-model predictions are supporting signals; neither independently confirms a diagnosis.</p>
     </div>
 

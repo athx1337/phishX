@@ -45,10 +45,5 @@ export default function AnalysisExtensions({ result }) {
         </div>
       </details>)}
     </section>}
-    {result.explanation && <section className="glass-panel rounded-lg p-5 space-y-3" aria-label="Grounded explanation">
-      <h3 className="text-lg font-semibold text-white">Grounded explanation</h3>
-      <p className="text-sm text-slate-300">{result.explanation.text}</p>
-      <p className="text-xs text-slate-400">{result.explanation.source === 'gemini' ? 'Gemini selected recorded observations. Wording is assembled from validated evidence/templates; the model cannot replace the official verdict.' : 'Deterministic explanation from the recorded observations.'}</p>
-    </section>}
   </>;
 }

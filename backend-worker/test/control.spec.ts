@@ -239,19 +239,19 @@ describe('Gemini selects existing evidence and cannot invent claims', () => {
   const enabled = { GEMINI_ENABLED: 'true', GEMINI_API_KEY: 'fixture' };
   it('accepts only existing IDs and renders deterministic observed facts', async () => {
     const value = await report();
-    vi.mocked(fetch).mockResolvedValue(json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ verdict: 'suspicious', evidence_ids: ['known'] }) }] } }] }));
+    vi.mocked(fetch).mockResolvedValue(json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ verdict: 'suspicious', evidence_ids: ['known'] }) }] } }] }));
     const result = await explain(value, enabled); expect(result.source).toBe('gemini'); expect(result.text).toContain('only observed fact');
     const body = String(vi.mocked(fetch).mock.calls.at(-1)![1]?.body); expect(body).not.toContain('example.com'); expect(body).not.toContain(value.url);
   });
   it('deduplicates protocol evidence IDs and keeps deterministic text bounded', async () => {
     const value = await report(); value.reasons.push({ ...value.reasons[0], target_url: 'http://example.com/' });
-    vi.mocked(fetch).mockResolvedValue(json({ candidates: [{ content: { parts: [{ text: JSON.stringify({ verdict: 'suspicious', evidence_ids: ['known'] }) }] } }] }));
+    vi.mocked(fetch).mockResolvedValue(json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify({ verdict: 'suspicious', evidence_ids: ['known'] }) }] } }] }));
     expect((await explain(value, enabled)).evidence_ids).toEqual(['known']);
     const payload = JSON.parse(String(vi.mocked(fetch).mock.calls.at(-1)![1]?.body));
     expect(JSON.parse(payload.contents[0].parts[0].text).evidence).toHaveLength(1);
   });
   it.each([{ verdict: 'malicious', evidence_ids: ['known'] }, { verdict: 'suspicious', evidence_ids: ['invented'] }, { verdict: 'suspicious', evidence_ids: ['known'], text: 'invented' }, { verdict: 'suspicious', evidence_ids: ['known', 'known'] }])('falls back on invalid selection %j', async chosen => {
-    const value = await report(); vi.mocked(fetch).mockResolvedValue(json({ candidates: [{ content: { parts: [{ text: JSON.stringify(chosen) }] } }] }));
+    const value = await report(); vi.mocked(fetch).mockResolvedValue(json({ candidates: [{ finishReason: 'STOP', content: { parts: [{ text: JSON.stringify(chosen) }] } }] }));
     const result = await explain(value, enabled); expect(result.source).toBe('deterministic'); expect(result.text).not.toContain('invented'); expect(value.verdict).toBe('suspicious');
   });
 });

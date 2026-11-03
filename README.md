@@ -30,6 +30,8 @@ Per-scan Durable Object → revisioned canonical job state and fixed deletion al
 Optional browser storage → redacted, expiring history
 ```
 
+The original animated waves, typewriter/glitch heading, ASCII X and floating glass panels are restored around the audited scanner. Motion can be paused and respects reduced-motion settings.
+
 The Worker calls fixed provider endpoints; it does not crawl submitted websites itself. Cloudflare performs optional remote active inspection. New `ml/` and `model/` artifacts train, evaluate and serve actual XGBoost trees; archived `repo/` research is separate. Optional Gemini selects recorded evidence for deterministic explanation and cannot change the verdict.
 
 | Location | Responsibility |
@@ -83,7 +85,7 @@ No provider key is required to start development. Without reputation credentials
 | `SCAN_RATE_LIMITER`, `POLL_RATE_LIMITER` | Managed creation/poll rate-limit bindings in Wrangler |
 | `SCAN_COORDINATOR`, `CLIENT_ID_SECRET` | Durable Object budgets, concurrency and privacy-safe client identity |
 | `METRICS_TOKEN` | Independent bearer token for aggregate metrics |
-| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Optional bounded evidence selection; disabled by default |
+| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Bounded evidence selection; production enabled, with explicit success/fallback status |
 
 Managed limiters and production coordination are required for scan routes; missing required infrastructure fails closed with HTTP 503. Follow `.dev.vars.example` for localhost-only development. Local Wrangler supplies configured bindings. KV is optional: without it, reputation/heuristic results still work, but Cloudflare jobs are unavailable. Store production credentials as Cloudflare secrets. A Gemini key never substitutes for a Safe Browsing key.
 

@@ -122,6 +122,20 @@ test('optional AI output may refer only to recorded evidence identifiers', () =>
   r.explanation = { source: 'deterministic', evidence_ids: [], text: r.summary };
   assert.ok(isScanReport(r));
 });
+test('Gemini metadata is additive while successful and fallback states cannot contradict provenance', () => {
+  const r = fixture();
+  r.explanation = { source: 'gemini', evidence_ids: [], text: r.summary };
+  assert.ok(isScanReport(r)); // Existing v2 reports do not need the new optional metadata.
+  r.explanation.ai_status = 'complete'; r.explanation.model = 'gemini-2.5-flash';
+  assert.ok(isScanReport(r));
+  r.explanation.ai_status = 'timeout'; assert.equal(isScanReport(r), false);
+  r.explanation.source = 'deterministic'; assert.ok(isScanReport(r));
+  r.explanation.ai_status = 'complete'; assert.equal(isScanReport(r), false);
+  r.explanation.ai_status = 'not_configured'; r.explanation.model = 'https://untrusted.invalid/';
+  assert.equal(isScanReport(r), false);
+  delete r.explanation.model; assert.ok(isScanReport(r));
+  r.explanation.ai_status = 'unrecognized'; assert.equal(isScanReport(r), false);
+});
 test('destination assessments must be explicit, bounded and scoped to their own URL', () => {
   const r = fixture();
   r.destinations = [{ url: r.url }];

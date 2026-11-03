@@ -107,7 +107,11 @@ export interface ScanReport {
   deep_scan?: { poll_path: string; next_poll_at: string; expires_at: string };
   registration?: RegistrationInfo;
   destinations?: DestinationAssessment[];
-  explanation?: { source: 'deterministic' | 'gemini'; evidence_ids: string[]; text: string };
+  explanation?: {
+    source: 'deterministic' | 'gemini'; evidence_ids: string[]; text: string;
+    ai_status?: 'complete' | 'disabled' | 'not_configured' | 'unavailable' | 'rate_limited' | 'timeout' | 'invalid_response';
+    model?: string;
+  };
 }
 export interface VerifyRequest { url: string; refresh?: boolean; sensitive_url_consent?: boolean }
 
@@ -211,6 +215,10 @@ export function isScanReport(value: unknown): value is ScanReport {
     const knownIds = new Set((value.reasons as Evidence[]).map(item => item.id));
     if (!record(explanation) || !['deterministic', 'gemini'].includes(String(explanation.source)) || !text(explanation.text) ||
         !list(explanation.evidence_ids, id => typeof id === 'string' && knownIds.has(id), 100)) return false;
+    if (explanation.ai_status !== undefined &&
+        (!['complete', 'disabled', 'not_configured', 'unavailable', 'rate_limited', 'timeout', 'invalid_response'].includes(String(explanation.ai_status)) ||
+         (explanation.source === 'gemini') !== (explanation.ai_status === 'complete'))) return false;
+    if (explanation.model !== undefined && (typeof explanation.model !== 'string' || !/^[a-z0-9.-]{1,80}$/.test(explanation.model))) return false;
   }
   if (value.destinations !== undefined) {
     if (!Array.isArray(value.destinations) || value.destinations.length > 4) return false;

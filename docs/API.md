@@ -25,7 +25,7 @@ Only HTTP(S) public destinations are supported. The input limit is 4,096 URL cha
 | `whois` | Nullable registrar/creation information with real source/time |
 | `registration` | Optional RDAP source/status/registrar/creation/domain-age observation |
 | `destinations` | Optional independently assessed observed destinations with their own coverage/engines/timing |
-| `explanation` | Optional deterministic or validated Gemini evidence-ID explanation; never a separate verdict |
+| `explanation` | Optional deterministic or validated Gemini evidence-ID explanation, with additive `ai_status` and `model`; never a separate verdict |
 | `observed_at`, `expires_at`, `cached` | Original timing and cache provenance |
 | `privacy` | Sensitive-input and external-submission flags |
 | `deep_scan` | Optional polling path, next allowed time and deadline |
@@ -74,3 +74,7 @@ A required production Durable Object coordinator serializes global/client admiss
 `GET /api/metrics` requires independent bearer `METRICS_TOKEN` and returns aggregate OpenMetrics. Provider outcome/latency/circuit, verdict and admission/lease metrics contain no URL/client labels. This route is for a private monitor, not the frontend. `/api/ping` remains reachability only.
 
 Model target data contains `model_version`, `features_version`, `raw_score`, `calibrated_score`, `warning_threshold`, `model_warning`, `promoted`, `feature_count` and `tree_count`. Numeric model output is not a probability that visiting is safe. Model warning evidence cannot establish a clean remote reputation result.
+
+## Gemini explanation status
+
+`explanation.source` is `gemini` only after a real validated selection; otherwise deterministic evidence wording remains available. Optional `ai_status` is `complete`, `disabled`, `not_configured`, `unavailable`, `rate_limited`, `timeout` or `invalid_response`. Optional `model` identifies the configured Gemini model. Old schema-v2 reports without these additive fields remain valid. Contradictory provenance/status combinations are rejected by the shared validator. A scan with no warning reasons can still receive a bounded Gemini explanation using aggregate coverage context and an empty list of evidence IDs; this adds no threat evidence or remote coverage.

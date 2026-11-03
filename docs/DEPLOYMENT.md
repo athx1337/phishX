@@ -33,7 +33,7 @@ Deploy contract changes together. The client rejects legacy binary responses. Co
 
 The current Vercel project is `phish-x`, with root directory `frontend`, Node24 and source files outside that directory enabled for `shared/scan.ts`. `frontend/vercel.json` defines the CSP and browser security headers. `npm run package:web` builds against the reviewed HTTPS API origin and packages only public assets into ignored `.vercel/output/` (Build Output APIv3); `vercel deploy --prebuilt` prepares a preview. The API origin must also be allowed by CSP. `.vercelignore` excludes backend, research, training data, tools and local secret files from source uploads. Platform CLIs/MCP/plugin setup is user-scoped, not an application dependency.
 
-Optional Gemini requires its own key and explicit `GEMINI_ENABLED=true`; leave disabled unless the operator chooses this bounded evidence-selection integration. No model API key is needed for local trained XGBoost inference. See [operations](OPERATIONS.md) for monitoring tokens, quotas, environment separation and rotation.
+Gemini requires its own key and `GEMINI_ENABLED=true`. The current production configuration enables this bounded evidence-selection integration at the user's request; an operator can disable it explicitly. Validate a real `source: gemini` / `ai_status: complete` response after deployment rather than inferring success from a flag. No model API key is needed for local trained XGBoost inference. See [operations](OPERATIONS.md) for monitoring tokens, quotas, environment separation and rotation.
 
 ## Operational validation
 

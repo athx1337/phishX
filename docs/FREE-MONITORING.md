@@ -1,6 +1,6 @@
 # Free monitoring on existing platforms
 
-Investigated and live-tested 3 November 2026. **Recommended: GitHub Actions for basic availability alerts on the existing public `athx1337/phishX` repository.** Configuration is prepared locally; scheduled execution and notification delivery are not activated or verified.
+Investigated and live-tested 3 November 2026. **Recommended: GitHub Actions for basic availability alerts on the existing public `athx1337/phishX` repository.** Configuration was published in source release `dc1b315`. Its repository metrics secret and notification delivery remain unverified; publication alone does not establish working alerts.
 
 ## Verified platform fit
 
@@ -23,12 +23,12 @@ Ten regression tests cover health, missing secrets, outages, header/contract dri
 
 ## Activation still required
 
-1. Review and publish the source changes, including the workflow and script, to the repository's default branch. This checkout contains pre-existing user changes and has not been committed or pushed automatically.
+1. The workflow and script were reviewed and published to `main` in user-authorized source release `dc1b315`. Verify that revision or a later reviewed update remains on the default branch.
 2. Add the independent production metrics token as the repository Actions secret `PHISHX_METRICS_TOKEN`. Use the value already held in the ignored private `backend-worker/.dev.vars.production` file or rotate it deliberately. Do not put it in Git, workflow YAML, repository variables or a URL. Repository administrators and default-branch workflow code can access this secret; it grants aggregate metrics access only.
 3. The owner who creates/enables the schedule must enable GitHub Actions email/web notifications, optionally failures only, in [notification settings](https://github.com/settings/notifications). Scheduled notifications follow the cron author or the user who re-enables it; they are not automatically sent to every collaborator.
 4. Run **Production availability** manually in [repository Actions](https://github.com/athx1337/phishX/actions), verify success, then perform an agreed controlled failure test and confirm receipt. Delivery has not been tested and no message has been sent by this task.
 
-No authenticated GitHub write session was established during this task. Cloudflare/Vercel authentication does not grant GitHub repository-secret or notification-settings access.
+Git source publication is now authenticated and verified. Repository-secret configuration and personal notification settings have not been verified; Git push access alone does not prove either is configured.
 
 ## Limits and full provider alerts
 

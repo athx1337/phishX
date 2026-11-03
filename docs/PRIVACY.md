@@ -22,7 +22,7 @@ Cloudflare submissions explicitly request **Unlisted**. This removes normal list
 
 Clearing browser history or expiring KV does not delete external copies. Cancelling a request cannot undo an accepted provider submission. phishX cannot promise universal transient processing or third-party deletion.
 
-Gemini is optional and disabled by default. If explicitly enabled by the operator, it receives the official verdict and bounded evidence IDs/titles rather than submitted URLs, path/query or page content. It can select only existing evidence IDs; text is rendered from validated stored observations and deterministic templates. Failed/invalid selection falls back to deterministic explanation. Existing evidence descriptions in the final report may still contain domains/URLs; this does not imply those descriptions were sent to Gemini.
+Gemini is an optional integration and is enabled in the current production configuration at the user's request. It receives the official verdict, bounded evidence IDs/titles/severity and aggregate provider coverage/status, rather than submitted URLs, path/query or page content. It can select only existing evidence IDs; text is rendered from validated stored observations and deterministic templates. Failed/invalid selection falls back to deterministic explanation. Existing evidence descriptions in the final report may still contain domains/URLs; this does not imply those descriptions were sent to Gemini.
 
 ## Operations
 

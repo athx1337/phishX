@@ -6,6 +6,7 @@ import { assess, expireEvidence } from './evidence';
 import { jobControl } from './control';
 import { isScanJob } from './job-state';
 import modelEvaluation from '../../model/evaluation.json';
+import { refreshExplanation } from './explanation';
 
 export async function digest(value: string): Promise<string> {
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
@@ -14,7 +15,8 @@ export async function digest(value: string): Promise<string> {
 export async function cacheKey(urls: string[], env: Bindings): Promise<string> {
   // Explicit generation changes invalidate results after credential rotation or policy changes.
   const configured = [!!env.GOOGLE_SAFE_BROWSING_API_KEY, !!env.URLHAUS_API_KEY, !!env.VIRUSTOTAL_API_KEY,
-    !!env.CLOUDFLARE_API_TOKEN && !!env.CLOUDFLARE_ACCOUNT_ID && !!env.SCAN_CACHE];
+    !!env.CLOUDFLARE_API_TOKEN && !!env.CLOUDFLARE_ACCOUNT_ID && !!env.SCAN_CACHE,
+    env.GEMINI_ENABLED === 'true', !!env.GEMINI_API_KEY?.trim(), env.GEMINI_MODEL || 'gemini-2.5-flash'];
   return `report:${await digest(JSON.stringify([SCHEMA_VERSION, POLICY_VERSION, modelEvaluation.artifact_sha256,
     modelEvaluation.feature_sha256, env.CACHE_CONFIG_VERSION || '1', [...urls].sort(), configured]))}`;
 }
@@ -26,7 +28,7 @@ export async function readReport(env: Bindings, key: string, expectedUrls: strin
     if (!isScanReport(value) || value.policy_version !== POLICY_VERSION || Date.parse(value.expires_at) <= Date.now() || value.deep_scan ||
         value.url !== expectedUrls[0] || JSON.stringify(value.checked_urls) !== JSON.stringify(expectedUrls) || key !== await cacheKey(expectedUrls, env)) return null;
     const engines = expireEvidence(value.engines);
-    const report = { ...value, engines, ...assess(engines, expectedUrls), cached: true };
+    const report = refreshExplanation(value, { ...value, engines, ...assess(engines, expectedUrls), cached: true });
     return isFreshScanReport(report) ? report : null;
   } catch { return null; }
 }

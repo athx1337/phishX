@@ -151,13 +151,14 @@ export default function ChromaWaves({
   flatness = 1.0,
   opacity = 1.0,
   quality = "high", // currently unused, resolution can be tied to this
+  animated = true,
   className = "",
   children
 }) {
   const containerRef = useRef(null);
 
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !animated) return;
     const container = containerRef.current;
 
     // Set up Three.js Scene
@@ -166,7 +167,10 @@ export default function ChromaWaves({
     
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let renderer;
-    try { renderer = new THREE.WebGLRenderer({ alpha: true, antialias: false, powerPreference: 'low-power' }); }
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('webgl2', { alpha: true, antialias: false, powerPreference: 'low-power' });
+    if (!context) return;
+    try { renderer = new THREE.WebGLRenderer({ canvas, context, alpha: true, antialias: false, powerPreference: 'low-power' }); }
     catch { return; }
     
     // Performance optimization: Render at a lower resolution and scale up.
@@ -221,23 +225,29 @@ export default function ChromaWaves({
     resize();
 
     let animationId;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Timer();
+    clock.connect(document);
+    let lastFrame = 0;
+    let frames = 0;
     let visible = true;
     const observer = typeof IntersectionObserver !== 'undefined' ? new IntersectionObserver(entries => {
       visible = entries.some(entry => entry.isIntersecting);
     }, { rootMargin: '80px' }) : null;
     observer?.observe(container);
 
-    const render = () => {
-      if (document.hidden || !visible) { animationId = requestAnimationFrame(render); return; }
-      uniforms.u_time.value = clock.getElapsedTime();
+    const render = (now = 0) => {
+      animationId = requestAnimationFrame(render);
+      if (document.hidden || !visible || now - lastFrame < 48) return;
+      lastFrame = now;
+      clock.update(now);
+      uniforms.u_time.value = clock.getElapsed();
       
       // Update dynamic uniforms if props changed (React effect deps cover creation, 
       // but to be fully reactive without recreation, you'd typically sync them in a separate effect. 
       // For simplicity, recreation on prop change is acceptable here, or we just rely on the effect).
       
       renderer.render(scene, camera);
-      animationId = requestAnimationFrame(render);
+      canvas.dataset.frame = String(++frames);
     };
 
     render();
@@ -246,19 +256,21 @@ export default function ChromaWaves({
       observer?.disconnect();
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
-      container.removeChild(renderer.domElement);
+      clock.dispose();
+      if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
       geometry.dispose();
       material.dispose();
       renderer.dispose();
     };
   }, [
     speed, color, backgroundColor, waveFrequency, waveAmplitude, 
-    distortion, chromaShift, noiseLevel, flatness, quality
+    distortion, chromaShift, noiseLevel, flatness, quality, animated
   ]);
 
   return (
     <div 
-      className={`relative overflow-hidden ${className}`} 
+      className={`chroma-waves relative overflow-hidden ${className}`}
+      data-testid="chroma-waves" data-motion={animated ? 'running' : 'static'}
       style={{ width, height, opacity }}
     >
       <div 

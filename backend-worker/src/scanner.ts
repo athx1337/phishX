@@ -10,7 +10,7 @@ import { PublicError } from './types';
 import type { ParsedInput } from './url';
 import { analyzeModel } from './ml';
 import { domainRegistration, registrationSignals } from './registration';
-import { explain } from './explanation';
+import { deterministicExplanation, explain, explanationContext, refreshExplanation } from './explanation';
 import { applyDestinations, checkDestinations, refreshDestinations } from './destinations';
 import { control, release, retainLease } from './control';
 
@@ -21,11 +21,7 @@ function expiresAt(engines: EngineResult[], now = Date.now()): string {
 function update(report: ScanReport): ScanReport {
   const engines = expireEvidence(report.engines);
   const updated = applyDestinations({ ...report, engines, destinations: refreshDestinations(report.destinations), ...assess(engines, report.checked_urls), observed_at: nowIso(), expires_at: expiresAt(engines), cached: false });
-  if (updated.verdict !== report.verdict || updated.summary !== report.summary ||
-      report.explanation?.evidence_ids.some(id => !updated.reasons.some(reason => reason.id === id))) {
-    updated.explanation = { source: 'deterministic', evidence_ids: [], text: updated.summary };
-  }
-  return updated;
+  return refreshExplanation(report, updated);
 }
 export async function scan(input: ParsedInput, env: Bindings): Promise<ScanReport> {
   const key = await cacheKey(input.targets, env);
@@ -48,6 +44,8 @@ export async function scan(input: ParsedInput, env: Bindings): Promise<ScanRepor
     ...assess(engines, input.targets), engines, cloudflare_reports: [], whois, registration, observed_at: nowIso(), expires_at: expiresAt(engines), cached: false,
     privacy: { sensitive_parameters: input.sensitive, third_party_submission: Boolean(input.domain.registrable_domain && registration.status !== 'unavailable') || [gsb, haus, vt, cf.engine].some(e => e.targets.some(t => t.error_code !== 'MISSING_CREDENTIALS' && t.error_code !== 'JOB_STORAGE_UNAVAILABLE')) },
   };
+  Object.assign(report, applyDestinations(report));
+  report.explanation = await explain(report, env);
   if (cf.pending.length && env.SCAN_CACHE) {
     const next = Date.now() + POLL_INTERVAL_MS, deadline = started + JOB_LIFETIME_MS;
     report.deep_scan = { poll_path: `/api/scans/${scanId}`, next_poll_at: new Date(next).toISOString(), expires_at: new Date(deadline).toISOString() };
@@ -57,10 +55,9 @@ export async function scan(input: ParsedInput, env: Bindings): Promise<ScanRepor
       delete report.deep_scan;
       report.engines = report.engines.map(e => e.id !== 'cloudflare' ? e : aggregate(e.id, e.name, e.kind, e.targets.map(t => t.status !== 'pending' ? t : target(t.url, 'error', { error_code: 'JOB_STORAGE_UNAVAILABLE', message: 'The active inspection result cannot be tracked because storage failed.' }))));
       Object.assign(report, assess(report.engines, report.checked_urls));
+      report.explanation = deterministicExplanation(report, report.explanation.ai_status === 'complete' ? 'unavailable' : report.explanation.ai_status || 'unavailable', report.explanation.model);
     }
   }
-  Object.assign(report, applyDestinations(report));
-  report.explanation = await explain(report, env);
   if (!isFreshScanReport(report)) throw new PublicError('INVALID_SCAN_RESULT', 'The scan could not produce a valid report. Please try again.', 503);
   await writeReport(env, key, report);
   try { await control(env, '/scan-result', { verdict: report.verdict }); } catch { /* Reporting never changes verdicts. */ }
@@ -83,6 +80,7 @@ async function pollOnce(id: string, env: Bindings): Promise<ScanReport> {
   if (Date.now() >= job.deadline) { await release(env, job.coordinator_lease); throw new PublicError('SCAN_EXPIRED', 'This scan status link has expired. Start a new scan for current evidence.', 410); }
   if (!job.report.deep_scan || !job.pending.length) return update(job.report);
   if (Date.now() < job.next_poll_at) return update(job.report);
+  const previousContext = explanationContext(job.report);
   const results: CloudflarePoll[] = await Promise.all(job.pending.map(item => pollCloudflare(item, env)));
   const cf = job.report.engines.find(e => e.id === 'cloudflare')!;
   const targets = cf.targets.map(previous => results.find(result => result.target.url === previous.url)?.target || previous);
@@ -96,7 +94,7 @@ async function pollOnce(id: string, env: Bindings): Promise<ScanReport> {
   else job.report.deep_scan = { poll_path: `/api/scans/${id}`, next_poll_at: new Date(Math.min(job.next_poll_at, job.deadline)).toISOString(), expires_at: new Date(job.deadline).toISOString() };
   job.report = update(job.report);
   if (results.some(item => item.report)) { job.report.destinations = await checkDestinations(job.report, env); job.report = applyDestinations(job.report); }
-  job.report.explanation = await explain(job.report, env);
+  if (!job.report.explanation || previousContext !== explanationContext(job.report)) job.report.explanation = await explain(job.report, env);
   if (!isFreshScanReport(job.report)) throw new PublicError('INVALID_SCAN_RESULT', 'Active inspection returned an unusable report.', 503);
   try { job = await writeJob(env, job); job.report = update(job.report); }
   catch {
