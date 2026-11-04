@@ -46,8 +46,9 @@ A useful scan explains what was observed, where the information came from, and w
 | **Evidence you can inspect** | Four outcomes, attributed reasons, observation times, coverage, and explicit pending/error states. |
 | **Trained local XGBoost** | A real URL-only model running inside the Worker: 69 features and 160 trees, with no separate Python inference service. |
 | **Four remote sources** | Reputation from Google Safe Browsing, URLhaus and VirusTotal, plus active inspection from Cloudflare URL Scanner, each with its actual status and findings. |
-| **Grounded Gemini assistance** | Gemini 2.5 Flash selects existing evidence IDs for an explanation. Production displays its completion or fallback status; it cannot override the verdict. |
-| **An expressive interface** | Restored waves, typewriter/glitch text, ASCII X, floating glass panels, responsive reports, and pause/reduced-motion controls. |
+| **Grounded Gemini assistance** | Gemini 3.5 Flash-Lite selects existing evidence IDs for an explanation. Production displays its completion or fallback status; it cannot override the verdict. |
+| **Live scan workspace** | Source statuses update from the API while checks run. The finished report organizes findings into Overview, Sources, Browser, and Model & AI tabs. |
+| **An expressive interface** | Animated waves, typewriter text, ASCII X, and floating glass panels honor the system reduced-motion preference. |
 | **Deliberate data handling** | Sensitive-link consent, opt-in redacted browser history capped at 50 entries/seven days, and short-lived active scan jobs. |
 
 ## Read the result
@@ -90,7 +91,7 @@ Production requires managed route limiters and a global Durable Object coordinat
 | API and runtime | TypeScript, Hono, Cloudflare Workers |
 | Coordination and storage | Durable Objects, optional Workers KV, managed rate limits |
 | Analysis | Local XGBoost, URL heuristics, RDAP, four remote providers |
-| Explanation | Deterministic templates; optional Gemini 2.5 Flash evidence selection |
+| Explanation | Deterministic templates; optional Gemini 3.5 Flash-Lite evidence selection |
 | Verification | Node test runner, Vitest, Playwright/axe, model parity, Prometheus rules |
 
 ```text
@@ -170,7 +171,7 @@ Provider keys are optional for local development. Without them, ordinary URLs ge
 | `CLIENT_ID_SECRET`, `METRICS_TOKEN` | Independent client-identity HMAC and protected metrics secrets |
 | `ALLOWED_ORIGINS` | Exact frontend origins accepted by CORS |
 | `CACHE_CONFIG_VERSION` | Cache generation; increment after provider/policy changes |
-| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Optional bounded evidence selection; production uses `gemini-2.5-flash` |
+| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Optional bounded evidence selection; production uses `gemini-3.5-flash-lite` |
 
 Keep local credentials in ignored `.dev.vars` files. Set production credentials through Wrangler secret bindings, for example from `backend-worker/`:
 
@@ -194,7 +195,7 @@ curl -X POST http://localhost:8787/api/verify \
   -d '{"url":"https://example.com","refresh":false,"sensitive_url_consent":false}'
 ```
 
-When a response includes `deep_scan`, wait until its `next_poll_at`, then request the returned `poll_path` (the `/api/scans/:scan_id` route). Follow the timing from each fresh response and replace the previous report. The scan ID is a temporary read capability; keep it private.
+When a response includes `deep_scan`, wait until its `next_poll_at`, then request the returned `poll_path` (the `/api/scans/:scan_id` route). Follow the timing from each fresh response and replace the previous report. The web app keeps the progress view open while a tracked job is pending and labels interrupted reports as partial. The scan ID is a temporary read capability; keep it private.
 
 ```bash
 curl "http://localhost:8787/api/scans/SCAN_ID_FROM_RESPONSE"
@@ -229,7 +230,7 @@ On Windows, the Playwright configuration defaults to installed Chrome at `C:/Pro
 | Model verification | 100 native/edge prediction fixtures and 23 feature controls |
 | Python training pipeline | Five cases in the earlier recorded pipeline run; not a new run |
 
-Controlled browser/provider fixtures check behavior, not live detection accuracy or account permissions. CI also runs dependency audits, the controlled benchmark, a Worker dry run, and browser tests. See the [current UI/Gemini verification](.planning/quick/261103-ltf-restore-original-animated-ui-and-visible/261103-ltf-VERIFICATION.md) and [full audit verification](.planning/phases/02-complete-audit/02-VERIFICATION.md) for evidence and scope.
+Controlled browser/provider fixtures check behavior, not live detection accuracy or account permissions. CI also runs dependency audits, the controlled benchmark, a Worker dry run, and browser tests. See the [current UI/Gemini verification](.planning/quick/261103-rkk-compact-scan-workspace-with-real-time-co/261103-rkk-VERIFICATION.md) and [full audit verification](.planning/phases/02-complete-audit/02-VERIFICATION.md) for evidence and scope.
 
 ## The model and its limits
 

@@ -1,0 +1,49 @@
+{
+  "checked_at": "2026-11-04T10:03:17.313Z",
+  "checks": [
+    {
+      "device": "desktop",
+      "tracked_job_seen": true,
+      "reports": 4,
+      "final_job_pending": false,
+      "coverage": {
+        "total": 4,
+        "completed": 4,
+        "detected": 0,
+        "no_detection": 4,
+        "unavailable": 0,
+        "error": 0,
+        "pending": 0,
+        "unknown": 0,
+        "sufficient": true
+      },
+      "verdict": "no_known_threats",
+      "model": "gemini-3.5-flash-lite",
+      "ai_status": "complete",
+      "ai_status_visible": true,
+      "columns": 4
+    },
+    {
+      "device": "mobile",
+      "tracked_job_seen": true,
+      "reports": 4,
+      "final_job_pending": false,
+      "coverage": {
+        "total": 4,
+        "completed": 4,
+        "detected": 3,
+        "no_detection": 1,
+        "unavailable": 0,
+        "error": 0,
+        "pending": 0,
+        "unknown": 0,
+        "sufficient": true
+      },
+      "verdict": "malicious",
+      "model": "gemini-3.5-flash-lite",
+      "ai_status": "complete",
+      "ai_status_visible": true,
+      "columns": 2
+    }
+  ]
+}

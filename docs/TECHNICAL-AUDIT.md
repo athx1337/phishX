@@ -30,7 +30,7 @@ flowchart LR
   P --> K[Optional KV source/report caches]
 ```
 
-The implementation uses TypeScript/Hono on Cloudflare Workers with Node compatibility, React 19/Vite 7 and Tailwind on the frontend, `tldts` for PSL domains, `ipaddr.js` for address classification and versioned Unicode 18 confusables. Each application has its own npm lockfile; root scripts coordinate checks. The restored Three.js wave background and ASCII X load automatically on capable default-motion browsers, with pause/reduced-motion controls and static fallbacks. Python/XGBoost/sklearn/NumPy/Pandas are training dependencies, not serving dependencies.
+The implementation uses TypeScript/Hono on Cloudflare Workers with Node compatibility, React 19/Vite 7 and Tailwind on the frontend, `tldts` for PSL domains, `ipaddr.js` for address classification and versioned Unicode 18 confusables. Each application has its own npm lockfile; root scripts coordinate checks. The restored Three.js wave background and ASCII X load automatically on capable default-motion browsers, with system reduced-motion support and static fallbacks. Python/XGBoost/sklearn/NumPy/Pandas are training dependencies, not serving dependencies.
 
 ## Frontend
 
