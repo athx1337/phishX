@@ -2,8 +2,8 @@
   width:100%;
   min-width:0;
   color:#ddd6ec;
-  font-size:14px;
-  line-height:1.55}
+  font-size:.9375rem;
+  line-height:1.6}
 .report-workspace * {
   box-sizing:border-box}
 .report-workspace h3,.report-workspace h4 {
@@ -12,7 +12,7 @@
   line-height:1.4;
   margin:0}
 .report-workspace h3 {
-  font-size:15px}
+  font-size:1.0625rem; letter-spacing:-.025em}
 .report-workspace h4 {
   font-size:14px}
 .report-workspace p {
@@ -34,7 +34,7 @@
   gap:16px;
   margin-bottom:16px}
 .report-kicker {
-  font:10px/1.6 ui-monospace,monospace;
+  font:500 .6875rem/1.6 var(--type-mono);
   letter-spacing:.11em;
   text-transform:uppercase;
   color:#c4b5fd}
@@ -74,8 +74,11 @@
   gap:13px;
   border-left:3px solid #9783b6}
 .report-verdict h2 {
-  font-size:clamp(28px,3.2vw,41px);
-  line-height:1.12;
+  font-size:clamp(1.75rem,3vw,2.625rem);
+  line-height:1.08;
+  font-weight:620;
+  letter-spacing:-.05em;
+  text-wrap:balance;
   color:#eee8f8;
   margin:0}
 .verdict-malicious .report-verdict {
@@ -105,7 +108,7 @@
 .report-domain-row>div {
   min-width:0}
 .report-domain {
-  font:600 23px/1.4 ui-monospace,monospace;
+  font:600 clamp(1.125rem,2vw,1.5rem)/1.32 var(--type-mono);
   letter-spacing:-.04em;
   color:#e9ddff;
   overflow-wrap:anywhere;
@@ -118,25 +121,25 @@
   padding-top:12px;
   margin-top:7px}
 .report-coverage strong {
-  font-size:13px;
+  font-size:.875rem;
   font-weight:600;
   color:#eee8f8}
 .report-muted {
-  font-size:12px;
+  font-size:.8125rem;
   color:#ada3bd;
   line-height:1.65;
   overflow-wrap:anywhere}
 .report-mono {
-  font:11px/1.65 ui-monospace,monospace;
+  font:.8125rem/1.65 var(--type-mono);
   overflow-wrap:anywhere;
   word-break:break-word;
   user-select:text;
   color:#c1b5d2}
 .report-warning {
   color:#ecd1a2;
-  font-size:12px}
+  font-size:.8125rem}
 .report-coverage-note {
-  font-size:12px;
+  font-size:.8125rem;
   color:#d2bd98;
   padding:10px 2px 0}
 .report-alert {
@@ -149,7 +152,7 @@
   padding:14px 16px;
   margin-bottom:14px;
   color:#e5cfab;
-  font-size:12px}
+  font-size:.8125rem}
 .report-alert strong {
   font-size:14px}
 .report-tabs {
@@ -163,7 +166,7 @@
   border-bottom:2px solid transparent;
   color:#aea2bf;
   background:transparent;
-  font-size:13px;
+  font-size:.875rem;
   white-space:nowrap;
   min-height:49px;
   padding:11px 18px;
@@ -175,7 +178,7 @@
   border-color:#b69ce7;
   background:linear-gradient(0deg,#8b5cf611,transparent)}
 .report-tab-count {
-  font:10px ui-monospace,monospace;
+  font:.6875rem var(--type-mono);
   border-radius:4px;
   background:#a78bfa20;
   padding:3px 5px}
@@ -208,11 +211,11 @@
   align-items:center;
   gap:8px}
 .report-panel-heading .report-status {
-  font-size:10px}
+  font-size:.6875rem}
 .report-status {
   border:1px solid #b8a0df30;
   border-radius:5px;
-  font-size:10px;
+  font-size:.6875rem;
   padding:3px 7px;
   color:#cbbdde;
   white-space:nowrap}
@@ -253,12 +256,12 @@
 .signal-high {
   background:#f3919f}
 .report-findings li>p {
-  font-size:13px;
+  font-size:.875rem;
   margin-top:6px}
 .report-findings li>.report-muted {
-  font-size:11px}
+  font-size:.75rem}
 .report-findings li>.report-evidence-id {
-  font:9px/1.6 ui-monospace,monospace;
+  font:.6875rem/1.6 var(--type-mono);
   color:#a79ab9;
   overflow-wrap:anywhere}
 .report-findings-caveat {
@@ -274,12 +277,12 @@
 .report-empty svg {
   color:#b49cd9}
 .report-empty p {
-  font-size:13px}
+  font-size:.875rem}
 .report-assistant {
   border-top-color:#b39cde66;
   background:linear-gradient(135deg,#45256225,#100b1bb3)}
 .report-assistant-text {
-  font-size:13px;
+  font-size:.875rem;
   line-height:1.75;
   white-space:pre-wrap;
   overflow-wrap:anywhere}
@@ -293,14 +296,14 @@
   color:#d1bcf5;
   text-decoration:underline;
   text-underline-offset:3px;
-  font-size:12px;
+  font-size:.8125rem;
   overflow-wrap:anywhere}
 .report-text-button {
   min-height:44px;
   display:inline-flex;
   align-items:center;
   gap:6px;
-  font-size:12px!important;
+  font-size:.8125rem!important;
   color:#d7c4fa;
   background:none;
   border:0;
@@ -312,12 +315,12 @@
   gap:13px;
   margin:0 0 12px}
 .report-facts dt {
-  font-size:10px;
+  font-size:.6875rem;
   color:#ada3bd;
   text-transform:uppercase;
   letter-spacing:.04em}
 .report-facts dd {
-  font-size:12px;
+  font-size:.8125rem;
   margin:3px 0 0;
   color:#ddd2ee;
   overflow-wrap:anywhere}
@@ -327,7 +330,7 @@
   max-height:300px;
   overflow:auto}
 .report-url-list li {
-  font:11px/1.75 ui-monospace,monospace;
+  font:.75rem/1.75 var(--type-mono);
   overflow-wrap:anywhere;
   padding:5px 0;
   color:#c7b9da}
@@ -338,7 +341,7 @@
   gap:14px;
   margin-bottom:15px}
 .report-section-heading p {
-  font-size:12px;
+  font-size:.8125rem;
   color:#ada3bd}
 .report-source-grid {
   display:grid;
@@ -370,7 +373,7 @@
   font-weight:600;
   overflow-wrap:anywhere}
 .report-source>.report-muted {
-  font-size:10px;
+  font-size:.6875rem;
   text-transform:uppercase;
   letter-spacing:.05em}
 .report-source-summary {
@@ -379,14 +382,14 @@
   -webkit-box-orient:vertical;
   overflow:hidden;
   color:#b8abc9;
-  font-size:12px;
+  font-size:.8125rem;
   line-height:1.65;
   min-height:40px}
 .report-source-action {
   display:flex;
   align-items:center;
   gap:5px;
-  font-size:11px;
+  font-size:.75rem;
   color:#ccb7f0;
   padding-top:4px;
   margin-top:auto}
@@ -404,7 +407,7 @@
 .report-data {
   white-space:pre-wrap;
   overflow-wrap:anywhere;
-  font-size:11px;
+  font-size:.75rem;
   line-height:1.6;
   color:#cbbfde;
   background:#07050c55;
@@ -413,15 +416,15 @@
 .report-workspace summary {
   cursor:pointer;
   color:#d2bcef;
-  font-size:12px;
+  font-size:.8125rem;
   padding:9px 0}
 .report-model {
   display:grid;
   gap:12px;
-  font-size:13px;
+  font-size:.875rem;
   color:#bfb3d0}
 .report-browser label,.report-destinations label {
-  font-size:11px;
+  font-size:.75rem;
   color:#b7a5cf;
   display:block;
   margin:12px 0 5px}
@@ -434,7 +437,7 @@
   padding:9px 12px;
   border-radius:7px;
   max-width:100%;
-  font-size:12px}
+  font-size:.8125rem}
 .report-browser>.report-muted {
   margin:9px 0 15px}
 .report-browser-facts {
@@ -458,7 +461,7 @@
   width:100%;
   border-collapse:collapse;
   text-align:left;
-  font-size:12px;
+  font-size:.8125rem;
   table-layout:fixed;
   min-width:500px}
 .report-workspace td,.report-workspace th {
@@ -470,14 +473,14 @@
   top:0;
   background:#21162f;
   color:#e0d2f2;
-  font-size:11px;
+  font-size:.75rem;
   font-weight:500}
 .report-destinations {
   border-top:1px solid #aa88e826;
   padding-top:18px;
   margin-top:20px}
 .report-footer {
-  font-size:10px;
+  font-size:.6875rem;
   color:#a99bbd;
   border-top:1px solid #aa88e826;
   padding-top:15px;
@@ -491,7 +494,7 @@
 .report-toolbar .report-kicker span {
   display:block}
 .report-actions button {
-  font-size:12px}
+  font-size:.8125rem}
 .report-source-grid {
   grid-template-columns:repeat(2,minmax(0,1fr))}
 }
@@ -532,7 +535,7 @@
   gap:0}
 .report-tabs button {
   padding:10px 11px;
-  font-size:12px}
+  font-size:.8125rem}
 .report-tab-count {
   padding:2px 4px}
 .report-actions {
@@ -540,7 +543,7 @@
   gap:7px}
 .report-actions button {
   flex:1;
-  font-size:11px;
+  font-size:.75rem;
   padding:8px;
   white-space:nowrap}
 .report-panel-heading {

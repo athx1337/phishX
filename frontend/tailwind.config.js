@@ -29,14 +29,8 @@ export default {
         "safe-border": "#23482c",
       },
       fontFamily: {
-        'gothic-block': ['"PP Neue Montreal Condensed"', '"Syne"', '"Anton"', 'sans-serif'],
-        'inktrap': ['"Plus Jakarta Sans"', '"Satoshi"', 'sans-serif'],
-        'techmono': ['"Geist Mono"', 'monospace'],
-        'fluidserif': ['"PP Editorial New"', '"Instrument Serif"', 'serif'],
-        display: ['"PP Neue Montreal Condensed"', '"Syne"', '"Anton"', 'sans-serif'],
-        sans: ['"Plus Jakarta Sans"', '"Satoshi"', 'sans-serif'],
-        mono: ['"Geist Mono"', 'monospace'],
-        serif: ['"PP Editorial New"', '"Instrument Serif"', 'serif'],
+        sans: ['var(--type-sans)'],
+        mono: ['var(--type-mono)'],
       },
       borderRadius: {
         DEFAULT: "0.25rem",

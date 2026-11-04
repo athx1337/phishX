@@ -16,8 +16,8 @@ export default function ScanProgress({ snapshot, startedAt, submittedUrl, nextPo
   const received = snapshot ? engines.filter(engine => !pending(engine)).length : 0;
   return <section className="scan-progress glass-panel" aria-label="Live scan progress" data-testid="scan-progress">
     <header className="scan-progress-heading">
-      <p className="report-eyebrow">LIVE INSPECTION</p>
-      <h1 ref={heading} tabIndex={-1} className="font-gothic-block">Inspecting <span>{hostname}</span></h1>
+      <p className="report-kicker">Live inspection</p>
+      <h1 ref={heading} tabIndex={-1}>Inspecting <span>{hostname}</span></h1>
       <p role="status" aria-live="polite">{snapshot ? 'Collecting the remaining browser observations' : 'Waiting for the scan service to return observations'}</p>
     </header>
     <div className="scan-progress-workspace">

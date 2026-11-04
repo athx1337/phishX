@@ -42,7 +42,7 @@ export default function Dialog({ open, onClose, title, children, drawer = false 
       <section ref={ref} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={titleId}
         className={`bg-[#0e091a] border border-white/15 shadow-2xl flex flex-col outline-none ${drawer ? 'h-full w-full max-w-md' : 'max-h-[90dvh] rounded-lg w-full max-w-xl'}`}>
         <div className="flex items-center justify-between gap-4 p-5 border-b border-white/10">
-          <h2 id={titleId} className="font-gothic-block text-2xl font-bold tracking-wide text-white">{title}</h2>
+          <h2 id={titleId} className="text-2xl font-semibold tracking-tight text-white">{title}</h2>
           <button type="button" aria-label={`Close ${title}`} onClick={onClose} className="p-2 rounded text-slate-300 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-violet-400">✕</button>
         </div>
         <div className="p-5 overflow-y-auto min-h-0">{children}</div>

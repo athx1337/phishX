@@ -2,7 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: Geist;
+  src: url('/fonts/geist-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Geist Mono';
+  src: url('/fonts/geist-mono-latin.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Instrument Serif';
+  src: url('/fonts/instrument-serif-italic-latin.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
 @layer base {
+  :root {
+    --type-sans: Geist, system-ui, sans-serif;
+    --type-mono: 'Geist Mono', ui-monospace, monospace;
+    --type-accent: 'Instrument Serif', Georgia, serif;
+  }
+
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   }
@@ -41,23 +71,16 @@
   }
 
   .metallic-text {
-    background: linear-gradient(180deg, #FFFFFF 0%, #A855F7 50%, #581C87 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0px 4px 12px rgba(168, 85, 247, 0.25));
+    color: #e3d8fa;
   }
 
   .phishing-italic {
-    font-family: "PP Editorial New", "Instrument Serif", Georgia, serif;
+    font-family: var(--type-accent);
+    font-size: 1.24em;
+    font-weight: 400;
     font-style: italic;
-    background: linear-gradient(135deg, #e9d5ff 0%, #c084fc 35%, #a855f7 70%, #7e22ce 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0px 0px 30px rgba(168, 85, 247, 0.5));
-    line-height: 1.05;
-    padding-bottom: 0.12em;
-    padding-top: 0.05em;
-    display: inline-block;
+    letter-spacing: -.035em;
+    color: #d9b9ff;
   }
 
   .purple-glow {
@@ -135,7 +158,14 @@
 .chroma-waves {
   background: radial-gradient(ellipse at 75% 10%, #77727f 0%, transparent 45%), radial-gradient(ellipse at 20% 85%, #77727f 0%, transparent 45%), linear-gradient(125deg,#130826 20%,#5e5867 45%,#130826 70%);
 }
-.hero-heading { min-height: 190px; }
+.hero-heading {
+  font-size: clamp(2.5rem, 6.2vw, 5.75rem);
+  line-height: .99;
+  font-weight: 630;
+  letter-spacing: -.068em;
+}
+.hero-line { display: block; min-height: 1em; }
+.hero-line:first-child { min-height: 1.24em; }
 .hero-glitch { position: relative; }
 .hero-glitch::after {
   content: attr(data-text);
@@ -167,7 +197,6 @@
 .scanner-button:active:not(:disabled) { transform: scale(.97); }
 [data-motion="paused"] *, [data-motion="paused"] *::before, [data-motion="paused"] *::after { animation-play-state: paused !important; }
 [data-motion="paused"] .navbar-enter, [data-motion="paused"] .scanner-enter { animation: none; }
-@media (min-width: 768px) { .hero-heading { min-height: 220px; } }
 @media (min-width: 1024px) {
   .hud-composition { display: block; min-height: 550px; }
   .hud-visual { position: absolute; inset: 0; height: auto; }

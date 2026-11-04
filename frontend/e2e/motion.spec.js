@@ -8,7 +8,7 @@ async function prepare(page, hardwareConcurrency = 8) {
   await page.addInitScript(cores => Object.defineProperty(navigator, 'hardwareConcurrency', { configurable: true, get: () => cores }), hardwareConcurrency);
   await page.route('**/api/ping', route => route.fulfill({ status: 200, contentType: 'application/json', headers: { 'Access-Control-Allow-Origin': '*' }, body: '{"status":"ok"}' }));
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'DETECT phishing. STAY AHEAD.' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Detect phishing. Stay ahead.' })).toBeVisible();
 }
 
 test('original waves and X animate without a pause button and honor system motion preferences', async ({ page }, testInfo) => {
@@ -77,7 +77,7 @@ test('reduced motion renders static identity and never starts continuous canvas 
   await expect(page.getByTestId('chroma-waves')).toHaveAttribute('data-motion', 'static');
   await expect(page.locator('canvas')).toHaveCount(0);
   await expect(page.getByTestId('ascii-static')).toBeVisible();
-  await expect(page.getByText('STAY AHEAD.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Stay ahead.', { exact: true })).toBeVisible();
 });
 
 test('WebGL failure retains static waves and X with an operable scanner and no runtime errors', async ({ page }) => {
