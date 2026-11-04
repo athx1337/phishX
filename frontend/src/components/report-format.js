@@ -1,0 +1,3 @@
+export const reportTime = value => value ? new Date(value).toLocaleString() : 'Not reported';
+export const STATUS_LABELS = { detected: 'Evidence found', no_detection: 'No detection', unavailable: 'Unavailable', error: 'Check failed', pending: 'Pending', unknown: 'Unknown / stale' };
+export const engineKind = engine => /registration|rdap|whois/i.test(`${engine.id} ${engine.name}`) ? 'Registration context' : ({ reputation: 'Remote reputation', active: 'Remote browser', heuristic: 'Local URL rules', model: 'Local trained model' }[engine.kind] || engine.kind);

@@ -6,7 +6,7 @@ import { assess, expireEvidence } from './evidence';
 import { jobControl } from './control';
 import { isScanJob } from './job-state';
 import modelEvaluation from '../../model/evaluation.json';
-import { refreshExplanation } from './explanation';
+import { DEFAULT_GEMINI_MODEL, refreshExplanation } from './explanation';
 
 export async function digest(value: string): Promise<string> {
   const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
@@ -16,7 +16,7 @@ export async function cacheKey(urls: string[], env: Bindings): Promise<string> {
   // Explicit generation changes invalidate results after credential rotation or policy changes.
   const configured = [!!env.GOOGLE_SAFE_BROWSING_API_KEY, !!env.URLHAUS_API_KEY, !!env.VIRUSTOTAL_API_KEY,
     !!env.CLOUDFLARE_API_TOKEN && !!env.CLOUDFLARE_ACCOUNT_ID && !!env.SCAN_CACHE,
-    env.GEMINI_ENABLED === 'true', !!env.GEMINI_API_KEY?.trim(), env.GEMINI_MODEL || 'gemini-2.5-flash'];
+    env.GEMINI_ENABLED === 'true', !!env.GEMINI_API_KEY?.trim(), env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL];
   return `report:${await digest(JSON.stringify([SCHEMA_VERSION, POLICY_VERSION, modelEvaluation.artifact_sha256,
     modelEvaluation.feature_sha256, env.CACHE_CONFIG_VERSION || '1', [...urls].sort(), configured]))}`;
 }

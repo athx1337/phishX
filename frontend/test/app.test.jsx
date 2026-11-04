@@ -117,7 +117,7 @@ describe('scanner workflow', () => {
   it('stops further polling when the user stops report updates', async () => {
     vi.useFakeTimers(); requestScan.mockResolvedValue(pendingReport());
     render(<App />); await submit();
-    fireEvent.click(screen.getByRole('button', { name: 'Stop report updates' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Stop waiting and view partial report' }));
     await act(async () => { await vi.advanceTimersByTimeAsync(30_000); });
     expect(pollScan).not.toHaveBeenCalled();
     expect(screen.getByText(/Pending observations remain unverified/)).toBeInTheDocument();
@@ -132,7 +132,7 @@ describe('scanner workflow', () => {
     expect(screen.getByText(/Retrying \(1\/3\)/)).toBeInTheDocument();
     await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
     expect(pollScan).toHaveBeenCalledTimes(2);
-    expect(screen.queryByRole('button', { name: 'Stop report updates' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Stop waiting and view partial report' })).not.toBeInTheDocument();
     expect(screen.getByTestId('verdict')).toHaveTextContent('Unable to determine');
   });
 
@@ -147,7 +147,7 @@ describe('scanner workflow', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Report expired — refresh to assess current evidence.');
     expect(screen.getByText(/Historical assessment: No known threats detected/)).toBeInTheDocument();
     expect(screen.queryByText('Report unavailable')).not.toBeInTheDocument();
-    expect(screen.getByText('Expired snapshot')).toBeInTheDocument();
+    expect(screen.getByText(/Historical snapshot/)).toBeInTheDocument();
     requestScan.mockResolvedValueOnce(noThreatReport(new Date(Date.now() + 60_000).toISOString()));
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Refresh report' })); });
     expect(requestScan.mock.calls[1][0]).toMatchObject({ refresh: true });
@@ -181,6 +181,69 @@ describe('scanner workflow', () => {
     await act(async () => { finishPoll(noThreatReport(new Date(Date.now() + 60_000).toISOString())); });
     expect(screen.getByRole('alert')).toHaveTextContent(/Active inspection expired/);
     expect(screen.getByTestId('verdict')).toHaveTextContent('Unable to determine');
-    expect(screen.queryByRole('button', { name: 'Stop report updates' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Stop waiting and view partial report' })).not.toBeInTheDocument();
+  });
+});
+
+
+describe('completion-first scan session', () => {
+  it('keeps provisional results behind live progress until the last tracked job clears', async () => {
+    vi.useFakeTimers(); requestScan.mockResolvedValue(pendingReport()); pollScan.mockResolvedValue(scanReport());
+    render(<App />); await submit();
+    expect(screen.getByTestId('scan-progress')).toBeInTheDocument();
+    expect(screen.queryByTestId('verdict')).not.toBeInTheDocument();
+    expect(screen.getByText('4 / 5 returned')).toBeInTheDocument();
+    await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
+    expect(screen.queryByTestId('scan-progress')).not.toBeInTheDocument();
+    expect(screen.getByTestId('verdict')).toHaveTextContent('Unable to determine');
+    expect(pollScan).toHaveBeenCalledTimes(1);
+  });
+  it('waits for a returned job even when its current source statuses are terminal', async () => {
+    vi.useFakeTimers(); const waiting = pendingReport();
+    waiting.engines = scanReport().engines; waiting.coverage = scanReport().coverage;
+    requestScan.mockResolvedValue(waiting); pollScan.mockResolvedValue(scanReport());
+    render(<App />); await submit();
+    expect(screen.queryByTestId('verdict')).not.toBeInTheDocument();
+    await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
+    expect(screen.getByTestId('verdict')).toBeInTheDocument();
+  });
+  it('releases orphaned pending observations as partial instead of waiting forever', async () => {
+    const orphan = pendingReport(); delete orphan.deep_scan;
+    requestScan.mockResolvedValue(orphan); render(<App />); await submit();
+    expect(screen.queryByTestId('scan-progress')).not.toBeInTheDocument();
+    expect(screen.getByRole('alert')).toHaveTextContent(/no trackable job/);
+    expect(screen.getByTestId('verdict')).toHaveTextContent('Unable to determine');
+    expect(pollScan).not.toHaveBeenCalled();
+  });
+  it('never extends the original deadline when later polling offers a longer one', async () => {
+    vi.useFakeTimers(); const first = pendingReport(); first.deep_scan.expires_at = new Date(Date.now() + 20_000).toISOString();
+    const later = pendingReport(); later.deep_scan.expires_at = new Date(Date.now() + 180_000).toISOString(); later.deep_scan.next_poll_at = new Date(Date.now() + 40_000).toISOString();
+    requestScan.mockResolvedValue(first); pollScan.mockResolvedValue(later);
+    render(<App />); await submit(); await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
+    expect(screen.queryByTestId('verdict')).not.toBeInTheDocument();
+    await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
+    expect(screen.getByRole('alert')).toHaveTextContent(/Active inspection expired/);
+    expect(screen.getByTestId('verdict')).toHaveTextContent('Unable to determine');
+    expect(pollScan).toHaveBeenCalledTimes(1);
+  });
+  it('saves only the accepted published snapshot to opted-in history', async () => {
+    vi.useFakeTimers(); requestScan.mockResolvedValue(pendingReport()); pollScan.mockResolvedValue(scanReport());
+    const { readHistory } = await import('../src/lib/history');
+    render(<App />); fireEvent.click(screen.getByRole('checkbox', { name: /Remember redacted scans/ })); await submit();
+    expect(readHistory()).toHaveLength(0);
+    await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
+    expect(readHistory()).toHaveLength(1);
+  });
+  it('ignores an old poll after an explicit partial exit and reset', async () => {
+    vi.useFakeTimers(); let resolve;
+    requestScan.mockResolvedValue(pendingReport()); pollScan.mockImplementation(() => new Promise(done => { resolve = done; }));
+    render(<App />); await submit(); await act(async () => { await vi.advanceTimersByTimeAsync(10_010); });
+    const signal = pollScan.mock.calls[0][1].signal;
+    fireEvent.click(screen.getByRole('button', { name: 'Stop waiting and view partial report' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check another URL' }));
+    expect(signal.aborted).toBe(true);
+    await act(async () => { resolve(noThreatReport(new Date(Date.now() + 60_000).toISOString())); });
+    expect(screen.queryByTestId('verdict')).not.toBeInTheDocument();
+    expect(screen.getByLabelText('URL to inspect')).toBeInTheDocument();
   });
 });

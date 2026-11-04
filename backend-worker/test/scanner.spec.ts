@@ -285,7 +285,7 @@ describe('unlisted asynchronous Cloudflare inspection', () => {
     expect(initial.explanation?.ai_status).toBe('complete');
     vi.setSystemTime(NOW + 6000);
     const expired = await validReport(await app.request(initial.deep_scan!.poll_path, {}, bindings));
-    expect(expired.explanation).toMatchObject({ source: 'deterministic', ai_status: 'unavailable', model: 'gemini-2.5-flash', evidence_ids: ['gsb-0'] });
+    expect(expired.explanation).toMatchObject({ source: 'deterministic', ai_status: 'unavailable', model: 'gemini-3.5-flash-lite', evidence_ids: ['gsb-0'] });
     expect(expired.verdict).toBe('suspicious');
     expect(expired.reasons.some(item => item.id === 'gsb-0')).toBe(true);
     expect(vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes('generativelanguage.googleapis.com'))).toHaveLength(1);

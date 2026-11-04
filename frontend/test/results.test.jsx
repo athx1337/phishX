@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import ResultsDashboard from '../src/components/ResultsDashboard';
 import { scanReport, evidence } from './fixtures';
@@ -32,6 +32,7 @@ describe('evidence-first results', () => {
     expect(screen.getByText('0 of 4 remote providers completed')).toBeInTheDocument();
     expect(screen.getByText(/Missing evidence does not establish safety/)).toBeInTheDocument();
     expect(screen.queryByText(/SAFE TO VISIT|VERY SAFE|800\+ ACTIVE SOURCES|18 GLOBAL DATABASES/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('tab', { name: 'Browser' }));
     expect(screen.getByText(/No completed Cloudflare browser report/)).toBeInTheDocument();
     expect(screen.queryByText('104.21.57.174')).not.toBeInTheDocument();
   });
@@ -67,7 +68,8 @@ describe('evidence-first results', () => {
 
   it('states that pending and cancelled updates leave observations unverified', () => {
     render(<ResultsDashboard result={scanReport()} polling pollingStopped resetScan={vi.fn()} onRescan={vi.fn()} onCancelPolling={vi.fn()} />);
-    expect(screen.getByText(/Active browser inspection is pending/)).toBeInTheDocument();
-    expect(screen.getByText(/Pending observations remain unverified/)).toBeInTheDocument();
+    expect(screen.getByText('Partial report')).toBeInTheDocument();
+    expect(screen.queryByText(/will update when observations/)).not.toBeInTheDocument();
+    expect(screen.getAllByText(/Pending observations remain unverified/)[0]).toBeInTheDocument();
   });
 });

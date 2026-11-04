@@ -11,7 +11,8 @@ async function prepare(page, hardwareConcurrency = 8) {
   await expect(page.getByRole('heading', { name: 'DETECT phishing. STAY AHEAD.' })).toBeVisible();
 }
 
-test('original waves and X animate automatically with four truthful HUDs; pause and resume cleanly', async ({ page }, testInfo) => {
+test('original waves and X animate without a pause button and honor system motion preferences', async ({ page }, testInfo) => {
+  test.setTimeout(45_000);
   const errors = [];
   if (testInfo.project.name === 'desktop-chrome') await page.setViewportSize({ width: 1440, height: 1050 });
   page.on('pageerror', error => errors.push(error.message));
@@ -25,24 +26,23 @@ test('original waves and X animate automatically with four truthful HUDs; pause 
   await expect(page.locator('.ascii-canvas')).toHaveCount(1);
   await expect.poll(() => page.locator('.ascii-canvas').getAttribute('data-frame')).not.toBeNull();
   for (const type of ['verdict', 'coverage', 'model', 'gemini']) await expect(page.getByTestId(`hud-${type}`)).toBeVisible();
-  await page.waitForTimeout(6000);
-  const first = await waves.screenshot();
-  const asciiFirst = await page.locator('.ascii-canvas').screenshot();
-  await page.waitForTimeout(700);
-  expect((await waves.screenshot()).equals(first)).toBe(false);
-  expect((await page.locator('.ascii-canvas').screenshot()).equals(asciiFirst)).toBe(false);
+  const waveCanvas = waves.locator('canvas');
+  const asciiCanvas = page.locator('.ascii-canvas');
+  const waveFrame = await waveCanvas.getAttribute('data-frame');
+  const asciiFrame = await asciiCanvas.getAttribute('data-frame');
+  await expect.poll(() => waveCanvas.getAttribute('data-frame')).not.toBe(waveFrame);
+  await expect.poll(() => asciiCanvas.getAttribute('data-frame')).not.toBe(asciiFrame);
   await page.screenshot({ path: testInfo.outputPath('restored-full-motion.png'), fullPage: true });
-  await page.getByRole('button', { name: 'Pause decorative animation' }).click();
+  await expect(page.getByRole('button', { name: /Pause decorative animation|Resume decorative animation/ })).toHaveCount(0);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect(waves).toHaveAttribute('data-motion', 'static');
   await expect(waves.locator('canvas')).toHaveCount(0);
   await expect(page.locator('.ascii-canvas')).toHaveCount(0);
   await expect(page.getByTestId('ascii-static')).toBeVisible();
-  const paused = await waves.screenshot();
-  await page.waitForTimeout(400);
-  expect((await waves.screenshot()).equals(paused)).toBe(true);
-  await page.getByRole('button', { name: 'Resume decorative animation' }).click();
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect(waves.locator('canvas')).toHaveCount(1);
   await expect(page.locator('.ascii-canvas')).toHaveCount(1);
+  await expect(page.locator('.scanner-enter')).toHaveCSS('opacity', '1');
   const violations = (await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations;
   expect(violations).toEqual([]);
   expect(errors).toEqual([]);

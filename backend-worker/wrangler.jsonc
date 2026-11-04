@@ -8,7 +8,7 @@
   "upload_source_maps": true,
   "vars": {
     "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://phish-x.vercel.app",
-    "CACHE_CONFIG_VERSION": "3",
+    "CACHE_CONFIG_VERSION": "4",
     "REQUIRE_COORDINATOR": "true",
     "GLOBAL_SCAN_LIMIT": "60",
     "GLOBAL_POLL_LIMIT": "600",
@@ -23,7 +23,7 @@
     "CLOUDFLARE_REQUEST_LIMIT": "10",
     "GEMINI_REQUEST_LIMIT": "5",
     "GEMINI_ENABLED": "true",
-    "GEMINI_MODEL": "gemini-2.5-flash"
+    "GEMINI_MODEL": "gemini-3.5-flash-lite"
   },
   // Wrangler provisions a namespace at deploy time; no fabricated namespace IDs.
   // Remove this binding to disable optional report caching and active scan jobs.

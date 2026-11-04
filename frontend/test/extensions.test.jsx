@@ -21,6 +21,7 @@ describe('accessible enriched evidence', () => {
         status: 'no_detection', evidence: [], data: { model_version: 'fixture-native-model', features_version: 'lexical-v1', raw_score: 0.12, threshold: 0.9 } }] });
     render(<ResultsDashboard result={report} resetScan={vi.fn()} onRescan={vi.fn()} />);
     expect(screen.getByTestId('verdict')).toHaveTextContent('Unable to determine');
+    fireEvent.click(screen.getByRole('tab', { name: 'Model & AI' }));
     expect(screen.getByText('fixture-native-model')).toBeInTheDocument();
     expect(screen.getByText(/not a safety score or a probability/)).toBeInTheDocument();
     expect(screen.getByText('0 of 4 remote providers completed')).toBeInTheDocument();

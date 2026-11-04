@@ -14,9 +14,9 @@ function renderExplanation(explanation) {
 
 describe('prominent grounded Gemini provenance', () => {
   it('shows validated Gemini completion, model and linked recorded evidence beside the verdict', () => {
-    const panel = renderExplanation({ source: 'gemini', ai_status: 'complete', model: 'gemini-2.5-flash', evidence_ids: ['known-observation'], text: 'Recorded evidence supports this assessment.' });
+    const panel = renderExplanation({ source: 'gemini', ai_status: 'complete', model: 'fixture-supported-model', evidence_ids: ['known-observation'], text: 'Recorded evidence supports this assessment.' });
     expect(within(panel).getByText('Gemini completed')).toBeInTheDocument();
-    expect(within(panel).getByText(/Gemini selected recorded observations/)).toHaveTextContent('gemini-2.5-flash');
+    expect(within(panel).getByText(/Gemini selected recorded observations/)).toHaveTextContent('fixture-supported-model');
     expect(within(panel).getByRole('link', { name: 'Recorded observation' })).toHaveAttribute('href', '#evidence-known-observation');
     expect(screen.getByTestId('verdict')).toHaveTextContent('Suspicious URL');
     expect(screen.getByTestId('verdict').compareDocumentPosition(panel) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();

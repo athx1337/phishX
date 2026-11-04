@@ -40,7 +40,8 @@ test('provider outage stays unknown with real coverage and no synthetic telemetr
   await page.getByRole('button', { name: /analyze|scan url/i }).click();
   await expect(page.getByRole('heading', { name: /unable to determine/i })).toBeVisible();
   await expect(page.getByText(/safe to visit|very safe/i)).toHaveCount(0);
-  await expect(page.getByText('No inference performed')).toBeVisible();
+  await page.getByRole('tab', { name: 'Model & AI' }).click();
+  await expect(page.getByText('No trained-model observations were included in this report.')).toBeVisible();
   await expect(page.getByText(/104\.21\.57\.174|800\+ ACTIVE SOURCES|18 GLOBAL DATABASES/)).toHaveCount(0);
   await expect(page.getByText('example.com', { exact: true }).first()).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBeTruthy();
@@ -85,7 +86,7 @@ test('sensitive URLs require an explicit acknowledgement before any scan submiss
   expect(submissions).toBe(0);
   await page.getByRole('checkbox', { name: /I understand this URL/i }).check();
   await page.getByRole('button', { name: 'Analyze URL' }).click();
-  await expect(page.getByTestId('verdict')).toHaveText('Unable to determine');
+  await expect(page.getByRole('heading', { name: 'Unable to determine' })).toBeVisible();
   expect(submissions).toBe(1);
 });
 
@@ -96,7 +97,7 @@ test('opt-in history is redacted, clearable and keyboard accessible with reduced
   await page.getByRole('checkbox', { name: /Remember redacted scans/i }).check();
   await page.getByLabel(/url to inspect/i).fill(input);
   await page.getByRole('button', { name: 'Analyze URL' }).click();
-  await expect(page.getByTestId('verdict')).toHaveText('Unable to determine');
+  await expect(page.getByRole('heading', { name: 'Unable to determine' })).toBeVisible();
   const button = page.getByRole('button', { name: 'Recent scans' });
   await button.click();
   const dialog = page.getByRole('dialog', { name: 'Scan history' });
@@ -124,9 +125,11 @@ test('stopping active report updates preserves uncertainty and prevents polling'
   await page.goto('/');
   await page.getByLabel(/url to inspect/i).fill(initial.url);
   await page.getByRole('button', { name: 'Analyze URL' }).click();
-  await page.getByRole('button', { name: 'Stop report updates' }).click();
+  await expect(page.getByTestId('scan-progress')).toBeVisible();
+  await expect(page.getByTestId('verdict')).toHaveCount(0);
+  await page.getByRole('button', { name: 'Stop waiting and view partial report' }).click();
   await page.clock.fastForward(20_000);
-  await expect(page.getByTestId('verdict')).toHaveText('Unable to determine');
+  await expect(page.getByRole('heading', { name: 'Unable to determine' })).toBeVisible();
   await expect(page.getByText(/Report updates stopped/i)).toBeVisible();
   expect(polls).toBe(0);
 });

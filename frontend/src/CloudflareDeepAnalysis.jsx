@@ -1,24 +1,31 @@
-const time = value => value ? new Date(value).toLocaleString() : 'Not reported';
+import { useId, useState } from 'react';
+import { DestinationAssessments } from './components/AnalysisExtensions';
+import ReportEvidence from './components/ReportEvidence';
+import { reportTime as time } from './components/report-format';
 
-export default function CloudflareDeepAnalysis({ reports = [] }) {
-  if (!reports.length) return <div className="rounded border border-white/10 p-4 space-y-2"><h4 className="font-semibold text-white">Active browser observations unavailable</h4><p className="text-sm text-slate-300">No completed Cloudflare browser report is available. IP address, certificates, redirects and transactions have not been established by this report.</p></div>;
-  return <div className="space-y-6">{reports.map(report => <section key={report.url} className="rounded border border-white/10 p-4 space-y-5 min-w-0">
-    <div><h4 className="font-semibold text-white">Cloudflare browser observations</h4><p className="font-mono text-xs text-slate-300 break-all mt-2">{report.url}</p><p className="text-xs text-slate-400 mt-2">{report.source} · observed {time(report.observed_at)}</p></div>
-    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm"><div><dt className="text-slate-400 text-xs">IP address</dt><dd className="font-mono break-all">{report.ip || 'Not reported'}</dd></div><div><dt className="text-slate-400 text-xs">ASN</dt><dd className="break-all">{report.asn || 'Not reported'}</dd></div><div><dt className="text-slate-400 text-xs">Server country</dt><dd>{report.country || 'Not reported'}</dd></div><div><dt className="text-slate-400 text-xs">Final observed URL</dt><dd className="font-mono text-xs break-all">{report.final_url || 'Not reported'}</dd></div></dl>
-    {!!report.redirect_chain?.length && <details><summary className="cursor-pointer text-sm text-violet-200">Observed redirect chain ({report.redirect_chain.length})</summary><ol className="mt-3 space-y-2">{report.redirect_chain.map((url, index) => <li key={`${url}-${index}`} className="text-xs font-mono break-all text-slate-300">{index + 1}. {url}</li>)}</ol><p className="text-xs text-slate-400 mt-3">Observed browser navigation only. Reputation checks for discovered destinations are listed separately.</p></details>}
-    <details><summary className="cursor-pointer text-sm text-violet-200">Certificates ({report.certificates.length})</summary>
-      <p className="text-xs text-slate-400 mt-3">Certificate observations do not establish that a site is trustworthy.</p>
-      {!report.certificates.length ? <p className="text-sm text-slate-300 mt-3">No certificate data returned.</p> : <ul className="space-y-3 mt-3">{report.certificates.map((cert, index) => <li key={index} className="text-xs border border-white/10 rounded p-3 space-y-1 break-all"><p>Subject: {cert.subject || 'Not reported'}</p><p>Issuer: {cert.issuer || 'Not reported'}</p><p>Issued: {time(cert.valid_from)}</p><p>Expires: {time(cert.valid_to)}</p></li>)}</ul>}
-    </details>
-    <details><summary className="cursor-pointer text-sm text-violet-200">HTTP transactions ({report.requests.length})</summary>
-      {!report.requests.length ? <p className="text-sm text-slate-300 mt-3">No transaction data returned.</p> : <ol className="space-y-3 mt-3">{report.requests.map((request, index) => <li key={index} className="text-xs font-mono border border-white/10 p-3 rounded space-y-2"><p className="break-all text-slate-200">{request.url}</p><p className="text-slate-400">{request.method || 'Method not reported'} · HTTP {request.status ?? 'status not reported'} · {request.ip || 'IP not reported'}</p></li>)}</ol>}
-    </details>
-    <details><summary className="cursor-pointer text-sm text-violet-200">Reported risks ({report.risks.length})</summary>
-      {!report.risks.length ? <p className="text-sm text-slate-300 mt-3">The source returned no risk observations in this completed report. This is not a guarantee that no threats exist.</p> : <ul className="mt-3 space-y-3">{report.risks.map((risk, index) => <li key={`${risk.id}-${index}`} className="space-y-1"><p className="font-semibold text-sm text-amber-200">{risk.title}</p><p className="text-sm text-slate-300">{risk.description}</p></li>)}</ul>}
-    </details>
-    <details><summary className="cursor-pointer text-sm text-violet-200">Observed links ({report.links.length})</summary>
-      <p className="text-xs text-slate-400 mt-3">Addresses are shown as text to avoid accidentally opening an untrusted destination.</p>
-      <ul className="mt-3 space-y-2">{report.links.map((link, index) => <li key={`${link}-${index}`} className="text-xs font-mono break-all text-slate-300">{link}</li>)}</ul>
-    </details>
-  </section>)}</div>;
+const VIEWS = ['Navigation', 'Certificates', 'HTTP transactions', 'Reported risks', 'Observed links'];
+export default function CloudflareDeepAnalysis({ reports = [], destinations = [] }) {
+  const [index, setIndex] = useState(0);
+  const [view, setView] = useState('Navigation');
+  const id = useId();
+  const report = reports[index] || reports[0];
+  const counts = report ? [report.redirect_chain?.length || 0, report.certificates.length, report.requests.length, report.risks.length, report.links.length] : [];
+  return <section className="report-panel report-browser" aria-label="Active browser observations">
+    <div className="report-panel-heading"><h3>Browser observations</h3><span className="report-muted">Remote · Cloudflare URL Scanner</span></div>
+    {!report ? <div><h4>Active browser observations unavailable</h4><p>No completed Cloudflare browser report is available. IP address, certificates, redirects and transactions have not been established by this report.</p></div> : <>
+      <label htmlFor={`${id}-target`}>Requested browser target</label><select id={`${id}-target`} value={index} onChange={event => setIndex(Number(event.target.value))}>{reports.map((item, i) => <option key={item.url} value={i}>{item.url}</option>)}</select>
+      <p className="report-muted">{report.source} · observed {time(report.observed_at)}</p>
+      <dl className="report-browser-facts report-facts"><div><dt>IP address</dt><dd>{report.ip || 'Not reported'}</dd></div><div><dt>ASN</dt><dd>{report.asn || 'Not reported'}</dd></div><div><dt>Server country</dt><dd>{report.country || 'Not reported'}</dd></div><div><dt>Final observed URL</dt><dd className="report-mono">{report.final_url || 'Not reported'}</dd></div></dl>
+      <label htmlFor={`${id}-view`}>Observation view</label><select id={`${id}-view`} value={view} onChange={event => setView(event.target.value)}>{VIEWS.map((name, i) => <option key={name} value={name}>{name} ({counts[i]})</option>)}</select>
+      <div className="report-browser-content">
+        <h4>{view}</h4>
+        {view === 'Navigation' && <><ol className="report-url-list">{report.redirect_chain?.length ? report.redirect_chain.map((url, i) => <li key={`${url}-${i}`}>{url}</li>) : <li>No redirect chain returned.</li>}</ol><p className="report-muted">Observed browser navigation only. Reputation checks for discovered destinations are listed separately.</p></>}
+        {view === 'Certificates' && <><p className="report-muted">Certificate observations do not establish that a site is trustworthy.</p>{!report.certificates.length ? <p>No certificate data returned.</p> : <div className="report-table-scroll" role="region" aria-label="Certificate observations" tabIndex={0}><table><thead><tr><th>Subject</th><th>Issuer</th><th>Issued</th><th>Expires</th></tr></thead><tbody>{report.certificates.map((cert, i) => <tr key={i}><td>{cert.subject || 'Not reported'}</td><td>{cert.issuer || 'Not reported'}</td><td>{time(cert.valid_from)}</td><td>{time(cert.valid_to)}</td></tr>)}</tbody></table></div>}</>}
+        {view === 'HTTP transactions' && (!report.requests.length ? <p>No transaction data returned.</p> : <div className="report-table-scroll" role="region" aria-label="HTTP transactions" tabIndex={0}><table><thead><tr><th>URL</th><th>Method</th><th>HTTP status</th><th>IP</th></tr></thead><tbody>{report.requests.map((request, i) => <tr key={i}><td className="report-mono">{request.url}</td><td>{request.method || 'Not reported'}</td><td>{request.status ?? 'Not reported'}</td><td>{request.ip || 'Not reported'}</td></tr>)}</tbody></table></div>)}
+        {view === 'Reported risks' && (report.risks.length ? <ReportEvidence evidence={report.risks} /> : <p>The source returned no risk observations in this completed report. This is not a guarantee that no threats exist.</p>)}
+        {view === 'Observed links' && <><p className="report-muted">Addresses are shown as text to avoid accidentally opening an untrusted destination.</p>{report.links.length ? <ul className="report-url-list">{report.links.map((link, i) => <li key={`${link}-${i}`}>{link}</li>)}</ul> : <p>No observed links returned.</p>}</>}
+      </div>
+    </>}
+    {view === 'Navigation' && <DestinationAssessments destinations={destinations} />}
+  </section>;
 }
