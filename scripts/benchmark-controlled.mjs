@@ -5,9 +5,9 @@ import { performance } from 'node:perf_hooks';
 import app, { ScanCoordinator } from '../backend-worker/.wrangler/benchmark/index.js';
 
 const cases = [
-  ['clean', 'https://example.com/', 'no_known_threats'],
-  ['legitimate-login', 'https://accounts.google.com/login', 'no_known_threats'],
-  ['ordinary-keyword', 'https://example.com/login', 'no_known_threats'],
+  ['partial-no-match', 'https://example.com/', 'unknown'],
+  ['partial-legitimate-login', 'https://accounts.google.com/login', 'unknown'],
+  ['partial-ordinary-keyword', 'https://example.com/login', 'unknown'],
   ['brand-subdomain', 'https://paypal.com.verify-account.example.com/login', 'suspicious'],
   ['lookalike', 'https://paypa1.example.com/', 'suspicious'],
   ['unicode-impersonation', 'https://раypal.example.com/', 'suspicious'],
@@ -59,7 +59,7 @@ try {
   }
 } finally { globalThis.fetch = originalFetch; }
 const sorted = samples.map(row => row.milliseconds).sort((a, b) => a - b);
-const result = { scope: 'Controlled whole HTTP route with actual parser/model/policy/coordinator logic, memory storage and 5ms synthetic upstream delays. Not live accuracy, deployment coverage or production latency.',
+const result = { scope: 'Controlled initial HTTP route with actual parser/model/policy/coordinator logic, memory storage and 5ms synthetic upstream delays. Negative fixtures configure only two reputation sources and must remain unknown under the complete-coverage policy. Not live accuracy, deployment coverage or production latency.',
   environment: `Node ${process.version} ${process.platform}/${process.arch}`, cases: cases.length, samples: samples.length,
   p50_ms: sorted[Math.floor(sorted.length * .5)], p95_ms: sorted[Math.floor(sorted.length * .95)],
   sufficient_coverage_rate: samples.filter(row => row.sufficient_coverage).length / samples.length,

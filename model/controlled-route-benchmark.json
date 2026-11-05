@@ -1,29 +1,29 @@
 {
-  "scope": "Controlled whole HTTP route with actual parser/model/policy/coordinator logic, memory storage and 5ms synthetic upstream delays. Not live accuracy, deployment coverage or production latency.",
+  "scope": "Controlled initial HTTP route with actual parser/model/policy/coordinator logic, memory storage and 5ms synthetic upstream delays. Negative fixtures configure only two reputation sources and must remain unknown under the complete-coverage policy. Not live accuracy, deployment coverage or production latency.",
   "environment": "Node v24.19.0 win32/x64",
   "cases": 12,
   "samples": 60,
-  "p50_ms": 15.681299999999965,
-  "p95_ms": 17.16579999999999,
+  "p50_ms": 15.73129999999992,
+  "p95_ms": 16.651299999999992,
   "sufficient_coverage_rate": 0.8333333333333334,
-  "unknown_verdict_rate": 0.25,
+  "unknown_verdict_rate": 0.5,
   "scenarios": [
     {
-      "name": "clean",
+      "name": "partial-no-match",
       "verdicts": [
-        "no_known_threats"
+        "unknown"
       ]
     },
     {
-      "name": "legitimate-login",
+      "name": "partial-legitimate-login",
       "verdicts": [
-        "no_known_threats"
+        "unknown"
       ]
     },
     {
-      "name": "ordinary-keyword",
+      "name": "partial-ordinary-keyword",
       "verdicts": [
-        "no_known_threats"
+        "unknown"
       ]
     },
     {
