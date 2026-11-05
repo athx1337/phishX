@@ -1,7 +1,7 @@
 import { hasSensitiveParameters } from '../../../shared/scan';
 
 export default function URLScanner({ url, setUrl, onSubmit, loading, error, onCancel, sensitiveConsent,
-  setSensitiveConsent, rememberHistory, setRememberHistory }) {
+  setSensitiveConsent, rememberHistory, setRememberHistory, geminiAssessment = false, setGeminiAssessment }) {
   const sensitive = hasSensitiveParameters(url);
   return <div className="scanner-enter glass-panel p-6 sm:p-8 rounded-lg border border-white/10 bg-white/[0.02] shadow-2xl relative max-w-xl">
     <form onSubmit={onSubmit} className="space-y-5" aria-busy={loading}>
@@ -22,6 +22,9 @@ export default function URLScanner({ url, setUrl, onSubmit, loading, error, onCa
           onChange={event => setSensitiveConsent(event.target.checked)} disabled={loading} className="mt-0.5 rounded accent-violet-500" />
           <span>I understand this URL may contain sensitive information and agree to share it with security providers.</span></label>
       </div>}
+      {setGeminiAssessment && <label className="flex items-start gap-3 text-sm text-slate-200 leading-relaxed"><input type="checkbox" checked={geminiAssessment}
+        onChange={event => setGeminiAssessment(event.target.checked)} disabled={loading} className="mt-1 rounded accent-violet-500" />
+        <span>Include independent Gemini URL review<span className="block text-xs text-slate-400 mt-1">Shares the hostname and limited URL structure with Google. Skips sensitive links. URL-only warnings can raise caution.</span></span></label>}
       <label className="flex items-start gap-3 text-sm text-slate-300"><input type="checkbox" checked={rememberHistory}
         onChange={event => setRememberHistory(event.target.checked)} className="rounded accent-violet-500" /><span>Remember redacted scans on this device <span className="block text-slate-400 mt-1">Optional · 50 summaries · 7 days · clear anytime</span></span></label>
       {error && <p role="alert" className="text-sm text-red-300 break-words">{error}</p>}

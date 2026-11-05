@@ -9,10 +9,11 @@ export default function GeminiExplanation({ result, expired, compact = false, on
   const observations = [...result.reasons, ...result.engines.flatMap(engine => [...engine.evidence, ...engine.targets.flatMap(target => target.evidence)])];
   const evidence = observations.filter((item, index) => selected.has(item.id) && observations.findIndex(other => other.id === item.id) === index);
   const gemini = explanation?.source === 'gemini';
+  const independent = result.engines.some(engine => engine.id === 'gemini-url');
   const text = explanation?.text || 'No explanation was included in this report. The recorded findings and provider coverage remain available.';
   const collapsed = compact && !expanded && text.length > 260;
   return <section className="report-panel report-assistant" aria-label="Gemini AI explanation">
-    <div className="report-panel-heading"><h3><Sparkles size={16} aria-hidden="true" /> Gemini assistant</h3><span className="report-status">{explanationStatus(explanation)}</span></div>
+    <div className="report-panel-heading"><h3><Sparkles size={16} aria-hidden="true" /> {independent ? 'Recorded explanation' : 'Gemini assistant'}</h3><span className="report-status">{independent ? 'Evidence summary' : explanationStatus(explanation)}</span></div>
     {expired && <p className="report-warning">Historical explanation · refresh the expired report for current evidence.</p>}
     <p className="report-assistant-text">{collapsed ? `${text.slice(0, 260)}…` : text}</p>
     {compact && (text.length > 260 || evidence.length > 2) && <button type="button" className="report-text-button" onClick={() => setExpanded(!expanded)} aria-expanded={expanded}>{expanded ? 'Show concise explanation' : text.length > 260 ? 'Read full explanation' : 'Show all referenced evidence'}</button>}

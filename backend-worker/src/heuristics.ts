@@ -10,6 +10,9 @@ const BRANDS: Record<string, string[]> = {
   apple: ['apple.com', 'icloud.com'], amazon: ['amazon.com', 'amazon.co.uk', 'amazon.in', 'amazon.de', 'amazon.com.au', 'amazonaws.com'],
   facebook: ['facebook.com', 'fb.com', 'meta.com'], instagram: ['instagram.com'], netflix: ['netflix.com'],
   github: ['github.com', 'githubusercontent.com'], dropbox: ['dropbox.com', 'dropboxusercontent.com'],
+  // Official marketplace domains and the separately branded Lokalnie service.
+  allegro: ['allegro.pl', 'allegro.cz', 'allegro.sk', 'allegro.hu', 'allegrolokalnie.pl'],
+  allegrolokalnie: ['allegrolokalnie.pl', 'allegro.pl'],
 };
 const SHORTENERS = new Set(['bit.ly', 't.co', 'tinyurl.com', 'goo.gl', 'is.gd', 'ow.ly', 'cutt.ly', 'buff.ly', 'shorturl.at']);
 /** UTS #39 skeleton is an internal comparison form, never a user-facing hostname. */

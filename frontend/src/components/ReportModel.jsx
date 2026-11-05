@@ -1,5 +1,5 @@
 export default function ModelObservation({ engine }) {
-  if (engine.kind !== 'model') return null;
+  if (engine.kind !== 'model' || engine.id === 'gemini-url') return null;
   return <section className="report-model" data-testid="model-observations">
     <h4>Trained XGBoost URL model</h4>
     <p>Local inference over the trained model’s decision trees. Its output supplements evidence; a negative prediction does not verify reputation or make a URL safe.</p>

@@ -13,6 +13,7 @@ import { domainRegistration, registrationSignals } from './registration';
 import { deterministicExplanation, explain, explanationContext, refreshExplanation } from './explanation';
 import { applyDestinations, checkDestinations, refreshDestinations } from './destinations';
 import { control, release, retainLease } from './control';
+import { geminiEngine } from './gemini-engine';
 
 function expiresAt(engines: EngineResult[], now = Date.now()): string {
   const expirations = engines.flatMap(e => e.targets.flatMap(t => t.expires_at && ['detected', 'no_detection'].includes(t.status) ? [Date.parse(t.expires_at)] : []));
@@ -25,7 +26,7 @@ function update(report: ScanReport): ScanReport {
 }
 export async function scan(input: ParsedInput, env: Bindings): Promise<ScanReport> {
   const key = await cacheKey(input.targets, env);
-  if (!input.refresh) { const cached = await readReport(env, key, input.targets); if (cached) return cached; }
+  if (!input.refresh && !input.geminiAssessment) { const cached = await readReport(env, key, input.targets); if (cached) return cached; }
   const scanId = crypto.randomUUID(), started = Date.now();
   let canSubmit = !!env.SCAN_CACHE;
   if (canSubmit && env.CLOUDFLARE_ACCOUNT_ID && env.CLOUDFLARE_API_TOKEN) {
@@ -34,18 +35,20 @@ export async function scan(input: ParsedInput, env: Bindings): Promise<ScanRepor
     catch { canSubmit = false; }
   }
   const cfEnv = canSubmit ? env : { ...env, SCAN_CACHE: undefined };
-  const [gsb, haus, vt, cf, whois, registration] = await Promise.all([
+  const [gsb, haus, vt, cf, whois, registration, gemini] = await Promise.all([
     googleSafeBrowsing(input.targets, env, input.refresh), urlhaus(input.targets, env), virusTotal(input.targets, env),
-    submitCloudflare(input, cfEnv), domainMetadata(input.domain.registrable_domain, env), domainRegistration(input),
+    submitCloudflare(input, cfEnv), domainMetadata(input.domain.registrable_domain, env), domainRegistration(input), geminiEngine(input, env),
   ]);
-  const engines = expireEvidence([gsb, haus, vt, cf.engine, analyzeHeuristics(input), analyzeModel(input), registrationSignals(input, registration)]);
+  const engines = expireEvidence([gsb, haus, vt, cf.engine, analyzeHeuristics(input), analyzeModel(input), registrationSignals(input, registration), ...(gemini ? [gemini] : [])]);
   const report: ScanReport = { schema_version: SCHEMA_VERSION, policy_version: POLICY_VERSION, scan_id: scanId,
     url: input.primary, checked_urls: input.targets, dual_protocol: input.targets.length === 2, domain: input.domain,
     ...assess(engines, input.targets), engines, cloudflare_reports: [], whois, registration, observed_at: nowIso(), expires_at: expiresAt(engines), cached: false,
-    privacy: { sensitive_parameters: input.sensitive, third_party_submission: Boolean(input.domain.registrable_domain && registration.status !== 'unavailable') || [gsb, haus, vt, cf.engine].some(e => e.targets.some(t => t.error_code !== 'MISSING_CREDENTIALS' && t.error_code !== 'JOB_STORAGE_UNAVAILABLE')) },
+    privacy: { sensitive_parameters: input.sensitive, third_party_submission: Boolean(input.domain.registrable_domain && registration.status !== 'unavailable') ||
+      Boolean(gemini?.targets.some(t => t.data?.source === 'gemini')) ||
+      [gsb, haus, vt, cf.engine].some(e => e.targets.some(t => t.error_code !== 'MISSING_CREDENTIALS' && t.error_code !== 'JOB_STORAGE_UNAVAILABLE')) },
   };
   Object.assign(report, applyDestinations(report));
-  report.explanation = await explain(report, env);
+  report.explanation = input.geminiAssessment ? deterministicExplanation(report, 'disabled') : await explain(report, env);
   if (cf.pending.length && env.SCAN_CACHE) {
     const next = Date.now() + POLL_INTERVAL_MS, deadline = started + JOB_LIFETIME_MS;
     report.deep_scan = { poll_path: `/api/scans/${scanId}`, next_poll_at: new Date(next).toISOString(), expires_at: new Date(deadline).toISOString() };
@@ -94,7 +97,10 @@ async function pollOnce(id: string, env: Bindings): Promise<ScanReport> {
   else job.report.deep_scan = { poll_path: `/api/scans/${id}`, next_poll_at: new Date(Math.min(job.next_poll_at, job.deadline)).toISOString(), expires_at: new Date(job.deadline).toISOString() };
   job.report = update(job.report);
   if (results.some(item => item.report)) { job.report.destinations = await checkDestinations(job.report, env); job.report = applyDestinations(job.report); }
-  if (!job.report.explanation || previousContext !== explanationContext(job.report)) job.report.explanation = await explain(job.report, env);
+  if (!job.report.explanation || previousContext !== explanationContext(job.report)) {
+    job.report.explanation = job.report.engines.some(engine => engine.id === 'gemini-url') ?
+      deterministicExplanation(job.report, 'disabled') : await explain(job.report, env);
+  }
   if (!isFreshScanReport(job.report)) throw new PublicError('INVALID_SCAN_RESULT', 'Active inspection returned an unusable report.', 503);
   try { job = await writeJob(env, job); job.report = update(job.report); }
   catch {

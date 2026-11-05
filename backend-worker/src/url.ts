@@ -11,6 +11,7 @@ export interface ParsedInput {
   domain: ScanReport['domain'];
   sensitive: boolean;
   refresh: boolean;
+  geminiAssessment?: boolean;
 }
 export function isPublicIp(input: string): boolean {
   try {
@@ -30,7 +31,8 @@ export function parseInput(body: unknown): ParsedInput {
   const input = body as Partial<VerifyRequest>;
   if (typeof input.url !== 'string' || !input.url.trim()) throw new PublicError('URL_REQUIRED', 'A URL string is required.');
   if ((input.refresh !== undefined && typeof input.refresh !== 'boolean') ||
-      (input.sensitive_url_consent !== undefined && typeof input.sensitive_url_consent !== 'boolean')) {
+      (input.sensitive_url_consent !== undefined && typeof input.sensitive_url_consent !== 'boolean') ||
+      (input.gemini_assessment !== undefined && typeof input.gemini_assessment !== 'boolean')) {
     throw new PublicError('INVALID_REQUEST', 'Refresh and consent flags must be booleans.');
   }
   if (input.url.length > 4096) throw new PublicError('URL_TOO_LONG', 'URLs must be at most 4096 characters.');
@@ -72,7 +74,7 @@ export function parseInput(body: unknown): ParsedInput {
     if (suppliedPort) second.port = suppliedPort;
     targets.push(second.toString());
   }
-  return { primary, targets, sensitive, refresh: input.refresh === true, domain: {
+  return { primary, targets, sensitive, refresh: input.refresh === true, geminiAssessment: input.gemini_assessment === true, domain: {
     hostname, registrable_domain: isIp ? null : parsed.domain, unicode_hostname: toUnicode(hostname), is_ip: isIp,
   } };
 }

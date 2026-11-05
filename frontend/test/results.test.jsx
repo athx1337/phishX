@@ -54,7 +54,7 @@ describe('evidence-first results', () => {
 
   it('qualifies a sufficiently covered negative instead of promising safety', () => {
     show(completedReport());
-    expect(screen.getByTestId('verdict')).toHaveTextContent('No known threats detected');
+    expect(screen.getByTestId('verdict')).toHaveTextContent('No threat matches returned');
     expect(screen.getByText(/not a guarantee of safety/)).toBeInTheDocument();
     expect(screen.getByText(/scheme alone does not verify a TLS connection/)).toBeInTheDocument();
     expect(screen.queryByText('SAFE TO VISIT')).not.toBeInTheDocument();

@@ -1,11 +1,11 @@
 /** Versioned public contract. No provider secrets or synthetic observations belong here. */
 export const SCHEMA_VERSION = 2 as const;
-export const POLICY_VERSION = '2026-11-evidence-v2-xgboost';
+export const POLICY_VERSION = '2026-11-evidence-v3-gemini-url';
 export const VERDICTS = ['malicious', 'suspicious', 'no_known_threats', 'unknown'] as const;
 export type Verdict = typeof VERDICTS[number];
 export const VERDICT_LABELS: Record<Verdict, string> = {
   malicious: 'Malicious URL', suspicious: 'Suspicious URL',
-  no_known_threats: 'No known threats detected', unknown: 'Unable to determine',
+  no_known_threats: 'No threat matches returned', unknown: 'Unable to determine',
 };
 export type EngineStatus = 'detected' | 'no_detection' | 'unavailable' | 'error' | 'pending' | 'unknown';
 export type ThreatType = 'phishing' | 'malware' | 'social_engineering' | 'suspicious_structure' | 'unknown';
@@ -113,7 +113,7 @@ export interface ScanReport {
     model?: string;
   };
 }
-export interface VerifyRequest { url: string; refresh?: boolean; sensitive_url_consent?: boolean }
+export interface VerifyRequest { url: string; refresh?: boolean; sensitive_url_consent?: boolean; gemini_assessment?: boolean }
 
 const SENSITIVE_KEY = /(?:token|password|passwd|secret|session|auth|credential|api[-_]?key|signature|code|email)/i;
 export function hasSensitiveParameters(input: string): boolean {
@@ -245,6 +245,8 @@ export function isFreshScanReport(value: unknown, now = Date.now()): value is Sc
     Boolean(item.expires_at) && Date.parse(item.expires_at!) > now && Date.parse(item.observed_at) <= now + 300_000;
   const completed = value.engines.filter(engine => isRemoteEngine(engine) && engine.targets.every(conclusiveFresh)).length;
   if (value.coverage.completed !== completed) return false;
+  if (value.policy_version === POLICY_VERSION && value.verdict === 'no_known_threats' &&
+      (value.coverage.completed !== value.coverage.total || value.coverage.detected > 0)) return false;
   if (value.verdict === 'no_known_threats' && value.engines.filter(engine => engine.kind === 'reputation' &&
       engine.targets.every(item => item.status === 'no_detection' && conclusiveFresh(item))).length < 2) return false;
   if (value.destinations && value.verdict === 'no_known_threats' && value.destinations.some(destination =>

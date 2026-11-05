@@ -80,3 +80,29 @@ test('initial waiting screen can be cancelled without publishing a late response
   await expect(page.getByTestId('verdict')).toHaveCount(0);
   await expect(page.getByLabel('URL to inspect')).toBeVisible();
 });
+
+test('independent Gemini review is opt-in and exposes its caution with model provenance', async ({ page }) => {
+  const report = completeReport();
+  report.verdict = 'suspicious';
+  report.summary = 'This URL has warning signals that require independent verification.';
+  report.engines.push({ id: 'gemini-url', name: 'Gemini URL assessment', kind: 'model', status: 'detected',
+    observed_at: report.observed_at, evidence: [], targets: [{ url: report.url, status: 'detected',
+      observed_at: report.observed_at, evidence: [], message: 'Gemini flagged URL structure for independent review.',
+      data: { status: 'risk_signal', source: 'gemini', model: 'gemini-3.5-flash-lite', prompt_version: 'url-risk-v1', reason_codes: ['deceptive_host'] } }] });
+  await page.route('**/api/**', async route => {
+    if (route.request().url().endsWith('/api/verify')) expect(route.request().postDataJSON().gemini_assessment).toBe(true);
+    await route.fulfill({ json: route.request().url().endsWith('/api/ping') ? { status: 'ok' } : report });
+  });
+  await page.goto('/');
+  const option = page.getByRole('checkbox', { name: /Include independent Gemini URL review/ });
+  await expect(option).not.toBeChecked();
+  await option.check();
+  await page.getByLabel('URL to inspect').fill(report.url);
+  await page.getByRole('button', { name: 'Analyze URL' }).click();
+  await expect(page.getByRole('heading', { name: 'Suspicious URL' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Independent Gemini URL review' })).toContainText('Gemini raised caution');
+  await page.getByRole('tab', { name: 'Model & AI' }).click();
+  const panel = page.getByRole('region', { name: 'Independent Gemini URL review' });
+  await expect(panel).toContainText('gemini-3.5-flash-lite');
+  await expect(panel).toContainText('It did not inspect page content');
+});

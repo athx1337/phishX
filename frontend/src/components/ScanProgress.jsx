@@ -6,13 +6,13 @@ const LABEL = { detected: 'Evidence received', no_detection: 'Response received'
 const pending = engine => engine.status === 'pending' || engine.targets?.some(target => target.status === 'pending');
 const clock = milliseconds => { const seconds = Math.max(0, Math.floor(milliseconds / 1000)); return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`; };
 
-export default function ScanProgress({ snapshot, startedAt, submittedUrl, nextPollAt, deadline, notice, onCancel, onShowPartial }) {
+export default function ScanProgress({ snapshot, startedAt, submittedUrl, nextPollAt, deadline, notice, onCancel, onShowPartial, geminiRequested = false }) {
   const [now, setNow] = useState(Date.now);
   const heading = useRef(null);
   useEffect(() => { heading.current?.focus(); const timer = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(timer); }, []);
   let hostname = 'your URL';
   try { hostname = new URL(/^https?:\/\//i.test(submittedUrl) ? submittedUrl : `https://${submittedUrl}`).hostname; } catch { /* Validation belongs to the API. */ }
-  const engines = snapshot?.engines || INITIAL.map((name, index) => ({ id: `waiting-${index}`, name }));
+  const engines = snapshot?.engines || [...INITIAL, ...(geminiRequested ? ['Gemini URL assessment'] : [])].map((name, index) => ({ id: `waiting-${index}`, name }));
   const received = snapshot ? engines.filter(engine => !pending(engine)).length : 0;
   return <section className="scan-progress glass-panel" aria-label="Live scan progress" data-testid="scan-progress">
     <header className="scan-progress-heading">

@@ -86,7 +86,8 @@ export function useScanSession(onPublish) {
     const controller = new AbortController(); initialRequest.current = controller;
     setStartedAt(Date.now()); setSubmittedUrl(url); setPhase('submitting');
     try {
-      const value = await requestScan({ url, refresh: Boolean(options.refresh), sensitive_url_consent: Boolean(options.sensitiveConsent) }, { signal: controller.signal });
+      const value = await requestScan({ url, refresh: Boolean(options.refresh), sensitive_url_consent: Boolean(options.sensitiveConsent),
+        ...(options.geminiAssessment ? { gemini_assessment: true } : {}) }, { signal: controller.signal });
       if (!controller.signal.aborted && generation === version.current) { accept(value); return value; }
     } catch (problem) {
       if (!controller.signal.aborted && generation === version.current) { setError(problem.message); setPhase('idle'); }

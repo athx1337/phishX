@@ -86,13 +86,22 @@ test('freshness rejects expired reports while permitting an explicitly historica
 });
 test('fresh clean coverage requires unexpired per-target evidence, not just a future report expiry', () => {
   const r = fixture(); r.verdict = 'no_known_threats';
-  for (const engine of r.engines.slice(0, 2)) { engine.status = 'no_detection'; engine.targets[0].status = 'no_detection'; }
-  Object.assign(r.coverage, { sufficient: true, completed: 2, no_detection: 2, unavailable: 2 });
+  for (const engine of r.engines) { engine.status = 'no_detection'; engine.targets[0].status = 'no_detection'; }
+  Object.assign(r.coverage, { sufficient: true, completed: 4, no_detection: 4, unavailable: 0 });
   assert.ok(isScanReport(r));
   assert.equal(isFreshScanReport(r, Date.parse(time)), false);
-  for (const engine of r.engines.slice(0, 2)) engine.targets[0].expires_at = r.expires_at;
+  for (const engine of r.engines) engine.targets[0].expires_at = r.expires_at;
   assert.ok(isFreshScanReport(r, Date.parse(time)));
   r.engines[0].targets[0].expires_at = time;
+  assert.equal(isFreshScanReport(r, Date.parse(time)), false);
+});
+test('the current policy rejects a fresh negative conclusion with incomplete remote coverage', () => {
+  const r = fixture(); r.verdict = 'no_known_threats';
+  for (const engine of r.engines.slice(0, 2)) {
+    engine.status = 'no_detection';
+    Object.assign(engine.targets[0], { status: 'no_detection', expires_at: r.expires_at });
+  }
+  Object.assign(r.coverage, { sufficient: true, completed: 2, no_detection: 2, unavailable: 2 });
   assert.equal(isFreshScanReport(r, Date.parse(time)), false);
 });
 

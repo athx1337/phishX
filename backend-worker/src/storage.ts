@@ -34,7 +34,7 @@ export async function readReport(env: Bindings, key: string, expectedUrls: strin
 }
 export async function writeReport(env: Bindings, key: string, report: ScanReport): Promise<void> {
   // Persist only complete reports. Provider-specific caching independently saves GSB lookups.
-  if (!env.SCAN_CACHE || report.deep_scan || report.destinations?.length || report.verdict === 'unknown' || report.coverage.completed !== 4) return;
+  if (!env.SCAN_CACHE || report.engines.some(engine => engine.id === 'gemini-url') || report.deep_scan || report.destinations?.length || report.verdict === 'unknown' || report.coverage.completed !== 4) return;
   const seconds = Math.floor((Date.parse(report.expires_at) - Date.now()) / 1000);
   if (seconds <= 0) return;
   try { await env.SCAN_CACHE.put(key, JSON.stringify(report), { expirationTtl: Math.max(60, seconds) }); }

@@ -32,6 +32,7 @@ function prefersReducedMotion() {
 function App() {
   const [url, setUrl] = useState('');
   const [sensitiveConsent, setSensitiveConsent] = useState(false);
+  const [geminiAssessment, setGeminiAssessment] = useState(false);
   const [rememberHistory, setRememberHistory] = useState(readHistoryPreference);
   const [history, setHistory] = useState(readHistory);
   const [historyOpen, setHistoryOpen] = useState(false);
@@ -62,7 +63,7 @@ function App() {
     if (hasSensitiveParameters(targetUrl) && !sensitiveConsent) {
       session.setError('Please acknowledge the sensitive information warning before submitting this URL.'); return;
     }
-    const accepted = await session.start(targetUrl, { refresh, sensitiveConsent });
+    const accepted = await session.start(targetUrl, { refresh, sensitiveConsent, geminiAssessment });
     if (accepted) setServerStatus('awake');
   };
 
@@ -77,7 +78,7 @@ function App() {
         <div aria-hidden="true" className="pointer-events-none fixed inset-0 purple-glow z-0" />
         <Navbar serverStatus={serverStatus} onHistoryClick={() => setHistoryOpen(true)} />
         <main id="main" tabIndex={-1} className="flex-1 relative z-10 pt-32 pb-16 px-6">
-          {session.running ? <ScanProgress snapshot={session.snapshot} startedAt={session.startedAt} submittedUrl={session.submittedUrl}
+          {session.running ? <ScanProgress snapshot={session.snapshot} startedAt={session.startedAt} submittedUrl={session.submittedUrl} geminiRequested={geminiAssessment}
             nextPollAt={session.snapshot?.deep_scan ? Math.max(Date.parse(session.snapshot.deep_scan.next_poll_at), session.retry.next) : null}
             deadline={session.deadline} notice={session.retry.notice} onCancel={session.cancel} onShowPartial={session.showPartial} />
           : result ? <div className="max-w-7xl mx-auto w-full"><h1 className="sr-only">URL inspection report</h1>
@@ -89,7 +90,8 @@ function App() {
                 <div className="max-w-xl"><URLScanner url={url} setUrl={changeUrl} loading={false} error={session.error}
                   onSubmit={event => { event.preventDefault(); startScan(url); }} onCancel={session.cancel}
                   sensitiveConsent={sensitiveConsent} setSensitiveConsent={setSensitiveConsent}
-                  rememberHistory={rememberHistory} setRememberHistory={changeRememberHistory} /></div>
+                  rememberHistory={rememberHistory} setRememberHistory={changeRememberHistory}
+                  geminiAssessment={geminiAssessment} setGeminiAssessment={setGeminiAssessment} /></div>
               </div>
               <aside aria-label="Scan information" className="lg:col-span-5 min-w-0 w-full space-y-5">
                 <div className="hud-composition relative w-full"><div className="hud-visual"><Suspense fallback={<div className="ascii-static" aria-hidden="true">X</div>}><HeroVisual animated={animateVisuals} /></Suspense></div>
@@ -110,7 +112,7 @@ function App() {
           {legal === 'privacy' ? <div className="space-y-4 text-sm leading-relaxed text-slate-300">
             <p>Submitting a URL shares its address, including its path and query parameters, with the configured Google Safe Browsing, URLhaus, VirusTotal and Cloudflare services. Registration lookups send the domain name to its RDAP registry, discovered through IANA. These providers apply their own retention policies.</p>
             <p>Cloudflare active scans are requested as unlisted. Unlisted reports are accessible to anyone who knows their report ID; this does not mean private or immediately deleted.</p>
-            <p>When enabled, Gemini receives only a compact verdict, recorded observation titles and severity, and provider coverage/status. The submitted URL, its path and query, and page content are not sent to Gemini. Gemini selects existing evidence; it cannot change the verdict.</p>
+            <p>The evidence explanation sends Gemini a compact verdict, recorded observation titles and severity, and provider coverage/status. If you enable independent Gemini URL review, Google also receives the hostname, registrable domain, and derived path traits such as depth and presence of login terms. Raw path, query, fragment, and page content are excluded. Sensitive URLs skip the independent review. Its probabilistic warning can raise caution; a threat confirmation requires separate evidence.</p>
             <p>When configured, the backend keeps short-lived scan jobs and cached reports with observation and expiry times. Provider requests already submitted cannot be recalled when you cancel the browser request.</p>
             <p>History is off by default. Enabling it saves up to 50 redacted summaries on this device for seven days. Query values and fragments are omitted; a sensitive value embedded in a path may still be present. You can clear history or turn it off at any time.</p>
             <p>Do not submit confidential or single-use links. The sensitive-parameter warning is a convenience and cannot recognize every secret.</p>
