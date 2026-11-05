@@ -28,6 +28,6 @@ Original artifacts are preserved rather than silently rewriting historical resul
 
 ## Nested repository
 
-The outer repository records `repo` as a gitlink without `.gitmodules`. Its existing local checkout is preserved; a fresh clone may omit the research and normal submodule initialization cannot discover its remote.
+The outer repository records `repo` as an optional submodule. Its upstream URL is declared in `.gitmodules`. Normal app builds and production monitoring skip submodule initialization.
 
-Research is unnecessary for app builds. Obtain an independent copy by cloning the attributed [upstream research](https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques) elsewhere. Repairing gitlink metadata should be an explicit repository-maintenance change, not deletion of a user's nested checkout.
+To initialize the historical checkout, run `git submodule update --init repo`. You can also clone the attributed [upstream research](https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques) independently.

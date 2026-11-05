@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        # Archived research is a gitlink without .gitmodules; it is not runtime input.
+        # Archived research is optional and is not runtime input.
         with:
           submodules: false
           fetch-depth: 0
