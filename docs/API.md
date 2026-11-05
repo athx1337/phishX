@@ -5,7 +5,7 @@ Reports and errors use `Cache-Control: no-store`. Exact-origin CORS does not ena
 ## POST /api/verify
 
 ```json
-{"url":"example.com/login","refresh":false,"sensitive_url_consent":false}
+{"url":"example.com/login","refresh":false,"sensitive_url_consent":false,"gemini_assessment":false}
 ```
 
 `url` is required. `refresh` bypasses cache lookup but remains rate-limited. `sensitive_url_consent` acknowledges third-party sharing for sensitive query keys/fragments; the backend enforces this boundary.
@@ -75,6 +75,14 @@ A required production Durable Object coordinator serializes global/client admiss
 
 Model target data contains `model_version`, `features_version`, `raw_score`, `calibrated_score`, `warning_threshold`, `model_warning`, `promoted`, `feature_count` and `tree_count`. Numeric model output is not a probability that visiting is safe. Model warning evidence cannot establish a clean remote reputation result.
 
+The optional boolean gemini_assessment defaults to false. When true, Google receives the hostname, registrable domain and bounded path traits for an independent URL review. Sensitive URLs skip this request. The review is returned as engine gemini-url with kind model, outside remote coverage. Validated warning codes contribute suspicious-structure evidence. This can raise caution but cannot confirm a threat. Abstention is unknown.
+
+Independent-review reports bypass the shared complete-report cache and retain their assessment through polling. This mode uses a deterministic evidence explanation so it makes only one Gemini call per scan. The existing five-request-per-minute Gemini admission budget applies.
+
 ## Gemini explanation status
 
 `explanation.source` is `gemini` only after a real validated selection; otherwise deterministic evidence wording remains available. Optional `ai_status` is `complete`, `disabled`, `not_configured`, `unavailable`, `rate_limited`, `timeout` or `invalid_response`. Optional `model` identifies the configured Gemini model. Old schema-v2 reports without these additive fields remain valid. Contradictory provenance/status combinations are rejected by the shared validator. A scan with no warning reasons can still receive a bounded Gemini explanation using aggregate coverage context and an empty list of evidence IDs; this adds no threat evidence or remote coverage.
+
+Independent Gemini source data records status, reason_codes, model and prompt_version. Status is risk_signal, abstained, unavailable, timeout, rate_limited or invalid_response. Sensitive skips and missing configuration use an unavailable engine with a specific error code. No free-form model claims are rendered. URL traits do not verify page content or current threat-list membership.
+
+For policy 2026-11-evidence-v3-gemini-url, a negative no_known_threats conclusion requires every remote source to have fresh conclusive observations for every requested protocol, with at least two completed reputation sources. Incomplete coverage yields unknown unless warning or threat evidence yields suspicious or malicious. The coverage.sufficient flag records the two-reputation-source quorum; it alone cannot authorize a negative conclusion. Historical earlier-policy reports retain their original interpretation.

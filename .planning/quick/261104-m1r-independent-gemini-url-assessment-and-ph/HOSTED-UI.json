@@ -1,0 +1,27 @@
+{
+  "first_report": {
+    "verdict": "unknown",
+    "coverage": {
+      "total": 4,
+      "completed": 2,
+      "detected": 0,
+      "no_detection": 2,
+      "unavailable": 0,
+      "error": 1,
+      "pending": 0,
+      "unknown": 1,
+      "sufficient": true
+    },
+    "ai": {
+      "source": "gemini",
+      "status": "timeout",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": [],
+      "prompt_version": "url-risk-v1"
+    }
+  },
+  "final_verdict": "? Unable to determine",
+  "assessment_visible": "Independent URL review\nReview unavailable\n\nGemini could not complete its independent assessment.\n\nGemini assessed the hostname and derived URL structure independently of provider results. It did not inspect page content. An abstention does not establish safety.\n\nModel gemini-3.5-flash-lite · url-risk-v1",
+  "axe_violations": [],
+  "sources": 8
+}

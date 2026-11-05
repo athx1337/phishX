@@ -1,0 +1,39 @@
+{
+  "checked_at": "2026-11-05T07:44:58.081Z",
+  "sample_id": "9554574",
+  "stages": [
+    {
+      "verdict": "no_known_threats",
+      "coverage": {
+        "total": 4,
+        "completed": 2,
+        "detected": 0,
+        "no_detection": 2,
+        "unavailable": 0,
+        "error": 1,
+        "pending": 0,
+        "unknown": 1,
+        "sufficient": true
+      },
+      "pending": false,
+      "ai": [
+        {
+          "status": "unknown",
+          "data": {
+            "source": "gemini",
+            "model": "gemini-3.5-flash-lite",
+            "status": "abstained",
+            "reason_codes": [],
+            "prompt_version": "url-risk-v1"
+          }
+        }
+      ],
+      "model": [
+        false
+      ]
+    }
+  ],
+  "status": "superseded_draft_before_complete_coverage_fix",
+  "superseded_by": "HOSTED-UI.json",
+  "note": "This earlier draft reproduced the premature negative conclusion with only two of four remote sources complete. Current-release behavior is recorded in HOSTED-UI.json as unknown for incomplete coverage."
+}

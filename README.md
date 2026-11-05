@@ -46,7 +46,8 @@ A useful scan explains what was observed, where the information came from, and w
 | **Evidence you can inspect** | Four outcomes, attributed reasons, observation times, coverage, and explicit pending/error states. |
 | **Trained local XGBoost** | A real URL-only model running inside the Worker: 69 features and 160 trees, with no separate Python inference service. |
 | **Four remote sources** | Reputation from Google Safe Browsing, URLhaus and VirusTotal, plus active inspection from Cloudflare URL Scanner, each with its actual status and findings. |
-| **Grounded Gemini assistance** | Gemini 3.5 Flash-Lite selects existing evidence IDs for an explanation. Production displays its completion or fallback status; it cannot override the verdict. |
+| **Independent Gemini review** | Opt in to a separate hostname and URL-structure assessment using Gemini 3.5 Flash-Lite. Validated warning codes can raise a suspicious result. Abstention adds no safety assurance or remote coverage. |
+| **Grounded explanations** | With independent review off, Gemini can select recorded evidence IDs. Independent review uses a deterministic explanation alongside its separate AI assessment, keeping one Gemini call per scan. |
 | **Live scan workspace** | Source statuses update from the API while checks run. The finished report organizes findings into Overview, Sources, Browser, and Model & AI tabs. |
 | **An expressive interface** | Animated waves, typewriter text, ASCII X, and floating glass panels honor the system reduced-motion preference. |
 | **Deliberate data handling** | Sensitive-link consent, opt-in redacted browser history capped at 50 entries/seven days, and short-lived active scan jobs. |
@@ -57,7 +58,7 @@ A useful scan explains what was observed, where the information came from, and w
 | :--- | :--- |
 | **Malicious URL** | Strong threat-intelligence evidence was found. Avoid interacting with the URL. |
 | **Suspicious URL** | Deceptive structure, weaker or stale positive intelligence, or conflicting findings warrant caution. |
-| **No known threats detected** | Sufficient fresh reputation checks found no known threat or warning. This is not a safety guarantee. |
+| **No threat matches returned** | All remote checks completed with fresh evidence and returned no known threat or warning. This is not a safety guarantee. |
 | **Unable to determine** | Evidence is insufficient, unknown, unavailable, failed, or pending. |
 
 A clean conclusion requires fresh results from at least two independent reputation sources for every requested protocol, with no warning or pending active inspection. Local model output does not count as remote coverage. Missing checks never become clean votes.
@@ -171,7 +172,7 @@ Provider keys are optional for local development. Without them, ordinary URLs ge
 | `CLIENT_ID_SECRET`, `METRICS_TOKEN` | Independent client-identity HMAC and protected metrics secrets |
 | `ALLOWED_ORIGINS` | Exact frontend origins accepted by CORS |
 | `CACHE_CONFIG_VERSION` | Cache generation; increment after provider/policy changes |
-| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Optional bounded evidence selection; production uses `gemini-3.5-flash-lite` |
+| `GEMINI_ENABLED`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Bounded independent URL review or evidence selection; production uses `gemini-3.5-flash-lite` |
 
 Keep local credentials in ignored `.dev.vars` files. Set production credentials through Wrangler secret bindings, for example from `backend-worker/`:
 
@@ -252,7 +253,7 @@ Model estimates support warnings; they are not probabilities that visiting a sit
 - **Unlisted is not private.** Cloudflare scans request unlisted visibility, but a report identifier can still grant access. Providers apply their own retention rules; cancellation cannot undo an accepted submission.
 - **History stays optional.** Browser history is off by default, capped at 50 summaries/seven days, and redacts query values/fragments. Sensitive path segments may remain.
 - **Jobs expire quickly.** Active jobs have a three-minute deadline; production object deletion is scheduled for that deadline plus sixty seconds. Cache values can still contain URL/report data.
-- **Gemini gets compact context.** It receives the verdict, bounded evidence IDs/titles/severity, and aggregate provider coverage/status. The submitted URL, path/query, and page content are excluded. Validated IDs drive deterministic displayed wording.
+- **Gemini has two modes.** The evidence explanation receives a verdict, bounded evidence IDs/titles/severity and aggregate coverage. Independent review is opt-in and receives the hostname, registrable domain and derived path traits. It gets no provider results, benchmark labels, raw path/query/fragment or page content. Sensitive URLs skip independent review. Both modes use validated outputs and explicit failure states.
 
 [Read the full privacy and retention policy →](docs/PRIVACY.md)
 

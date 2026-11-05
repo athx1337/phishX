@@ -1,0 +1,456 @@
+{
+  "source": "User-supplied PhishTank labels, independently unverified. Positive-only selected sample.",
+  "runtime": "Node direct provider request, production input shaping and 3s timeout. Not hosted Worker latency.",
+  "prompt_sha256": "9ba5d06157fe140f7d88903d0a0c858e481cb390117e5d86826ad9d20c080ca4",
+  "model": "gemini-3.5-flash-lite",
+  "counts": {
+    "all_40": {
+      "abstained": 19,
+      "unavailable": 5,
+      "risk_signal": 8,
+      "timeout": 4,
+      "skipped_sensitive": 4
+    },
+    "labeled_39": {
+      "abstained": 19,
+      "unavailable": 5,
+      "risk_signal": 7,
+      "timeout": 4,
+      "skipped_sensitive": 4
+    },
+    "benign_controls_6": {
+      "unavailable": 1,
+      "abstained": 5
+    }
+  },
+  "notes": [
+    "Hostname and derived path traits only; no target fetched or search tool used.",
+    "No supplied labels, other model outputs or provider results entered Gemini prompts.",
+    "Abstention and provider failures remain distinct.",
+    "Six curated benign controls are insufficient to estimate a general false-positive rate.",
+    "Opaque Gemini pretraining overlap cannot be verified.",
+    "XGBoost and Gemini were not fine-tuned on this evaluation set."
+  ],
+  "results": [
+    {
+      "id": "9554496",
+      "skipped_sensitive": false,
+      "elapsed_ms": 2507,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554495",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1580,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554494",
+      "skipped_sensitive": false,
+      "elapsed_ms": 961,
+      "source": "gemini",
+      "status": "unavailable",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554493",
+      "skipped_sensitive": false,
+      "elapsed_ms": 2798,
+      "source": "gemini",
+      "status": "unavailable",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554492",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1217,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554488",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1090,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "deceptive_host",
+        "brand_impersonation"
+      ]
+    },
+    {
+      "id": "9554486",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1373,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "deceptive_host",
+        "brand_impersonation"
+      ]
+    },
+    {
+      "id": "9554483",
+      "skipped_sensitive": false,
+      "elapsed_ms": 931,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "brand_impersonation"
+      ]
+    },
+    {
+      "id": "9554480",
+      "skipped_sensitive": false,
+      "elapsed_ms": 3013,
+      "source": "gemini",
+      "status": "timeout",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554470",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1111,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554467",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1013,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554466",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1080,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554465",
+      "skipped_sensitive": false,
+      "elapsed_ms": 3012,
+      "source": "gemini",
+      "status": "timeout",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554464",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1069,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554453",
+      "skipped_sensitive": false,
+      "elapsed_ms": 854,
+      "source": "gemini",
+      "status": "unavailable",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554442",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1310,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554440",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1467,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554439",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1710,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "deceptive_host",
+        "credential_lure"
+      ]
+    },
+    {
+      "id": "9554437",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1034,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554436",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1182,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "credential_lure"
+      ]
+    },
+    {
+      "id": "9554580",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1600,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "deceptive_host",
+        "brand_impersonation"
+      ]
+    },
+    {
+      "id": "9554576",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1130,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "deceptive_host",
+        "brand_impersonation"
+      ]
+    },
+    {
+      "id": "9554575",
+      "skipped_sensitive": false,
+      "elapsed_ms": 2338,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554574",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1352,
+      "source": "gemini",
+      "status": "unavailable",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554568",
+      "skipped_sensitive": false,
+      "elapsed_ms": 2537,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554567",
+      "skipped_sensitive": false,
+      "elapsed_ms": 3014,
+      "source": "gemini",
+      "status": "timeout",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554566",
+      "skipped_sensitive": false,
+      "elapsed_ms": 954,
+      "source": "gemini",
+      "status": "unavailable",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554565",
+      "skipped_sensitive": false,
+      "elapsed_ms": 3005,
+      "source": "gemini",
+      "status": "timeout",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "9554550",
+      "skipped_sensitive": true,
+      "elapsed_ms": 1
+    },
+    {
+      "id": "9554549",
+      "skipped_sensitive": true,
+      "elapsed_ms": 0
+    },
+    {
+      "id": "9554548",
+      "skipped_sensitive": true,
+      "elapsed_ms": 1
+    },
+    {
+      "id": "9554545",
+      "skipped_sensitive": true,
+      "elapsed_ms": 1
+    },
+    {
+      "id": "9554533",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1275,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554532",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1252,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554531",
+      "skipped_sensitive": false,
+      "elapsed_ms": 867,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554530",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1255,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "risk_signal",
+      "reason_codes": [
+        "deceptive_host",
+        "brand_impersonation"
+      ]
+    },
+    {
+      "id": "9554522",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1386,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554499",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1318,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554498",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1135,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "9554497",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1390,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "control-example",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1131,
+      "source": "gemini",
+      "status": "unavailable",
+      "model": "gemini-3.5-flash-lite",
+      "reason_codes": []
+    },
+    {
+      "id": "control-allegro",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1144,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "control-lokalnie",
+      "skipped_sensitive": false,
+      "elapsed_ms": 927,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "control-microsoft",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1248,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "control-prime",
+      "skipped_sensitive": false,
+      "elapsed_ms": 2165,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    },
+    {
+      "id": "control-github",
+      "skipped_sensitive": false,
+      "elapsed_ms": 1012,
+      "source": "gemini",
+      "model": "gemini-3.5-flash-lite",
+      "status": "abstained",
+      "reason_codes": []
+    }
+  ]
+}

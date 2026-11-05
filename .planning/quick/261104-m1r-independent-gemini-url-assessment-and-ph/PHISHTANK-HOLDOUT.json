@@ -1,0 +1,1429 @@
+{
+  "checked_at": "2026-11-05T07:40:32.803Z",
+  "input_sha256": "957874ee2c772f53e3a31289755b3038421ec8ac2a579e988af48ff3bb8b116b",
+  "source": "User-supplied PhishTank listing transcription; labels have not been independently confirmed",
+  "model": {
+    "version": "xgb-url-2026-11-03-v2",
+    "warning_threshold": 0.8220732808113098,
+    "promoted": true,
+    "artifact_sha256": "d72826ce96b10b04903b801aec72cb683a1ea83d32da1e39a3d7b0d03e9d19c9",
+    "feature_sha256": "b1f872dd3e148b50f3f8ad213e2591539fba66db6e1997d25f8e42bc0f8c3fd5",
+    "corpus_sha256": "a7a970a10c4bace2ecb859e2149362a3dcf6d9ce52d8d1cb3d72d859b13f022d",
+    "split_manifest_sha256": "f2956a20c69c153d0d42843bb7c87f94917fc937b5336b406bf61c6363c53bc4"
+  },
+  "counts": {
+    "rows": 40,
+    "unique_canonical_urls": 40,
+    "unique_domains": 35,
+    "incomplete_labels": 1,
+    "corpus_rows_scanned": 902110,
+    "corpus_ineligible_rows": 7416,
+    "corpus_exact_overlap": 0,
+    "corpus_scheme_independent_overlap": 0,
+    "corpus_domain_overlap": 4
+  },
+  "metrics": {
+    "all_rows_descriptive": {
+      "count": 40,
+      "warnings": 23,
+      "warning_rate": 0.575,
+      "wilson_95": [
+        0.42195068541991065,
+        0.7149060744004962
+      ],
+      "non_warnings": 17
+    },
+    "supplied_verified_online": {
+      "count": 39,
+      "warnings": 23,
+      "misses": 16,
+      "warning_rate": 0.5897435897435898,
+      "wilson_95": [
+        0.43418622882896973,
+        0.7292068999927483
+      ]
+    },
+    "unique_supplied_verified_online": {
+      "count": 39,
+      "warnings": 23,
+      "misses": 16,
+      "warning_rate": 0.5897435897435898,
+      "wilson_95": [
+        0.43418622882896973,
+        0.7292068999927483
+      ]
+    },
+    "corpus_domain_disjoint_verified_online": {
+      "count": 36,
+      "warnings": 20,
+      "misses": 16,
+      "warning_rate": 0.5555555555555556,
+      "wilson_95": [
+        0.395810617556973,
+        0.7045873125991978
+      ]
+    }
+  },
+  "rows": [
+    {
+      "id": "9554496",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "9bdb90dbced6fd39e7b4cfc45723d84577f978a1b9e0ecd5db58ef32019988b5",
+      "scheme_independent_url_sha256": "3955758f825a4ac91bd4ead6f027cde1df03c57285092243ea8c9ec640fba766",
+      "registrable_domain_sha256": "1d5509b9ba5bb54d37065666d72c72e1a9bd65bd1752882ab0b87af442008be7",
+      "raw_score": 0.9798078049584718,
+      "calibrated_score": 0.9119927541700213,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554495",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "6bb3d8ed0cced5520453ad3be7135ec845129cdef5c179349125cf6691a280c4",
+      "scheme_independent_url_sha256": "c7711847fed63053d36f84ff741f9f476ae6b21c85486c31d1e51e9ea6e9784a",
+      "registrable_domain_sha256": "395061b81cdb7363b1f6f0562de18e8757d5f4a8b38d945bd538858d749157a4",
+      "raw_score": 0.9779662511969146,
+      "calibrated_score": 0.9059680280456753,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554494",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "5fd23b4bd2c7e137a819669b129bef4ffdd7f87e0abca39df33ff38bbe94dca9",
+      "scheme_independent_url_sha256": "7a1358c44d35ddbf3a716a2375b954183d8f2b0592173f3c9124e096ce737f23",
+      "registrable_domain_sha256": "2c9db4d30a0d1787a4dd21409cffed9c3d7ae9073f7ab7b6ac4a47997e042a26",
+      "raw_score": 0.9679827030235802,
+      "calibrated_score": 0.8756290370451314,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554493",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "641e19760501807f20bb9a5ca75d179c11c7d645b93bd1dca22e2de1c72ce8f4",
+      "scheme_independent_url_sha256": "dd82ba61f16187087a5c2089a38c43c1f44d97eb36a0afddf1bfb116a19973ad",
+      "registrable_domain_sha256": "7f0d23181599f50550afced34eee789b817469f15ab722605bf027b5f35df336",
+      "raw_score": 0.9247695581205312,
+      "calibrated_score": 0.77143270142656,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554492",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "2874e81ed937ee32c44721d07f3a44f4fb6ce5d462ff8dbf9ad9ae423604a08d",
+      "scheme_independent_url_sha256": "97441ebf1a201e5c7b335105cdf5a14c4d51b6b1f0af1a41005a2255cf02bdca",
+      "registrable_domain_sha256": "615e910bf07a3ca3210bc7ba186712ba06ca7f5214deb60d91bdb9138b47b4c3",
+      "raw_score": 0.9272077596684295,
+      "calibrated_score": 0.7765176975498063,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554488",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "f9556f413b123a7b7da355d6cab2edf8815e67fca35b2a996c10da80e6a0a8fa",
+      "scheme_independent_url_sha256": "fdc0fb8c40017477ddaba053270fb4b7cbfc65f5b7fe07a9824d43c96ad5caef",
+      "registrable_domain_sha256": "c6d23d1f0d4962a7228477bdd454dfc40ecf6ed2095a88d24d9c97a8ea89e789",
+      "raw_score": 0.9805265427089186,
+      "calibrated_score": 0.9143874890194862,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554486",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "ceae0282cbabf6298e45f646d04e02cfb915d1417a8f44b553f36707a799adb7",
+      "scheme_independent_url_sha256": "1ebc5796813f12644339a8131b076f7d11876fdbb42eb163d7c7783502d19bf7",
+      "registrable_domain_sha256": "69fa17dcdab3312cce5197bfe1dd3799b6e188a6f9dc3f4b440e3643b88f0e81",
+      "raw_score": 0.9810246841097394,
+      "calibrated_score": 0.9160622683199251,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554483",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "9157618e70a75dfaf4a7d341549719146e5d848cd81be9fe2a194c413a8d01d6",
+      "scheme_independent_url_sha256": "0a3857bf029e2d07db06c826bdd14e56a7e6851e961903a812ec6b5d6935894b",
+      "registrable_domain_sha256": "c8caaed9bfa35757c1c0b4c8234732e8c3de612cd5b286b2f3af7ad4e4594192",
+      "raw_score": 0.9951120714888981,
+      "calibrated_score": 0.9709655203809434,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554480",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "f116cb93170d758294eb0f647f2292070029b1d1c0a5235b55e83798171f3a01",
+      "scheme_independent_url_sha256": "362393bbcae5abcf6f764fce8cb9c2739fd326b42370e6f515af3d6fe8b0188f",
+      "registrable_domain_sha256": "69fa17dcdab3312cce5197bfe1dd3799b6e188a6f9dc3f4b440e3643b88f0e81",
+      "raw_score": 0.983366569967364,
+      "calibrated_score": 0.9241120523042295,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554470",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "abc99cac78612ae37417c7defde299b59cbd24f201c94a47bc57384db6f98f2d",
+      "scheme_independent_url_sha256": "e412c51efd49fc3f96519039cfcf62279df81cbafefc2cee418e5b743a0bceca",
+      "registrable_domain_sha256": "80f438b92c6fd41d1b83648cf8a16ce1191bf83bf7254762ee0a75b9ef95a566",
+      "raw_score": 0.9957143301560727,
+      "calibrated_score": 0.9738581816433617,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554467",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "c38f3b32d060abbd1db0363f4480c66b4587167d5a528a4bafac5d70f1dfcc98",
+      "scheme_independent_url_sha256": "95f58ffcf07f56b31aed92b9ce45d225206e8e26f28fab6c8d52faf541e5e569",
+      "registrable_domain_sha256": "9c6e6134b3f1d17286a363a691aef1af29d1bccdf9bc5b6362f097dd8a7b4a59",
+      "raw_score": 0.8858020241460944,
+      "calibrated_score": 0.6985179294558116,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554466",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "43bbb9950ce9fc4821bde572d098b8c8cec899b5641e8f7ba4fe60413dce017a",
+      "scheme_independent_url_sha256": "8ea8eefc76a2046f594da675223bd2ce520ef38afcf466186dcae0001fb94c9d",
+      "registrable_domain_sha256": "5366cb8cdc1204caf21cc5dea49da2fb5c2ce64a2df2b56c91ee86b1d3307c9f",
+      "raw_score": 0.9792808503071059,
+      "calibrated_score": 0.9102528169729981,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554465",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "087dc30a621a413f292b8822916d5ea447f302af202afee789f8ba372b0ae6ef",
+      "scheme_independent_url_sha256": "1d2b9d18876679a7a3b4446990162fc5c777c0541dc6d85036d6db58d45dad6f",
+      "registrable_domain_sha256": "2c49336478d47e893818d9294afb0092390131d9b0ea6665aa8734ab94d8f0ca",
+      "raw_score": 0.9715469019376793,
+      "calibrated_score": 0.8860584954357954,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554464",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "dd153f45434a4f1152174c3035c9d735cec128845ea3329ef8db3233dc42960e",
+      "scheme_independent_url_sha256": "d3ef9cdbb190d6221f2fa6b165c3aa61b7b65666a0a9ce0f87923a4f377685bc",
+      "registrable_domain_sha256": "5de736f954f3d829551c485fa3f753c1f749f5eb90a189785f5dea14a8baa0b7",
+      "raw_score": 0.9792808503071059,
+      "calibrated_score": 0.9102528169729981,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554453",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "715a233ddba9ad1ebf64c0a6346dfce7b358d391e1eca5a368fe5035e14ca81e",
+      "scheme_independent_url_sha256": "e88603a9ce92dd46e8e33556585a52d954c9f24b2bbb3ff7d01f0d1e8d7a85a0",
+      "registrable_domain_sha256": "12f2790da5e99190eaff8c68448b6451110c47ee53705c1712507129f23d2e58",
+      "raw_score": 0.9919548228064298,
+      "calibrated_score": 0.9568967895402696,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554442",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "333853b3b88c6106abfe6efe66b18e1676e1a14688847ef6f8367c24e83d33a2",
+      "scheme_independent_url_sha256": "18954d29a32ab1a7302f6a65d81bddd7321137437ec73da92d6c15070359a638",
+      "registrable_domain_sha256": "cfce30583cb4852acefd00cd01afdc8595af185a30057d29a1cd928d2aaa378e",
+      "raw_score": 0.923159887238277,
+      "calibrated_score": 0.7681151835983661,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554440",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "498e5ec24f31607e1ed88686c017a5c5f3806247ab7c06e795784fac741128fe",
+      "scheme_independent_url_sha256": "9f4c1e0793f90013aa7a856a42eb16d90614139e079ad929dac6849bf37fb8ae",
+      "registrable_domain_sha256": "c93cc6638bd0a6558c19d8b665b689e5e1c218d2753a3a409db61ccfe9caabed",
+      "raw_score": 0.9806643514293908,
+      "calibrated_score": 0.9148495588582302,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": true,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": true
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554439",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "58d0b4ecb1e64795b41cf2d554e907eb28f7e41e45e3d2e4bbe05a2ff84e9a8c",
+      "scheme_independent_url_sha256": "a3b073cfaf5004bc1f87a0dbf859d6accb53eeab4ea161dd445a71792cfc2537",
+      "registrable_domain_sha256": "c93cc6638bd0a6558c19d8b665b689e5e1c218d2753a3a409db61ccfe9caabed",
+      "raw_score": 0.9546880211816151,
+      "calibrated_score": 0.8397859479823054,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": true,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": true
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554437",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "db779c2028dac7d33b2b9faf441df932dc4430a7a9553f6ca08451540e692233",
+      "scheme_independent_url_sha256": "e5c5e6c2b7609a6d53fb84235ecd2ed504d0db14acbab88f69336377824befb2",
+      "registrable_domain_sha256": "c93cc6638bd0a6558c19d8b665b689e5e1c218d2753a3a409db61ccfe9caabed",
+      "raw_score": 0.9686384576512013,
+      "calibrated_score": 0.877518056926849,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": true,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": true
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554436",
+      "supplied_verified": null,
+      "supplied_online": null,
+      "canonical_url_sha256": "cea4bc7f5084cb777e8000c8def4a8cccb8340fb1b6a855bd2f8137ae07b4849",
+      "scheme_independent_url_sha256": "f7317d3de1be64489c1f2c326f623a0a6c47fbb91010c2d203707faf2fe29192",
+      "registrable_domain_sha256": "c93cc6638bd0a6558c19d8b665b689e5e1c218d2753a3a409db61ccfe9caabed",
+      "raw_score": 0.9076195739130775,
+      "calibrated_score": 0.7375643757830763,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": true,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": true
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554580",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "a39459197d8da7727eedc53075be0a1443ca8c76f8249faa8b7c1a88b1c185d2",
+      "scheme_independent_url_sha256": "29d14715ca086e48a6eee4dfe8f79011de49f383c13649bf32651e24ec8e0883",
+      "registrable_domain_sha256": "25020e7909215e3cb207ffac9b718e72f15d581fe4ac970c68e189625ed08ad4",
+      "raw_score": 0.975359703704747,
+      "calibrated_score": 0.8976922767609842,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554576",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "efab075b16cccf2c832144e2519d0a85bf4f69d0cf4143a4d33e3de451b50f69",
+      "scheme_independent_url_sha256": "32240ac204e69a4eac00062887ce8890311591ad606f6efc0cae96d7cc31cb54",
+      "registrable_domain_sha256": "37f8ed58236d8cb3fddbd8671c0bc3e63e11bb0eab9720ab863bbf664bc5ab5e",
+      "raw_score": 0.9840689579446505,
+      "calibrated_score": 0.9265870799975414,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554575",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "173c7a66f66c31e7466a5e567cd5ef9315057c2bb89885784163acbdebb2845d",
+      "scheme_independent_url_sha256": "c89ad8b8bbb7eba91db3dc3f770d02bd7288cb06e0f9f8d759e53ef33b45f29f",
+      "registrable_domain_sha256": "0a06b320d38beda5e0053be8af9451419d60c735ccd403d3aa0efd3be09c9b13",
+      "raw_score": 0.9958540280173181,
+      "calibrated_score": 0.9745415381148166,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554574",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "124b74e5423c96d6840238b870f920e2414de5a2143ab2e0ea6fc27350dfc396",
+      "scheme_independent_url_sha256": "93c70867cc6138f200ed5f1d3146d54df945ee12276f54277001e81882d470c9",
+      "registrable_domain_sha256": "1e1393dbabe7334d906aee4758fa6ffcccc71020a179d85a0ffa2ecc7eef438c",
+      "raw_score": 0.8756469724587815,
+      "calibrated_score": 0.6816205660577672,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554568",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "990fbed986a77b02c3e8f897d7c35ccee61ac39ec35ae40963d3511207c423ad",
+      "scheme_independent_url_sha256": "6526136e864490b9abbc6b2abed5a332443560636b0dfc3e824cec4c59ee4b5f",
+      "registrable_domain_sha256": "e6f5a230e75ca4938a29c042fd4a6c5d60fe81d5956bf0e40bd6c93a6b4abd1c",
+      "raw_score": 0.8725918431636137,
+      "calibrated_score": 0.6766774510330361,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554567",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "26a99881f237ad21511bbf250a28309e8d00a7262e1bf674005eae8eac714fa7",
+      "scheme_independent_url_sha256": "e99533e582c64791548bda2e6292716fdb266cdf917cb6952af8005910d0e1c5",
+      "registrable_domain_sha256": "a8ea15e0205b0328b76ae18bb2612df5b4d8f70646e132b1b7e8a4be58cb4de2",
+      "raw_score": 0.8725918431636137,
+      "calibrated_score": 0.6766774510330361,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554566",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "333ff9d1f45a592fec66453859a8bbbdaa4a81843e14b01aad80ec6eae9a0d3e",
+      "scheme_independent_url_sha256": "24eb462878e0a0225fd320182b4027082c6bd907a25475f4faeae18ecf5fa1b2",
+      "registrable_domain_sha256": "cd7aab3916d9d2f770e820ef85fb4e893c309a9df72585b9706de2f693bf5d78",
+      "raw_score": 0.8548035760261316,
+      "calibrated_score": 0.6490674641314512,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554565",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "734bd716456011c622c0553ad1680d2b582035cd2cf34c8547b5dbd949c3d21b",
+      "scheme_independent_url_sha256": "b52c99ac287fffd0e46a279134ccfc950d359437598f38dfee2465ca1e5f18ca",
+      "registrable_domain_sha256": "63a582edf0d3066773ac11b57d72002f8740335e3113807569aeeede1287c36a",
+      "raw_score": 0.9290812697136465,
+      "calibrated_score": 0.7804754738403988,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554550",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "f9b6762a93f277155ccfc2f2213d62c6d630cf90d98d45d553cdd00a8e043133",
+      "scheme_independent_url_sha256": "5ae4db48fae0346bf6922fc6bed4224a5bfc572cc61f87b45271c1e72f39805f",
+      "registrable_domain_sha256": "29602f872147e6ac76e40842711abb74e2f17ed1a10827f11213d784dee81f43",
+      "raw_score": 0.9779975015147467,
+      "calibrated_score": 0.9060689865087285,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554549",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "ae92a2c22f73efeefd4291a4b8f844be31f56ced6164bf0c9941f74e7c33bcd1",
+      "scheme_independent_url_sha256": "c86d762f87e307ee8836fcb0852ed722b7c0ff2fedb2f24c55a82dd083e9d9b6",
+      "registrable_domain_sha256": "5b41e5574a8490072c6a16c0d96f2095c84c4a562575ff2da8681bc42311db1a",
+      "raw_score": 0.8275237038343723,
+      "calibrated_score": 0.6101113094939705,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554548",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "d6e34ef7c7e5341d7bde6e765eadd75f51b4eefd19c1af544aba0de259e763cb",
+      "scheme_independent_url_sha256": "9ad2082430da4a6034b234fec49e816580753ed49fe1aed289c9cd0f6685450d",
+      "registrable_domain_sha256": "97678380dda5d9bc666c653a4e14b25c45cf1995a9532be9ee641e36258fe194",
+      "raw_score": 0.9847928092272631,
+      "calibrated_score": 0.9291694076976204,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554545",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "89d1a87f70792b42fba448460521b1feb0475bd644d44fa7509264835bf3aa0b",
+      "scheme_independent_url_sha256": "f838c61eea62540e1a364985d481ef41579893b5cea826e25fa296385598e824",
+      "registrable_domain_sha256": "fbdd057ae476ad906ab923f35dc35ac7ba26542021ed73a5768cd8912ca1ca62",
+      "raw_score": 0.8275237038343723,
+      "calibrated_score": 0.6101113094939705,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554533",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "d51930ec37baa57465c85b09dc7550e16714ff0be53e777c3553a12d30b5ee3f",
+      "scheme_independent_url_sha256": "8a977aca64d1b09430280bc4c7dd41958736afc7d5b083f81d11641c67252479",
+      "registrable_domain_sha256": "9a68781f38b8594040509f96e243439565d0bab1e528ab57bcdda9c112267bcb",
+      "raw_score": 0.9469758399443645,
+      "calibrated_score": 0.8207735636278506,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554532",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "df964acfde477ec292728f2385588d1421ff7b145792a117d1eae2f833a90106",
+      "scheme_independent_url_sha256": "2567bcd425f8aace33988a89fa208c9a1e9e29240b5df26bf843ddd8df01f57c",
+      "registrable_domain_sha256": "9a68781f38b8594040509f96e243439565d0bab1e528ab57bcdda9c112267bcb",
+      "raw_score": 0.9469758399443645,
+      "calibrated_score": 0.8207735636278506,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554531",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "02a1fa82c98ee697f79b7392ae0fd1dc2792ef614e30d7c54d95e7a9b6410d65",
+      "scheme_independent_url_sha256": "8983bde4d419770fa8947d099881b16cde8a6745416ec23e33d3e8808b77d9ae",
+      "registrable_domain_sha256": "75bc40d55463cb1f2b319691aad0d64b5f9b54c605cffb3535bf04e301979d8a",
+      "raw_score": 0.9972542274000699,
+      "calibrated_score": 0.9817062083271827,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554530",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "788c138ac112a740f3f6963cd5785421384f421fe80fa07bf93beda1028f169a",
+      "scheme_independent_url_sha256": "5ee1923df6772f1f0663e36661390bccebaccdbfcce3eb9b69580925a55ba27c",
+      "registrable_domain_sha256": "d730fe7475980fb1c1f664bd254d3caaa4659bd90d485edff94570dcb787b0ba",
+      "raw_score": 0.9984182906186285,
+      "calibrated_score": 0.9882757544469561,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554522",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "ee8122d4c5626b506e13cf59c8f53067d5720c07c5ef8c2fd63c8becb114f116",
+      "scheme_independent_url_sha256": "a4789826967ad78dae5684741d8a39c12d7e3502206070d2b9084591e8575d33",
+      "registrable_domain_sha256": "919100894a2415f8b389600db432d64c48ba2dab34fda9e85b7e77eca56099df",
+      "raw_score": 0.9607188244381714,
+      "calibrated_score": 0.855507758699943,
+      "warning": true,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554499",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "40f149b10691f211280c24db335fe3d06a8ebdabdaaac752996376709b3e3095",
+      "scheme_independent_url_sha256": "bee4ee0bfeb38087d9ca4114ace00ddb59164ad696ea7460e00e273feca74091",
+      "registrable_domain_sha256": "bb28f6598dfb1c7bcd1c4c0d767f44fb2c221d9f192e8881307eb15b0f49bc94",
+      "raw_score": 0.7717605863134093,
+      "calibrated_score": 0.5403903654914668,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554498",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "4c2ce4dfc10eb084143c1a201b3d28c4b5b86755940f601f93099bb4b56f94ef",
+      "scheme_independent_url_sha256": "99b579e0454c961dd2f302d43bc9dee4a292876ed6feb7d65e56aeed822a056f",
+      "registrable_domain_sha256": "4eff9c1c37115bf476be7e6b3831088b82141064c645c44cf16697532a5034bb",
+      "raw_score": 0.7717605863134093,
+      "calibrated_score": 0.5403903654914668,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    },
+    {
+      "id": "9554497",
+      "supplied_verified": true,
+      "supplied_online": true,
+      "canonical_url_sha256": "d9f30b7cd8505d753661f7f59f73cbdfc069a8729aa012ded4e7e58d6dd0010b",
+      "scheme_independent_url_sha256": "dd07956742708136c71af74ffdce04b879da39fd92647e31a24f754bf6d3a48c",
+      "registrable_domain_sha256": "7ec37ec3e7905fcb01896a968a23eaf8bd528109dd49dec61e86afb8d70b9ec8",
+      "raw_score": 0.9468453776388054,
+      "calibrated_score": 0.8204614525147055,
+      "warning": false,
+      "overlap": {
+        "corpus_exact": false,
+        "corpus_scheme_independent": false,
+        "corpus_domain": false,
+        "splits": {
+          "calibration": {
+            "exact": false,
+            "domain": false
+          },
+          "test": {
+            "exact": false,
+            "domain": false
+          },
+          "train": {
+            "exact": false,
+            "domain": false
+          },
+          "validation": {
+            "exact": false,
+            "domain": false
+          }
+        }
+      }
+    }
+  ]
+}

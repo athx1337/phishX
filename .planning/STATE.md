@@ -25,8 +25,8 @@ Progress: 100% of the two implementation plans; not a claim that ongoing alert d
 
 ## Accumulated Context
 Baseline: earlier user changes were preserved and included in the user-authorized source release `dc1b315`, pushed to `athx1337/phishX` on main with author athx1337 <standoffak92@gmail.com>.
-Current verification: 44 shared/monitor tests, 190 backend tests, 69 frontend tests and 30 browser cases. The unchanged ML pipeline previously passed five Python tests. Native/edge parity passed for 100 predictions and 23 feature fixtures. Full dependency audits report zero vulnerabilities; real Gitleaks/promtool checks pass. See phases/02-complete-audit/02-VERIFICATION.md and docs/AUDIT-TRACEABILITY.md.
-Live: https://phish-x.vercel.app and https://backend-worker.phish-x.workers.dev. Worker 710d9e0a-e70b-4d1c-872d-a1ab72a0f90f; Vercel dpl_CMELMTzXjRSMAAh8bkWcWBR4MqBf. Report/progress and Gemini code commit 970f8a3. Genuine model xgb-url-2026-11-03-v2.
+Current verification: 45 shared/monitor tests, 229 backend tests, 70 frontend tests and 32 browser cases. The unchanged ML pipeline previously passed five Python tests. Native/edge parity passed for 100 predictions and 23 feature fixtures. Full dependency audits report zero vulnerabilities; real Gitleaks/promtool checks pass. See phases/02-complete-audit/02-VERIFICATION.md and docs/AUDIT-TRACEABILITY.md.
+Live: https://phish-x.vercel.app and https://backend-worker.phish-x.workers.dev. Worker f865fa1c-1a21-4aa8-a6d3-e438a693beaf; Vercel dpl_HBchqDpcojb64J9ru3oFNoCf2Niy. Independent Gemini and coverage policy code commit f074d74. Genuine model xgb-url-2026-11-03-v2.
 Next: Review user feedback on the compact workspace. Monitoring still needs the repository metrics secret and verified notification delivery; source publication/Git authentication and the UI/Gemini deployment are verified.
 
 ### Blockers/Concerns
@@ -38,6 +38,7 @@ Cloudflare/Vercel logins, actual provider calls and public deployment are verifi
 | --- | --- | --- | --- | --- |
 | [261103-ltf](quick/261103-ltf-restore-original-animated-ui-and-visible/261103-ltf-SUMMARY.md) | Original animated UI and visible working Gemini restored; audited features preserved | 2026-11-03 | 5308218 | Passed local suites and actual public desktop/mobile scans |
 | [261103-rkk](quick/261103-rkk-compact-scan-workspace-with-real-time-co/261103-rkk-SUMMARY.md) | Live scan progress, tabbed report, Gemini 3.5 Flash-Lite, and no decorative pause button | 2026-11-04 | 970f8a3 | Local suites and hosted desktop/mobile scan completion verified |
+| [261104-m1r](quick/261104-m1r-independent-gemini-url-assessment-and-ph/261104-m1r-SUMMARY.md) | Independent Gemini URL review, complete negative coverage, and supplied phishing evaluation | 2026-11-05 | f074d74 | Local/browser checks and hosted review verified; detection gaps disclosed |
 
 ## Session Continuity
-Last session: 2026-11-04. Quick task 261103-rkk records the live report and Gemini migration. Read its summary and verification for current deployment evidence. Phase 02 records the audit baseline.
+Last session: 2026-11-05. Quick261104-m1r records opt-in independent Gemini URL review and strict negative coverage. Supplied sample evaluation found23/39 XGBoost warnings and7/39 Gemini signals with abstentions/failures/skips explicit. These are regression evaluations, not retraining or verified current PhishTank labels. Example9554574 remains a detection gap and now shows unknown with incomplete remote coverage.
