@@ -18,6 +18,17 @@ function completedReport() {
 function show(report) { return render(<ResultsDashboard result={report} resetScan={vi.fn()} onRescan={vi.fn()} />); }
 
 describe('evidence-first results', () => {
+  it('shows a qualified official-homepage label while keeping partial coverage visible', () => {
+    const report = completedReport();
+    report.url = 'https://google.com/'; report.checked_urls = [report.url];
+    report.domain = { hostname: 'google.com', registrable_domain: 'google.com', unicode_hostname: 'google.com', is_ip: false };
+    report.engines.forEach(engine => engine.targets.forEach(target => { target.url = report.url; }));
+    show(report);
+    expect(screen.getByTestId('verdict')).toHaveTextContent('Likely safe');
+    expect(screen.getByText(/Recognized official homepage/)).toBeVisible();
+    expect(screen.getByText('2 of 4 remote providers completed', { exact: true })).toBeVisible();
+    expect(screen.getByText(/Partial analysis/)).toBeVisible();
+  });
   it('distinguishes successful shadow inference from unavailable model execution', () => {
     const model = { id: 'xgboost', kind: 'model', status: 'unknown', targets: [{ url: 'https://example.com/', status: 'unknown', data: { promoted: false, model_version: 'test-model', calibrated_score: .8 } }] };
     const result = scanReport(); result.engines.push(model);
@@ -54,7 +65,7 @@ describe('evidence-first results', () => {
 
   it('qualifies a sufficiently covered negative instead of promising safety', () => {
     show(completedReport());
-    expect(screen.getByTestId('verdict')).toHaveTextContent('No threat matches returned');
+    expect(screen.getByTestId('verdict')).toHaveTextContent('No threats detected');
     expect(screen.getByText(/not a guarantee of safety/)).toBeInTheDocument();
     expect(screen.getByText(/scheme alone does not verify a TLS connection/)).toBeInTheDocument();
     expect(screen.queryByText('SAFE TO VISIT')).not.toBeInTheDocument();

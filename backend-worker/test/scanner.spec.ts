@@ -130,10 +130,10 @@ describe('trust policy regression matrix', () => {
     vi.stubGlobal('fetch', providerFixtures({ gsbThreat: true }));
     expect((await validReport(await verify(undefined, remoteKeys()))).verdict).toBe('malicious');
   });
-  it('keeps the verdict unknown when two reputation sources complete but other checks are unavailable', async () => {
+  it('reports non-detection with two fresh reputation sources and separate incomplete coverage', async () => {
     vi.stubGlobal('fetch', providerFixtures());
     const result = await validReport(await verify({ url: 'example.com' }, env({ GOOGLE_SAFE_BROWSING_API_KEY: 'test', URLHAUS_API_KEY: 'test' })));
-    expect(result.verdict).toBe('unknown'); expect(result.coverage.completed).toBe(2); expect(result.summary).toContain('Missing or pending');
+    expect(result.verdict).toBe('no_known_threats'); expect(result.coverage.completed).toBe(2); expect(result.summary).toContain('incomplete checks');
   });
   it('never counts one clean protocol as full provider coverage', () => {
     const urls = ['https://example.com/', 'http://example.com/'];
@@ -361,7 +361,7 @@ describe('unlisted asynchronous Cloudflare inspection', () => {
     const result = await validReport(await app.request(initial.deep_scan!.poll_path, {}, bindings));
     // Fresh negative results from other sources cannot fill the expired GSB observation.
     expect(result.engines.find(e => e.id === 'gsb')?.status).toBe('unknown'); expect(result.coverage.completed).toBe(3);
-    expect(result.verdict).toBe('unknown');
+    expect(result.verdict).toBe('no_known_threats');
   });
   it('never reports a failed browser task as a clean observation', async () => {
     vi.stubGlobal('fetch', providerFixtures({ cfFailed: true }));

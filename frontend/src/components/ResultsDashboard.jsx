@@ -1,4 +1,4 @@
-import { isScanReport, VERDICT_LABELS } from '../../../shared/scan';
+import { isScanReport, VERDICT_LABELS, reportVerdictLabel } from '../../../shared/scan';
 import CloudflareDeepAnalysis from '../CloudflareDeepAnalysis';
 import { useReportExpiry } from '../hooks/use-report-expiry';
 import { useEffect, useId, useRef, useState } from 'react';
@@ -37,6 +37,7 @@ export default function ResultsDashboard({ result, resetScan, onRescan, pollErro
   if (!isScanReport(result)) return <section role="alert" className="glass-panel rounded-lg p-6"><h2>Report unavailable</h2><p>This report has an unsupported format. No safety conclusion can be displayed.</p><button type="button" onClick={resetScan}>Start a new scan</button></section>;
   const isExpired = expired || snapshotExpired;
   const expiredNegative = isExpired && result.verdict === 'no_known_threats';
+  const verdictLabel = reportVerdictLabel(result);
   const presentation = PRESENTATION[expiredNegative ? 'unknown' : result.verdict];
   const incomplete = result.coverage.total - result.coverage.completed;
   const actualDomain = result.domain.registrable_domain || (result.domain.is_ip ? result.domain.hostname : null);
@@ -60,12 +61,12 @@ export default function ResultsDashboard({ result, resetScan, onRescan, pollErro
     if (next !== undefined) { event.preventDefault(); selectTab(next); }
   };
   return <section className="report-workspace" aria-label="URL assessment">
-    <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">Assessment for {actualDomain || result.domain.hostname}: {expiredNegative ? 'Report expired' : VERDICT_LABELS[result.verdict]}. {result.coverage.completed} of {result.coverage.total} remote providers completed.</p>
+    <p role="status" aria-live="polite" aria-atomic="true" className="sr-only">Assessment for {actualDomain || result.domain.hostname}: {expiredNegative ? 'Report expired' : verdictLabel}. {result.coverage.completed} of {result.coverage.total} remote providers completed.</p>
     <header className="report-toolbar"><p className="report-kicker">Evidence report <span>· {result.cached ? 'Cached snapshot' : 'Current snapshot'} · {time(result.observed_at)}</span></p><div className="report-actions"><button type="button" onClick={onRescan}><RefreshCw size={15} aria-hidden="true" />Refresh report</button><button type="button" onClick={resetScan}>Check another URL <ArrowRight size={15} aria-hidden="true" /></button></div></header>
     {partial && <div className="report-alert" role={pollError && !pollingStopped ? 'alert' : 'status'}><ShieldAlert size={18} aria-hidden="true" /><div><strong>Partial report</strong><p>{partial}</p><p>Refresh to request a fresh assessment.</p></div></div>}
     {isExpired && <div className="report-alert" role="alert"><div><strong>Report expired — refresh to assess current evidence.</strong><p>Historical assessment: {VERDICT_LABELS[result.verdict]}. These observations are retained for context and do not assess the URL now.</p>{['malicious', 'suspicious'].includes(result.verdict) && <p>The previous warning remains visible. Expiry does not establish that the threat has gone away.</p>}</div></div>}
     <div className={`report-summary verdict-${expiredNegative ? 'unknown' : result.verdict}`}>
-      <div className="report-verdict"><p className="report-kicker">Recorded assessment</p><h2 ref={heading} tabIndex={-1} data-testid="verdict" className={expiredNegative ? 'text-slate-200' : undefined}><span aria-hidden="true">{presentation.icon} </span>{expiredNegative ? 'Report expired' : VERDICT_LABELS[result.verdict]}</h2><p>{expiredNegative ? 'This historical report cannot assess the URL now. Refresh to obtain current evidence.' : presentation.recommendation}</p><p className="report-muted">{isExpired ? 'Historical summary: ' : ''}{result.summary}</p></div>
+      <div className="report-verdict"><p className="report-kicker">Recorded assessment</p><h2 ref={heading} tabIndex={-1} data-testid="verdict" className={expiredNegative ? 'text-slate-200' : undefined}><span aria-hidden="true">{presentation.icon} </span>{expiredNegative ? 'Report expired' : verdictLabel}</h2><p>{!isExpired && verdictLabel === 'Likely safe' && <span>Recognized official homepage with fresh reputation checks. </span>}{expiredNegative ? 'This historical report cannot assess the URL now. Refresh to obtain current evidence.' : presentation.recommendation}</p><p className="report-muted">{isExpired ? 'Historical summary: ' : ''}{result.summary}</p></div>
       <div className="report-identity"><div className="report-domain-row"><div><p className="report-kicker">Actual registrable domain</p><p data-testid="registrable-domain" className="report-domain">{actualDomain || 'Not established'}</p></div><button type="button" onClick={copyDomain} disabled={!actualDomain} aria-label="Copy actual domain"><Copy size={16} aria-hidden="true" /></button></div><p role="status" aria-live="polite" className="report-muted">{copyStatus}</p><p className="report-mono">{result.url}</p><p className="report-muted">Full hostname: {result.domain.hostname}</p>{result.domain.unicode_hostname !== result.domain.hostname && <p className="report-warning">Unicode display: {result.domain.unicode_hostname}</p>}
       <div className="report-coverage"><strong>{result.coverage.completed} of {result.coverage.total} remote providers completed</strong><p className="report-muted">{result.coverage.pending} pending · {result.coverage.unavailable} unavailable · {result.coverage.error} failed · {result.coverage.unknown} unknown</p><p className="report-muted">{result.coverage.detected} detected · {result.coverage.no_detection} no detection. Local context is separate.</p></div></div>
     </div>

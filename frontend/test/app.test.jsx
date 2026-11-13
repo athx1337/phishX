@@ -140,18 +140,18 @@ describe('scanner workflow', () => {
     vi.useFakeTimers();
     requestScan.mockResolvedValueOnce(noThreatReport(new Date(Date.now() + 2000).toISOString()));
     render(<App />); await submit();
-    expect(screen.getByTestId('verdict')).toHaveTextContent('No threat matches returned');
+    expect(screen.getByTestId('verdict')).toHaveTextContent('No threats detected');
     await act(async () => { await vi.advanceTimersByTimeAsync(2010); });
     expect(screen.getByTestId('verdict')).toHaveTextContent('Report expired');
     expect(screen.getByTestId('verdict')).toHaveClass('text-slate-200');
     expect(screen.getByRole('alert')).toHaveTextContent('Report expired — refresh to assess current evidence.');
-    expect(screen.getByText(/Historical assessment: No threat matches returned/)).toBeInTheDocument();
+    expect(screen.getByText(/Historical assessment: No threats detected/)).toBeInTheDocument();
     expect(screen.queryByText('Report unavailable')).not.toBeInTheDocument();
     expect(screen.getByText(/Historical snapshot/)).toBeInTheDocument();
     requestScan.mockResolvedValueOnce(noThreatReport(new Date(Date.now() + 60_000).toISOString()));
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: 'Refresh report' })); });
     expect(requestScan.mock.calls[1][0]).toMatchObject({ refresh: true });
-    expect(screen.getByTestId('verdict')).toHaveTextContent('No threat matches returned');
+    expect(screen.getByTestId('verdict')).toHaveTextContent('No threats detected');
     expect(screen.queryByText(/Historical assessment:/)).not.toBeInTheDocument();
   });
 

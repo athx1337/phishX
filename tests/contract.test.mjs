@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { isScanReport, isFreshScanReport, hasSensitiveParameters, redactUrl, POLICY_VERSION } from '../shared/scan.ts';
+import { isScanReport, isFreshScanReport, hasSensitiveParameters, redactUrl, POLICY_VERSION, reportVerdictLabel } from '../shared/scan.ts';
 
 const time = '2026-11-03T10:00:00.000Z';
 function fixture() {
@@ -95,14 +95,14 @@ test('fresh clean coverage requires unexpired per-target evidence, not just a fu
   r.engines[0].targets[0].expires_at = time;
   assert.equal(isFreshScanReport(r, Date.parse(time)), false);
 });
-test('the current policy rejects a fresh negative conclusion with incomplete remote coverage', () => {
+test('fresh negative quorum permits separately reported incomplete coverage', () => {
   const r = fixture(); r.verdict = 'no_known_threats';
   for (const engine of r.engines.slice(0, 2)) {
     engine.status = 'no_detection';
     Object.assign(engine.targets[0], { status: 'no_detection', expires_at: r.expires_at });
   }
   Object.assign(r.coverage, { sufficient: true, completed: 2, no_detection: 2, unavailable: 2 });
-  assert.equal(isFreshScanReport(r, Date.parse(time)), false);
+  assert.equal(isFreshScanReport(r, Date.parse(time)), true);
 });
 
 test('genuine local model engines are explicit and never inflate remote coverage', () => {
@@ -162,4 +162,38 @@ test('incomplete destination investigation vetoes a parent clean conclusion', ()
   Object.assign(r.coverage, { sufficient: true, completed: 2, no_detection: 2, unavailable: 2 });
   r.verdict = 'no_known_threats';
   assert.equal(isScanReport(r), false);
+});
+
+test('likely-safe labels require an exact reviewed homepage and fresh negative reputation evidence', () => {
+  function report(url) {
+    const r = fixture(); r.url = url; r.checked_urls = [url];
+    const hostname = new URL(url).hostname;
+    r.domain = { hostname, registrable_domain: hostname, unicode_hostname: hostname, is_ip: false };
+    r.verdict = 'no_known_threats';
+    for (const [index, engine] of r.engines.entries()) {
+      engine.targets[0].url = url;
+      if (index < 2) {
+        engine.status = 'no_detection';
+        Object.assign(engine.targets[0], { status: 'no_detection', expires_at: r.expires_at });
+      }
+    }
+    Object.assign(r.coverage, { sufficient: true, completed: 2, no_detection: 2, unavailable: 2 });
+    return r;
+  }
+  const now = Date.parse(time);
+  for (const url of ['https://google.com/', 'https://github.com/', 'https://en.wikipedia.org/']) {
+    assert.equal(reportVerdictLabel(report(url), now), 'Likely safe');
+  }
+  for (const url of ['https://example.com/', 'https://google.com.example.com/', 'https://sites.google.com/', 'https://github.com/someone/project', 'https://google.com/?q=private', 'http://google.com/', 'https://google.com:444/']) {
+    assert.equal(reportVerdictLabel(report(url), now), 'No threats detected');
+  }
+  const r = report('https://google.com/');
+  r.verdict = 'suspicious';
+  assert.equal(reportVerdictLabel(r, now), 'Suspicious URL');
+  r.verdict = 'malicious';
+  assert.equal(reportVerdictLabel(r, now), 'Malicious URL');
+  r.verdict = 'unknown';
+  assert.equal(reportVerdictLabel(r, now), 'Unable to determine');
+  r.verdict = 'no_known_threats';
+  assert.equal(reportVerdictLabel(r, Date.parse(r.expires_at)), 'No threats detected');
 });

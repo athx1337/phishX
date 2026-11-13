@@ -1,12 +1,24 @@
 /** Versioned public contract. No provider secrets or synthetic observations belong here. */
 export const SCHEMA_VERSION = 2 as const;
-export const POLICY_VERSION = '2026-11-evidence-v3-gemini-url';
+export const POLICY_VERSION = '2026-11-evidence-v4-coverage-quorum';
 export const VERDICTS = ['malicious', 'suspicious', 'no_known_threats', 'unknown'] as const;
 export type Verdict = typeof VERDICTS[number];
 export const VERDICT_LABELS: Record<Verdict, string> = {
   malicious: 'Malicious URL', suspicious: 'Suspicious URL',
-  no_known_threats: 'No threat matches returned', unknown: 'Unable to determine',
+  no_known_threats: 'No threats detected', unknown: 'Unable to determine',
 };
+// Recognize only reviewed public homepages, excluding user-hosted content and login paths.
+const OFFICIAL_HOMEPAGES = new Set([
+  'google.com', 'www.google.com', 'github.com', 'www.github.com',
+  'wikipedia.org', 'www.wikipedia.org', 'en.wikipedia.org',
+]);
+export function reportVerdictLabel(report: ScanReport, now = Date.now()): string {
+  if (report.verdict !== 'no_known_threats' || !isFreshScanReport(report, now)) return VERDICT_LABELS[report.verdict];
+  const url = new URL(report.url);
+  return url.protocol === 'https:' && !url.port && url.pathname === '/' && !url.search && !url.hash &&
+    !report.privacy.sensitive_parameters && OFFICIAL_HOMEPAGES.has(url.hostname) ?
+    'Likely safe' : VERDICT_LABELS[report.verdict];
+}
 export type EngineStatus = 'detected' | 'no_detection' | 'unavailable' | 'error' | 'pending' | 'unknown';
 export type ThreatType = 'phishing' | 'malware' | 'social_engineering' | 'suspicious_structure' | 'unknown';
 export interface Evidence {
@@ -245,8 +257,7 @@ export function isFreshScanReport(value: unknown, now = Date.now()): value is Sc
     Boolean(item.expires_at) && Date.parse(item.expires_at!) > now && Date.parse(item.observed_at) <= now + 300_000;
   const completed = value.engines.filter(engine => isRemoteEngine(engine) && engine.targets.every(conclusiveFresh)).length;
   if (value.coverage.completed !== completed) return false;
-  if (value.policy_version === POLICY_VERSION && value.verdict === 'no_known_threats' &&
-      (value.coverage.completed !== value.coverage.total || value.coverage.detected > 0)) return false;
+  if (value.verdict === 'no_known_threats' && value.coverage.detected > 0) return false;
   if (value.verdict === 'no_known_threats' && value.engines.filter(engine => engine.kind === 'reputation' &&
       engine.targets.every(item => item.status === 'no_detection' && conclusiveFresh(item))).length < 2) return false;
   if (value.destinations && value.verdict === 'no_known_threats' && value.destinations.some(destination =>

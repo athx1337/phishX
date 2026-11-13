@@ -41,11 +41,11 @@ export function assess(engines: EngineResult[], urls: string[]): Pick<ScanReport
   const reasons = engines.flatMap(e => e.evidence).filter((e, i, all) => all.findIndex(item => item.id === e.id && item.target_url === e.target_url) === i).slice(0, 100);
   const strong = reasons.some(e => e.severity === 'high' && e.threat_type !== 'suspicious_structure');
   const warnings = reasons.some(e => e.severity === 'warning' || e.severity === 'high');
-  const completeCoverage = remotes.length > 0 && counts.detected === 0 && remotes.every(conclusive);
-  const verdict = strong ? 'malicious' : warnings ? 'suspicious' : sufficient && completeCoverage ? 'no_known_threats' : 'unknown';
+  const negativeQuorum = sufficient && counts.detected === 0 && counts.pending === 0;
+  const verdict = strong ? 'malicious' : warnings ? 'suspicious' : negativeQuorum ? 'no_known_threats' : 'unknown';
   const summary = verdict === 'malicious' ? 'Threat intelligence identified malicious activity. Avoid this URL. See the source observations below.' :
     verdict === 'suspicious' ? 'This URL has warning signals or conflicting intelligence. Avoid sharing credentials until you independently verify the destination.' :
-    verdict === 'no_known_threats' ? 'All remote sources returned fresh checks for every requested protocol without a known threat match. This does not guarantee the website is safe.' :
+    verdict === 'no_known_threats' ? 'At least two independent reputation sources completed fresh checks for every requested protocol without a known threat match. See coverage for any incomplete checks. This does not guarantee the website is safe.' :
     'There is not enough completed, fresh reputation evidence to determine the risk. Missing or pending checks are not proof of safety.';
   return { verdict, summary, reasons, coverage: { total: remotes.length, completed: remotes.filter(conclusive).length, ...counts, sufficient } };
 }

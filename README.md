@@ -58,7 +58,7 @@ A useful scan explains what was observed, where the information came from, and w
 | :--- | :--- |
 | **Malicious URL** | Strong threat-intelligence evidence was found. Avoid interacting with the URL. |
 | **Suspicious URL** | Deceptive structure, weaker or stale positive intelligence, or conflicting findings warrant caution. |
-| **No threat matches returned** | All remote checks completed with fresh evidence and returned no known threat or warning. This is not a safety guarantee. |
+| **No threats detected** | At least two independent reputation checks completed for every requested protocol and returned no threat match or warning. Coverage separately identifies missing checks. This is not a safety guarantee. |
 | **Unable to determine** | Evidence is insufficient, unknown, unavailable, failed, or pending. |
 
 A clean conclusion requires fresh results from at least two independent reputation sources for every requested protocol, with no warning or pending active inspection. Local model output does not count as remote coverage. Missing checks never become clean votes.
@@ -289,3 +289,5 @@ Maintained by [athx1337](https://github.com/athx1337). Contributions that improv
 Code is available under the [MIT license](LICENSE). Training datasets and model derivatives carry separate [CC BY 4.0 attribution and terms](model/LICENSE-DATA.md); the code license does not replace them. Unicode confusables include the [Unicode V3 notice](backend-worker/src/data/UNICODE-LICENSE.txt).
 
 Historical research was adapted from [Shreya Gopal's phishing-detection project](https://github.com/shreyagopal/Phishing-Website-Detection-by-Machine-Learning-Techniques). Dataset authors and contributors are credited in the model documentation.
+
+Recognized official HTTPS homepages for Google, GitHub and Wikipedia may display “Likely safe” after the same fresh negative reputation quorum. Recognition covers a small reviewed exact-host list and excludes non-root paths, queries, custom ports and user-hosted subdomains. Threat warnings always take precedence.
